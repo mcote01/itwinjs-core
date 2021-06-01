@@ -105,7 +105,7 @@ class ThemeManagerComponent extends React.Component<ThemeProps, State> {
 
     return (
       <div style={{ height: "100%" }} ref={this._handleRefSet}>
-        <ThemeProvider theme={theme} ownerDocument={this.state.ownerDocument}>
+        <ThemeProvider theme={theme} themeOptions={{ ownerDocument: this.state.ownerDocument }}>
           {this.props.children}
         </ThemeProvider>
       </div>

@@ -6,12 +6,13 @@
 /** getParentSelector
  * @internal
  */
-export const getParentSelector = (): HTMLElement => {
-  let portal = document.querySelector("#portal");
+export const getParentSelector = (innerDiv: HTMLDivElement | undefined): HTMLElement => {
+  const ownerDocument = innerDiv?.ownerDocument??document;
+  let portal = ownerDocument.querySelector("#portal");
   if (!portal) {
-    portal = document.createElement("div");
+    portal = ownerDocument.createElement("div");
     portal.id = "portal";
-    document.body.appendChild(portal);
+    ownerDocument.body.appendChild(portal);
   }
   return portal as HTMLElement;
 };

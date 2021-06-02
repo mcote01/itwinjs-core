@@ -17,6 +17,7 @@ import { ActionMeta, FocusEventHandler, InputActionMeta, KeyboardEventHandler, V
 import { UiCore } from "../UiCore";
 import { getCssVariableAsNumber } from "../utils/getCssVariable";
 import { getParentSelector } from "./modalHelper";
+import { useRefState } from "../utils/hooks/useRefState";
 
 // cspell:ignore reactselect builtins
 
@@ -215,7 +216,8 @@ export function ThemedSelect(props: ThemedSelectProps) {
   }, [noOptionLabel]);
   const noOptionFunction = props.noOptionsMessage ?? defaultOptionMessage;
   const selectClassName = classnames("uicore-reactSelectTop", props.className);
-  const portalTarget = !!props.isMenuFixed ? undefined : getParentSelector();
+  const [innerDivRef, innerDiv] = useRefState<HTMLDivElement>();
+  const portalTarget = !!props.isMenuFixed ? undefined : getParentSelector(innerDiv);
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     classNamePrefix, className, noOptionsMessage, menuPortalTarget, isMenuFixed, styles, components, divRef, ref,
@@ -226,10 +228,11 @@ export function ThemedSelect(props: ThemedSelectProps) {
     ...props.styles,
     menuPortal: (base: React.CSSProperties) => ({ ...base, zIndex }),
   };
+  divRef && (divRef.current = innerDiv);
 
   const zIndex = getCssVariableAsNumber("--uicore-z-index-dialog-popup");
   return (
-    <div className={selectClassName} ref={divRef}>
+    <div className={selectClassName} ref={innerDivRef}>
       <Component
         ref={ref}
         classNamePrefix="react-select"

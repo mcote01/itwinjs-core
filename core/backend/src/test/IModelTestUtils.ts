@@ -14,8 +14,8 @@ import {
 import { loadEnv } from "@bentley/config-loader";
 import { IModelHubClientLoggerCategory } from "@bentley/imodelhub-client";
 import {
-  Code, CodeProps, ElementProps, IModel, IModelError, IModelReadRpcInterface, IModelVersion, IModelVersionProps, PhysicalElementProps, RelatedElement,
-  RequestNewBriefcaseProps, RpcConfiguration, RpcManager, RpcPendingResponse, SyncMode,
+  Camera, Code, CodeProps, ElementProps, IModel, IModelError, IModelReadRpcInterface, IModelVersion, IModelVersionProps, PhysicalElementProps, RelatedElement,
+  RequestNewBriefcaseProps, RpcConfiguration, RpcManager, RpcPendingResponse, SyncMode, ViewDefinition3dProps
 } from "@bentley/imodeljs-common";
 import { IModelJsNative, NativeLoggerCategory } from "@bentley/imodeljs-native";
 import { AccessToken, AccessTokenProps, AuthorizedClientRequestContext, ITwinClientLoggerCategory } from "@bentley/itwin-client";
@@ -35,6 +35,8 @@ import { Schema, Schemas } from "../Schema";
 import { HubMock } from "./HubMock";
 import { KnownTestLocations } from "./KnownTestLocations";
 import { HubUtility } from "./integration/HubUtility";
+import { Angle, Matrix3d, Range2d, Range3d, StandardViewIndex, Transform, YawPitchRollAngles } from "@bentley/geometry-core";
+
 
 const assert = chai.assert;
 chai.use(chaiAsPromised);
@@ -575,6 +577,30 @@ export class IModelTestUtils {
       return false;
     return true;
   }
+
+  public static createViewDefinitionElement(selectedModel: IModelDb, categoryId: Id64String, displayStyleId: string): any {
+    const standardView = StandardViewIndex.Iso;
+    const rotation = Matrix3d.createStandardWorldToView(standardView);
+    const angles = YawPitchRollAngles.createFromMatrix3d(rotation);
+    const rotationTransform = Transform.createOriginAndMatrix(undefined, rotation);
+    const range: Range3d = new Range3d(1, 1, 1, 8, 8, 8);
+    const rotatedRange = rotationTransform.multiplyRange(range);
+
+    const elementProps: ViewDefinition3dProps = {
+      categorySelectorId: categoryId,
+      displayStyleId,
+      code: Code.createEmpty(),
+      model: IModel.dictionaryId,
+      classFullName: "BisCore:SpatialViewDefinition",
+      cameraOn: false,
+      origin: rotation.multiplyTransposeXYZ(rotatedRange.low.x, rotatedRange.low.y, rotatedRange.low.z),
+      extents: rotatedRange.diagonal(),
+      angles,
+      camera: new Camera(),
+    };
+    return selectedModel.elements.createElement(elementProps);
+  }
+
 }
 
 before(async () => {

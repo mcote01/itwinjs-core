@@ -7,11 +7,11 @@ import { assert, expect } from "chai";
 import * as semver from "semver";
 import { DbOpcode, DbResult, GuidString, Id64String, IModelHubStatus } from "@bentley/bentleyjs-core";
 import { CodeState, HubCode, IModelHubError, IModelQuery, Lock, LockLevel, LockQuery, LockType } from "@bentley/imodelhub-client";
-import { CodeScopeSpec, CodeSpec, IModel, IModelError, RequestNewBriefcaseProps, SchemaState, SubCategoryAppearance } from "@bentley/imodeljs-common";
+import { ColorDef, CodeScopeSpec, CodeSpec, IModel, IModelError, RequestNewBriefcaseProps, SchemaState, SubCategoryAppearance } from "@bentley/imodeljs-common";
 import { WsgError } from "@bentley/itwin-client";
 import { IModelHubBackend } from "../../IModelHubBackend";
 import {
-  AuthorizedBackendRequestContext, BriefcaseDb, BriefcaseManager, ConcurrencyControl, DictionaryModel, Element, IModelHost, IModelJsFs, LockProps,
+  AuthorizedBackendRequestContext, BriefcaseDb, BriefcaseManager, ConcurrencyControl, DictionaryModel, DisplayStyle3d, Element, IModelHost, IModelJsFs, LockProps,
   SpatialCategory, SqliteStatement, SqliteValue, SqliteValueType,
 } from "../../imodeljs-backend";
 import { HubMock } from "../HubMock";
@@ -1070,6 +1070,73 @@ describe("IModelWriteTest (#integration)", () => {
 
     /* Cleanup after test */
     await IModelHost.hubAccess.deleteIModel({ requestContext: managerRequestContext, contextId: projectId, iModelId });
+  });
+
+  it("should create a briefcase and insert ViewDefinition element to that (#integration)", async () => {
+    const requestContext = await IModelTestUtils.getUserContext(TestUserType.SuperManager);
+
+    let timer = new Timer("delete iModels");
+    // Delete any existing iModels with the same name as the read-write test iModel
+    const iModelName = "CodesPushTest";
+    const iModels = await IModelHubBackend.iModelClient.iModels.get(requestContext, testContextId, new IModelQuery().byName(iModelName));
+    for (const iModelTemp of iModels) {
+      await IModelHubBackend.iModelClient.iModels.delete(requestContext, testContextId, iModelTemp.id!);
+    }
+    timer.end();
+
+    // Create a new empty iModel on the Hub & obtain a briefcase
+    timer = new Timer("create iModel");
+    const rwIModelId = await BriefcaseManager.create(requestContext, testContextId, iModelName, { rootSubject: { name: "defaultRoot" } });
+    assert.isNotEmpty(rwIModelId);
+    const rwIModel = await IModelTestUtils.downloadAndOpenBriefcase({ requestContext: requestContext, contextId: testContextId, iModelId: rwIModelId });
+
+    timer.end();
+
+    timer = new Timer("create SpatialCategory");
+
+    rwIModel.concurrencyControl.setPolicy(new ConcurrencyControl.OptimisticPolicy());
+
+    // Create a SpatialCategory.
+    const spatialCategoryId = SpatialCategory.insert(rwIModel, IModel.dictionaryId, "DefaultSpatialCategory", new SubCategoryAppearance({ color: ColorDef.fromString("rgb(255,0,0)").toJSON() }));
+    await rwIModel.concurrencyControl.request(requestContext);
+    rwIModel.saveChanges("Added default category");
+    assert.isNotEmpty(spatialCategoryId);
+    timer.end();
+
+    timer = new Timer("query Codes I");
+    // iModel.concurrencyControl should have recorded the codes that are required by the new elements.
+    assert.isTrue(rwIModel.concurrencyControl.hasPendingRequests);
+    assert.isTrue(await rwIModel.concurrencyControl.areAvailable(requestContext));
+    timer.end();
+
+    timer = new Timer("create DisplayStyle");
+    const displayStyle3d: DisplayStyle3d = DisplayStyle3d.create(rwIModel, IModel.dictionaryId, "defaultDisplayStyle", { backgroundColor: ColorDef.fromString("rgb(255,0,0)") });
+    assert.isNotEmpty(displayStyle3d);
+    timer.end();
+
+    timer = new Timer("make more local changes");
+
+    const element = IModelTestUtils.createViewDefinitionElement(rwIModel, spatialCategoryId, displayStyle3d.id);
+    assert.isTrue(element);
+
+    // The application crashes while executing this
+    const elid1 = rwIModel.elements.insertElement(element);
+
+    // Commit the local changes to a local transaction in the briefcase.
+    rwIModel.saveChanges(JSON.stringify({ userid: "user1", description: "inserted generic objects" }));
+
+    rwIModel.elements.getElement(elid1); // throws if elid1 is not found
+    rwIModel.elements.getElement(spatialCategoryId); // throws if spatialCategoryId is not found
+
+    timer.end();
+
+    // Open a readonly copy of the iModel
+    const roIModel = await IModelTestUtils.downloadAndOpenBriefcase({ requestContext: requestContext, contextId: testContextId, iModelId: rwIModelId });
+
+    assert.exists(roIModel);
+
+    await IModelTestUtils.closeAndDeleteBriefcaseDb(requestContext, rwIModel);
+    roIModel.close();
   });
 
 });

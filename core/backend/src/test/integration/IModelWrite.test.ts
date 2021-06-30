@@ -12,7 +12,7 @@ import { WsgError } from "@bentley/itwin-client";
 import { IModelHubBackend } from "../../IModelHubBackend";
 import {
   AuthorizedBackendRequestContext, BriefcaseDb, BriefcaseManager, ConcurrencyControl, DictionaryModel, DisplayStyle3d, Element, IModelHost, IModelJsFs, LockProps,
-  SpatialCategory, SqliteStatement, SqliteValue, SqliteValueType,
+  SpatialCategory, SpatialViewDefinition, SqliteStatement, SqliteValue, SqliteValueType,
 } from "../../imodeljs-backend";
 import { HubMock } from "../HubMock";
 import { IModelTestUtils, TestUserType, Timer } from "../IModelTestUtils";
@@ -1135,6 +1135,62 @@ describe("IModelWriteTest (#integration)", () => {
 
     assert.exists(roIModel);
 
+    await IModelTestUtils.closeAndDeleteBriefcaseDb(requestContext, rwIModel);
+    roIModel.close();
+  });
+
+  it("should create a briefcase and insert ViewDefinition with camera to that (#integration)", async () => {
+    const requestContext = await IModelTestUtils.getUserContext(TestUserType.SuperManager);
+
+    let timer = new Timer("delete iModels");
+    // Delete any existing iModels with the same name as the read-write test iModel
+    const iModelName = "InsertViewDefinitionTest";
+    const iModels = await IModelHubBackend.iModelClient.iModels.get(requestContext, testContextId, new IModelQuery().byName(iModelName));
+    for (const iModelTemp of iModels) {
+      await IModelHubBackend.iModelClient.iModels.delete(requestContext, testContextId, iModelTemp.id!);
+    }
+    timer.end();
+
+    // Create a new empty iModel on the Hub & obtain a briefcase
+    timer = new Timer("create iModel");
+    const rwIModelId = await BriefcaseManager.create(requestContext, testContextId, iModelName, { rootSubject: { name: "defaultRoot" } });
+    assert.isNotEmpty(rwIModelId);
+    const rwIModel = await IModelTestUtils.downloadAndOpenBriefcase({ requestContext: requestContext, contextId: testContextId, iModelId: rwIModelId });
+
+    timer.end();
+    rwIModel.concurrencyControl.setPolicy(new ConcurrencyControl.OptimisticPolicy());
+
+    timer = new Timer("create DisplayStyle");
+    const displayStyleId = DisplayStyle3d.insert(rwIModel, IModel.dictionaryId, "defaultDisplayStyle", { backgroundColor: ColorDef.fromString("rgb(255,0,0)") });
+    await rwIModel.concurrencyControl.request(requestContext);
+    rwIModel.saveChanges("Added default Display Style");
+    assert.isNotEmpty(displayStyleId);
+    timer.end();
+
+    timer = new Timer("create model and SpatialCategory");
+    const r = await createNewModelAndCategory(requestContext, rwIModel);
+    rwIModel.saveChanges("Created new model and category");
+    assert.isNotEmpty(r.spatialCategoryId);
+    assert.isNotEmpty(r.modelId);
+    timer.end();
+
+    timer = new Timer("query Codes I");
+    // iModel.concurrencyControl should have recorded the codes that are required by the new elements.
+    assert.isTrue(rwIModel.concurrencyControl.hasPendingRequests);
+    assert.isTrue(await rwIModel.concurrencyControl.areAvailable(requestContext));
+    timer.end();
+
+    timer = new Timer("insert view definition");
+    //Application crashes here
+    const viewId = SpatialViewDefinition.insertWithCamera(rwIModel, IModel.dictionaryId, "default View", r.modelId, r.spatialCategoryId, displayStyleId, rwIModel.projectExtents);
+    rwIModel.views.setDefaultViewId(viewId);
+    rwIModel.saveChanges("Added default view");
+    assert.isNotEmpty(viewId);
+    timer.end();
+
+    // Open a readonly copy of the iModel
+    const roIModel = await IModelTestUtils.downloadAndOpenBriefcase({ requestContext: requestContext, contextId: testContextId, iModelId: rwIModelId });
+    assert.exists(roIModel);
     await IModelTestUtils.closeAndDeleteBriefcaseDb(requestContext, rwIModel);
     roIModel.close();
   });

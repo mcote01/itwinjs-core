@@ -348,7 +348,7 @@ export class HubUtility {
 
   /** Push an iModel to the Hub */
   public static async pushIModel(requestContext: AuthorizedClientRequestContext, projectId: string, pathname: string, iModelName?: string, overwrite?: boolean): Promise<GuidString> {
-    assert.isTrue(HubMock.isValid, "Must use HubMock for tests that create iModels");
+    assert.isTrue(HubUtility.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that create iModels");
     // Delete any existing iModels with the same name as the required iModel
     const locIModelName = iModelName || path.basename(pathname, ".bim");
     const iModelId = await HubUtility.queryIModelByName(requestContext, projectId, locIModelName);
@@ -387,7 +387,7 @@ export class HubUtility {
   }
 
   private static async pushChangeSets(requestContext: AuthorizedClientRequestContext, briefcase: Briefcase, uploadDir: string): Promise<void> {
-    assert.isTrue(HubMock.isValid, "Must use HubMock for tests push changesets");
+    assert.isTrue(HubUtility.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests push changesets");
     const changeSetJsonPathname = path.join(uploadDir, "changeSets.json");
     if (!IModelJsFs.existsSync(changeSetJsonPathname))
       return;
@@ -422,7 +422,7 @@ export class HubUtility {
   }
 
   private static async pushNamedVersions(requestContext: AuthorizedClientRequestContext, briefcase: Briefcase, uploadDir: string, overwrite?: boolean): Promise<void> {
-    assert.isTrue(HubMock.isValid, "Must use HubMock for tests that modify iModels");
+    assert.isTrue(HubUtility.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that modify iModels");
     const namedVersionsJsonPathname = path.join(uploadDir, "namedVersions.json");
     if (!IModelJsFs.existsSync(namedVersionsJsonPathname))
       return;
@@ -444,7 +444,7 @@ export class HubUtility {
    * Purges all acquired briefcases for the specified iModel (and user), if the specified threshold of acquired briefcases is exceeded
    */
   public static async purgeAcquiredBriefcasesById(requestContext: AuthorizedClientRequestContext, iModelId: GuidString, onReachThreshold: () => void = () => { }, acquireThreshold: number = 16): Promise<void> {
-    assert.isTrue(this.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that modify iModels");
+    assert.isTrue(HubUtility.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that modify iModels");
     const briefcases = await IModelHost.hubAccess.getMyBriefcaseIds({ requestContext, iModelId });
     if (briefcases.length > acquireThreshold) {
       if (undefined !== onReachThreshold)
@@ -462,7 +462,7 @@ export class HubUtility {
    * Purges all acquired briefcases for the specified iModel (and user), if the specified threshold of acquired briefcases is exceeded
    */
   public static async purgeAcquiredBriefcases(requestContext: AuthorizedClientRequestContext, projectName: string, iModelName: string, acquireThreshold: number = 16): Promise<void> {
-    assert.isTrue(this.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that modify iModels");
+    assert.isTrue(HubUtility.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that modify iModels");
     const projectId = await HubUtility.queryProjectIdByName(requestContext, projectName);
     const iModelId = await HubUtility.queryIModelIdByName(requestContext, projectId, iModelName);
 
@@ -576,7 +576,7 @@ export class HubUtility {
    * @returns the iModelId of the newly created iModel.
   */
   public static async recreateIModel(requestContext: AuthorizedClientRequestContext, contextId: GuidString, iModelName: string): Promise<GuidString> {
-    assert.isTrue(HubMock.isValid, "Must use HubMock for tests that modify iModels");
+    assert.isTrue(HubUtility.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that modify iModels");
     const deleteIModel = await HubUtility.queryIModelByName(requestContext, contextId, iModelName);
     if (undefined !== deleteIModel)
       await IModelHost.hubAccess.deleteIModel({ requestContext, contextId, iModelId: deleteIModel });
@@ -587,7 +587,7 @@ export class HubUtility {
 
   /** Create an iModel with the name provided if it does not already exist. If it does exist, the iModelId is returned. */
   public static async createIModel(requestContext: AuthorizedClientRequestContext, contextId: GuidString, iModelName: string): Promise<GuidString> {
-    assert.isTrue(HubMock.isValid, "Must use HubMock for tests that modify iModels");
+    assert.isTrue(HubUtility.allowHubBriefcases || HubMock.isValid, "Must use HubMock for tests that modify iModels");
     let iModelId = await HubUtility.queryIModelByName(requestContext, contextId, iModelName);
     if (!iModelId)
       iModelId = await IModelHost.hubAccess.createIModel({ requestContext, contextId, iModelName, description: `Description for iModel` });

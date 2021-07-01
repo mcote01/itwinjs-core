@@ -3,15 +3,13 @@
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
 
-import * as chai from "chai";
-import * as chaiAsPromised from "chai-as-promised";
-import * as path from "path";
 import { BackendITwinClientLoggerCategory } from "@bentley/backend-itwin-client";
 import {
   BeEvent, BentleyLoggerCategory, ChangeSetStatus, DbResult, Guid, GuidString, Id64, Id64String, IDisposable, IModelStatus, Logger, LogLevel,
-  OpenMode,
+  OpenMode
 } from "@bentley/bentleyjs-core";
 import { loadEnv } from "@bentley/config-loader";
+import { Matrix3d, Range3d, StandardViewIndex, Transform, YawPitchRollAngles } from "@bentley/geometry-core";
 import { IModelHubClientLoggerCategory } from "@bentley/imodelhub-client";
 import {
   Camera, Code, CodeProps, ElementProps, IModel, IModelError, IModelReadRpcInterface, IModelVersion, IModelVersionProps, PhysicalElementProps, RelatedElement,
@@ -20,22 +18,24 @@ import {
 import { IModelJsNative, NativeLoggerCategory } from "@bentley/imodeljs-native";
 import { AccessToken, AccessTokenProps, AuthorizedClientRequestContext, ITwinClientLoggerCategory } from "@bentley/itwin-client";
 import { TestUserCredentials, TestUsers, TestUtility } from "@bentley/oidc-signin-tool";
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
+import * as path from "path";
 import { BackendLoggerCategory as BackendLoggerCategory } from "../BackendLoggerCategory";
 import { CheckpointProps, V1CheckpointManager } from "../CheckpointManager";
 import { ClassRegistry } from "../ClassRegistry";
 import { Drawing, PhysicalElement, Subject } from "../Element";
 import {
   BriefcaseDb, BriefcaseManager, Element, IModelDb, IModelHost, IModelHostConfiguration, IModelJsFs, InformationPartitionElement, Model,
-  PhysicalModel, PhysicalPartition, SnapshotDb, SpatialCategory, SubjectOwnsPartitionElements,
+  PhysicalModel, PhysicalPartition, SnapshotDb, SpatialCategory, SubjectOwnsPartitionElements
 } from "../imodeljs-backend";
 import { DrawingModel } from "../Model";
 import { ElementDrivesElement, RelationshipProps } from "../Relationship";
 import { DownloadAndOpenArgs, RpcBriefcaseUtility } from "../rpc-impl/RpcBriefcaseUtility";
 import { Schema, Schemas } from "../Schema";
 import { HubMock } from "./HubMock";
-import { KnownTestLocations } from "./KnownTestLocations";
 import { HubUtility } from "./integration/HubUtility";
-import { Angle, Matrix3d, Range2d, Range3d, StandardViewIndex, Transform, YawPitchRollAngles } from "@bentley/geometry-core";
+import { KnownTestLocations } from "./KnownTestLocations";
 
 
 const assert = chai.assert;

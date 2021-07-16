@@ -2,33 +2,35 @@
 
 This is a proposal for the design of a two-process (2P) connector. In the second section of the proposal, some key simplifications/restrictions are proposed, to make it less difficult to write such a connector.
 
-The 2P connector uses two _processes_. One process, running iModel.js, handles all access to the iModel. The other process, based on any appropriate technology, handles all access to the external source. There is bi-directional IPC between the two.
+A 2P connector uses two _processes_. One process handles all access to the iModel, and it uses iModel.js. The other process handles all access to the external source. It uses any technology that is appropriate for that job. There is bi-directional IPC between the two.
 
-There are three _components_ in a 2P connector. That is because the data-conversion problem is really two problems, with different technologies appropriate for each. The three components and their responsibilities are:
-
+A 2P connector has three _components_:
 #### Reader.x
 
 - access and read external data
 
-The Reader.x can be written in any language. It does not use iModel.js, and it does not access the iModel directly. It runs in its own process. It is denoted ".x" because it is external and may be in any language.
+The Reader.x can be written in any language. It does not use iModel.js, and it does not access the iModel directly. It runs in its own process. It is denoted ".x" because it is external and may be in any language. It runs in its own process.
 
 #### Converter.js
 
 - map external concepts into BIS schemas and classes
-- convert external data into BIS elements
-
-The Converter.js should be written in TypeScript and should use iModel.js. It has the complicated job of mapping external concepts to BIS classes and converting external data to BIS elements. Using iModel.js is the only sensible way to work with BIS elements and classes. The converter does _not_ write to the iModel or work with iModelHub.
+- convert external data into BIS elements (but does not write them)
 
 Converter.js is, conceptually, in the middle.
 
 - It is loaded and called by GenericContainer.js.
 - It launches and communciates with Reader.x.
 
+Since it works with BIS elements and classes, the Converter.js needs to use iModel.js. It is a kind of extension to the Connector.js, and so it is loaded into the iModel.js process.
+
 #### GenericConnector.js
 
+- implements IModelBridge
 - update an iModel
 
-GenericConnector.js implements the IModelBridge interface. It is loaded and run by BridgeRunner. As it runs, GenericConnector.js calls methods on Converter.js, which communicates with Reader.x to get and convert data from the external source.
+GenericConnector.js is the connector proper. It implements the IModelBridge interface. It is loaded and run by BridgeRunner.
+
+In its implementation of IModelBridge, GenericConnector.js loads and uses Converter.js as a kind of extension. Converter.js gets the external data and converts it. GenericConnector.js writes the converted data to the briefcase.
 
 Here is how data and knowledge flow from one component to another:
 
@@ -36,8 +38,8 @@ Here is how data and knowledge flow from one component to another:
 graph LR
 External-repo[external repository] --> Reader.x;
 Reader.x -->|external data| Converter.js;
-External-concepts[external concepts] --> Converter.js;
-External-concepts --> Reader.x;
+External-concepts[external concepts] --- Converter.js;
+External-concepts --- Reader.x;
 GenericConnector.js -->|Elements| iModel;
 Converter.js -->|Elements| GenericConnector.js;
 GenericConnector.js --- BIS-concepts[BIS concepts];
@@ -51,11 +53,11 @@ Here is a detailed interaction diagram showing the three components at work. (Da
 iModelHub -- BridgeRunner: permissions
 BridgeRunner --> iModelHub: acquire briefcase
 iModelHub --> BridgeRunner: briefcase
-BridgeRunner -> GenericConnector.js: Load
-GenericConnector.js -> Converter.js: Load
+BridgeRunner ->> GenericConnector.js: Loads
+GenericConnector.js ->> Converter.js: Loads
 Converter.js -> Converter.js: Start gRPC IM server
 BridgeRunner -> GenericConnector.js: openSourceData
-Converter.js -->> Reader.x: Launch
+Converter.js ->> Reader.x: Launches
 Reader.x -> Reader.x: Start gRPC XS server
 BridgeRunner -> BridgeRunner: open briefcase
 BridgeRunner -> GenericConnector.js: onOpenIModel
@@ -94,6 +96,8 @@ BridgeRunner -> BridgeRunner: saveChanges
 BridgeRunner --> iModelHub: pushChanges
 BridgeRunner --> iModelHub: unlock connector channel
 ```
+
+The diagram may not make it clear that Converter.js is reading from a *stream* of data produced by Reader.x. Converter.js picks out data from the stream, converts it to elements and models, and invokes the onElement and onModel callbacks on GenericConnector.js *as it goes along*.
 
 The Converter.js must implement the following methods for the GenericConnector.js to call:
 

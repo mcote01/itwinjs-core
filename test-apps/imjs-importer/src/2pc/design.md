@@ -1,15 +1,15 @@
 # Two-process (2P) connector design
 
-This is a proposal for the design of a two-process (2P) connector. In the second section of the proposal, some key simplifications/restrictions are proposed, to make it less difficult to write such a connector.
+This is a proposal for the design of a two-process (2P) connector. In the second section of the proposal, some key simplifications/restrictions are proposed, to make it less difficult to write such a connector. *I think the whole thing stands or falls on these simplifications.*
 
 A 2P connector uses two _processes_. One process handles all access to the iModel, and it uses iModel.js. The other process handles all access to the external source. It uses any technology that is appropriate for that job. There is bi-directional IPC between the two.
 
-A 2P connector has three _components_:
+A connector has *three* things to do: 1) read the external data, 2) convert the external data to BIS elements, and 3) write the elements to the iModel. There is a distinct component for each of these tasks in a 2P connector. They are:
 #### Reader.x
 
 - access and read external data
 
-The Reader.x can be written in any language. It does not use iModel.js, and it does not access the iModel directly. It runs in its own process. It is denoted ".x" because it is external and may be in any language. It runs in its own process.
+The Reader.x can be written in any language. It does not use iModel.js, and it does not access the iModel directly. It runs in its own process. It is denoted ".x" because it is external and may be in any language. It runs in its own external process.
 
 #### Converter.js
 
@@ -20,8 +20,9 @@ Converter.js is, conceptually, in the middle.
 
 - It is loaded and called by GenericContainer.js.
 - It launches and communciates with Reader.x.
+- It converts external data to BIS elements
 
-Since it works with BIS elements and classes, the Converter.js needs to use iModel.js. It is a kind of extension to the Connector.js, and so it is loaded into the iModel.js process.
+Converter.js is distinct from Reader.x because it has different technology requirements. Since it works with BIS elements and classes, the Converter.js needs to use iModel.js. It is a kind of extension to the Connector.js, and so it is loaded into the iModel.js process.
 
 #### GenericConnector.js
 
@@ -119,7 +120,7 @@ interface ConnectorCallbacks {
 }
 ```
 
-In its onElement callback, the GenericConnector.js checks to see if the element or model as really changed and then writes it  to the briefcase.
+In its onElement callback, the GenericConnector.js checks to see if the element or model has really changed and then writes it  to the briefcase.
 
 The GenericConnector.js provides the following services to the Converter.js (and indirectly to the Reader.x):
 

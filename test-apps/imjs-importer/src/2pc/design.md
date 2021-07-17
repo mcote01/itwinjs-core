@@ -97,7 +97,7 @@ BridgeRunner --> iModelHub: pushChanges
 BridgeRunner --> iModelHub: unlock connector channel
 ```
 
-The diagram may not make it clear that Converter.js is reading from a *stream* of data produced by Reader.x. Converter.js picks out data from the stream, converts it to elements and models, and invokes the onElement and onModel callbacks on GenericConnector.js *as it goes along*.
+The diagram may not make it clear that Converter.js is reading from a stream of data produced by Reader.x. Converter.js picks out data from the stream, converts it to elements and models, and invokes the onElement and onModel callbacks on GenericConnector.js as it goes along. The converter is free to skip unchanged items.
 
 The Converter.js must implement the following methods for the GenericConnector.js to call:
 
@@ -112,22 +112,25 @@ The generic connector expects the Converter.js to invoke a callback whenever it 
 
 ```ts
 interface ConnectorCallbacks {
-  onElement(element: Element): void;
-  onModel(model: Model): void;
+  onElement(element: ElementProps, xsa: ExternalSourceAspectProps): Element;
+  onModel(model: ModelProps, xsa: ExternalSourceAspectProps): Model;
+  onElementSkipped(xsa: ExternalSourceAspectProps): void;
+  onModelSkipped(xsa: ExternalSourceAspectProps): void;
 }
 ```
+
+In its onElement callback, the GenericConnector.js checks to see if the element or model as really changed and then writes it  to the briefcase.
 
 The GenericConnector.js provides the following services to the Converter.js (and indirectly to the Reader.x):
 
 ```ts
 interface ConnectorServices {
-  getRepositoryLink(fileid: string): RepositoryLink;
-  isElementChanged(repo: RepositoryLink, externalid: string): boolean;
-  isElementChangedByGuid(federationGuid: string): boolean;
+  isElementChanged(scope: Id64String, externalid: string): ExternalSourceAspect | undefined;
+  isElementChangedByGuid(federationGuid: string): ExternalSourceAspect | undefined;
 }
 ```
 
-The isElementChanged methods allow the Converter.js (and, indirectly, the Reader.x) to check for changes before going to the effort of converting it. Converter.js can ask the GenericConnector.js, and the Reader.x can send a request to Converter.js, which forwards it. So, all three components can do change-detection.
+The isElementChanged methods allow the Converter.js (and, indirectly, the Reader.x) to check to see if an element already exists changes before going to the effort of converting it. Converter.js can ask the GenericConnector.js, and the Reader.x can send a request to Converter.js, which forwards it. So, all three components can do change-detection.
 
 ## Simplifications: No generated schemas, create definitions on the fly
 

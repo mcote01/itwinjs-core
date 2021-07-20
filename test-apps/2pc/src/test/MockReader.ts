@@ -15,9 +15,11 @@ let server: grpc.Server;
 const readerServer: IReaderServer = {
   sww(call: grpc.ServerWritableStream<TestRequest, TestResponse>) {
     const response = new TestResponse();
-    response.setTestResponse("hello...");
-    call.write(response);
-    response.setTestResponse("...world");
+    for (let i = 0; i < 1000; ++i) {
+      response.setTestResponse(`part ${i}`);
+      call.write(response);
+    }
+    response.setTestResponse("<done>");
     call.write(response);
     call.end();
   },

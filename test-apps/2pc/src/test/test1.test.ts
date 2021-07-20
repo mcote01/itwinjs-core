@@ -13,17 +13,21 @@ async function doServerStreamingCall(client: ReaderClient): Promise<void> {
   const clientMessage = new TestRequest();
   clientMessage.setTestMessage("Message from client");
   const stream = client.sww(clientMessage);
+  let i = 0;
   return new Promise((resolve, reject) => {
     stream.on("data", (response: TestResponse) => {
-      // eslint-disable-next-line no-console
-      console.log(
-        `(client) Got server message: ${response.getTestResponse()}`
-      );
+      ++i;
+      if (response.getTestResponse() === "<done>") {
+        // eslint-disable-next-line no-console
+        console.log(`(client) got ${i} responses`);
+      }
     });
     stream.on("error", (err: Error) => {
       reject(err);
     });
     stream.on("end", () => {
+      // eslint-disable-next-line no-console
+      console.log(`(client) stream has ended`);
       resolve();
     });
   });

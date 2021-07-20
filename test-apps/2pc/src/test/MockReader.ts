@@ -8,24 +8,28 @@
 */
 import * as grpc from "@grpc/grpc-js";
 import { ShutdownRequest, ShutdownResponse, TestRequest, TestResponse } from "../generated/reader_pb";
-import { IReaderServer, ReaderService} from "../generated/reader_grpc_pb";
+import { IReaderServer, ReaderService } from "../generated/reader_grpc_pb";
 
 let server: grpc.Server;
 
 const readerServer: IReaderServer = {
   sww(call: grpc.ServerWritableStream<TestRequest, TestResponse>) {
     const response = new TestResponse();
-    response.setTestResponse("hello");
+    response.setTestResponse("hello...");
     call.write(response);
+    response.setTestResponse("...world");
+    call.write(response);
+    call.end();
   },
 
   shutdown(_call: grpc.ServerUnaryCall<ShutdownRequest, ShutdownResponse>, callback: grpc.sendUnaryData<ShutdownResponse>) {
     const response = new ShutdownResponse();
     response.setStatus("0");
+    callback(null, response);
     server.tryShutdown((err?: Error) => {
       if (err)
-        response.setStatus(err.message);
-      callback(null, response);
+        // eslint-disable-next-line no-console
+        console.log(err.message);
     });
   },
 

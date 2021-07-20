@@ -19,10 +19,12 @@ async function doServerStreamingCall(client: ReaderClient): Promise<void> {
       console.log(
         `(client) Got server message: ${response.getTestResponse()}`
       );
-      resolve();
     });
     stream.on("error", (err: Error) => {
       reject(err);
+    });
+    stream.on("end", () => {
+      resolve();
     });
   });
 }

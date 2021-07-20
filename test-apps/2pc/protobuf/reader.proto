@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package TwoProcessConnector;
+
+message TestResponse {
+  string test_response = 1;
+}
+
+message TestRequest {
+  string test_message = 1;
+}
+
+service Reader {
+  rpc sww(TestRequest) returns (stream TestResponse) {}
+  // rpc serverStreamingCall(ClientMessage) returns (stream ServerMessage) {}
+  // rpc clientStreamingCall(stream ClientMessage) returns (ServerMessage) {}
+  // rpc bidirectionalStreamingCall(stream ClientMessage) returns (stream ServerMessage) {}
+}

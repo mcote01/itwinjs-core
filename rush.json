@@ -534,6 +534,12 @@
       "shouldPublish": false
     },
     {
+      "packageName": "2pc",
+      "projectFolder": "test-apps/2pc",
+      "reviewCategory": "internal",
+      "shouldPublish": false
+    },
+    {
       "packageName": "imodel-from-geojson",
       "projectFolder": "test-apps/imodel-from-geojson",
       "reviewCategory": "internal",

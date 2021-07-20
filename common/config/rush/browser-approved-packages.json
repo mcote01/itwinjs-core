@@ -263,6 +263,10 @@
       "allowedCategories": [ "tools" ]
     },
     {
+      "name": "@grpc/grpc-js",
+      "allowedCategories": [ "internal" ]
+    },
+    {
       "name": "@microsoft/api-extractor",
       "allowedCategories": [ "tools" ]
     },
@@ -587,8 +591,20 @@
       "allowedCategories": [ "backend", "edit", "frontend", "internal", "tools" ]
     },
     {
+      "name": "google-protobuf",
+      "allowedCategories": [ "internal" ]
+    },
+    {
       "name": "got",
       "allowedCategories": [ "backend" ]
+    },
+    {
+      "name": "grpc_tools_node_protoc_ts",
+      "allowedCategories": [ "internal" ]
+    },
+    {
+      "name": "grpc-tools",
+      "allowedCategories": [ "internal" ]
     },
     {
       "name": "highlight.js",
@@ -704,7 +720,7 @@
     },
     {
       "name": "mkdirp",
-      "allowedCategories": [ "backend" ]
+      "allowedCategories": [ "backend", "internal" ]
     },
     {
       "name": "mocha",
@@ -781,6 +797,10 @@
     {
       "name": "proper-lockfile",
       "allowedCategories": [ "backend" ]
+    },
+    {
+      "name": "protobufjs",
+      "allowedCategories": [ "internal" ]
     },
     {
       "name": "puppeteer",

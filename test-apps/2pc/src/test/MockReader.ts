@@ -2,14 +2,15 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-/* eslint-disable no-console */
 /*
   Pretend to be Reader.x.
   Run a gRPC server that implements the Reader service.
 */
 import * as grpc from "@grpc/grpc-js";
-import { TestRequest, TestResponse } from "../generated/reader_pb";
-import { IReaderServer, ReaderService } from "../generated/reader_grpc_pb";
+import { ShutdownRequest, ShutdownResponse, TestRequest, TestResponse } from "../generated/reader_pb";
+import { IReaderServer, ReaderService} from "../generated/reader_grpc_pb";
+
+let server: grpc.Server;
 
 const readerServer: IReaderServer = {
   sww(call: grpc.ServerWritableStream<TestRequest, TestResponse>) {
@@ -18,10 +19,20 @@ const readerServer: IReaderServer = {
     call.write(response);
   },
 
+  shutdown(_call: grpc.ServerUnaryCall<ShutdownRequest, ShutdownResponse>, callback: grpc.sendUnaryData<ShutdownResponse>) {
+    const response = new ShutdownResponse();
+    response.setStatus("0");
+    server.tryShutdown((err?: Error) => {
+      if (err)
+        response.setStatus(err.message);
+      callback(null, response);
+    });
+  },
+
 };
 
 function getServer(): grpc.Server {
-  const server = new grpc.Server();
+  server = new grpc.Server();
   server.addService(ReaderService, readerServer);
   return server;
 }
@@ -32,11 +43,10 @@ export async function startMockReader(rpcServerAddress: string): Promise<void> {
     server.bindAsync(
       rpcServerAddress,
       grpc.ServerCredentials.createInsecure(),
-      (err: Error | null, port: number) => {
+      (err: Error | null, _port: number) => {
         if (err) {
           reject(err);
         } else {
-          console.log(`Server bound on port: ${port}`);
           server.start();
           resolve();
         }

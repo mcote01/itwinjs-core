@@ -10,8 +10,17 @@ message TestRequest {
   string test_message = 1;
 }
 
+message ShutdownResponse {
+  string status = 1;
+}
+
+message ShutdownRequest {
+  string options = 1;
+}
+
 service Reader {
   rpc sww(TestRequest) returns (stream TestResponse) {}
+  rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
   // rpc serverStreamingCall(ClientMessage) returns (stream ServerMessage) {}
   // rpc clientStreamingCall(stream ClientMessage) returns (ServerMessage) {}
   // rpc bidirectionalStreamingCall(stream ClientMessage) returns (stream ServerMessage) {}

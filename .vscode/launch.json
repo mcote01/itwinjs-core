@@ -924,6 +924,27 @@
       "outputCapture": "std"
     },
     {
+      "name": "2pc",
+      "presentation": {
+        "group": "6_Misc"
+      },
+      "cwd": "${workspaceFolder}/test-apps/2pc",
+      "type": "pwa-node",
+      "request": "launch",
+      "program": "${workspaceFolder}/test-apps/2pc/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--no-timeouts",
+        "lib/test/**/*.test.js"
+      ],
+      "skipFiles": [
+        "<node_internals>/**/*.js",
+        "node_modules/rxjs/**/*"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/test-apps/2pc/lib/**/*.js"
+      ]
+    },
+    {
       "name": "imodel-from-geojson",
       "presentation": {
         "group": "6_Misc"

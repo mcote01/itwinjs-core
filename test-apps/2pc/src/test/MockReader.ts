@@ -38,7 +38,7 @@ function getServer(): grpc.Server {
 }
 
 export async function startMockReader(rpcServerAddress: string): Promise<void> {
-  const server = getServer();
+  server = getServer();
   return new Promise((resolve, reject) => {
     server.bindAsync(
       rpcServerAddress,

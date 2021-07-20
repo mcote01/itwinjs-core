@@ -6,50 +6,27 @@ import * as grpc from "@grpc/grpc-js";
 import { spawn, SpawnOptions } from "child_process";
 import * as net from "net";
 import * as path from "path";
-import { TestRequest, TestResponse } from "../generated/reader_pb";
 import { ReaderClient } from "../generated/reader_grpc_pb";
 
-/*
-https://github.com/protobufjs/protobuf.js/issues/1007#issuecomment-378780758
-*/
-
 /** Describes a spawned clash detection server */
-export interface ReaderServer {
+export interface ReaderClientWithShutdown {
   /** Created constraint solver gRPC service. Use this to communicate with the server. */
   service: ReaderClient;
   /** Closes the backend. */
   shutdown(): void;
 }
 
-/** Starts a constraint solver server and creates a service for it. */
-export async function startServer(exePath: string): Promise<ReaderServer> {
+export async function getServerAddress(): Promise<string> {
   // IP address that the backend will use to bind the gRPC server.
   const port = await getFreeTcpPort();
-  const rpcServerAddress = `localhost:${port}`;
-
-  // Inherit stdout and stderr to see output of the process.
-  const spawnOptions: SpawnOptions = { stdio: [undefined, "inherit", "inherit"], env: process.env };
-
-  // Spawn the Reader.exe
-  const backend = spawn(path.join(exePath), [rpcServerAddress], spawnOptions);
-
-  // Create a ReaderService.
-  const service = await createClient(rpcServerAddress);
-
-  return {
-    service,
-    shutdown: () => {
-      // TODO: we should gracefully shutdown by sending a "shutdown" request
-      backend.kill();
-    },
-  };
+  return `localhost:${port}`;
 }
 
-/** Creates a constraint solver service.
+/** Creates a Reader.x client
  * @note Server must be started before creating a service.
- * @note This function will wait for a server to bind to a specified `address`.
+ * @note This function will wait for a server to bind to the specified `address`.
  */
-async function createClient(address: string): Promise<ReaderClient> {
+export async function createClient(address: string): Promise<ReaderClient> {
 
   const client = new ReaderClient(address, grpc.credentials.createInsecure());
 
@@ -63,6 +40,7 @@ async function createClient(address: string): Promise<ReaderClient> {
   return client;
 }
 
+// NEEDS WORK: This same logic probably exists in many places -- find and use a standard, shared implementation
 async function getFreeTcpPort(): Promise<number> {
   return new Promise((resolve, reject) => {
     const server = net.createServer((socket) => {
@@ -89,14 +67,23 @@ async function getFreeTcpPort(): Promise<number> {
   });
 }
 
-export function doServerStreamingCall(client: ReaderClient) {
-  const clientMessage = new TestRequest();
-  clientMessage.setTestMessage("Message from client");
-  const stream = client.sww(clientMessage);
-  stream.on("data", (response: TestResponse) => {
-    // eslint-disable-next-line no-console
-    console.log(
-      `(client) Got server message: ${response.getTestResponse()}`
-    );
-  });
+/** Launches the specified reader.x process and creates a client to communciate with it. */
+export async function launchServerAndCreateClient(exePath: string, rpcServerAddress: string): Promise<ReaderClientWithShutdown> {
+
+  // Inherit stdout and stderr to see output of the process.
+  const spawnOptions: SpawnOptions = { stdio: [undefined, "inherit", "inherit"], env: process.env };
+
+  // Spawn the Reader.exe
+  const backend = spawn(path.join(exePath), [rpcServerAddress], spawnOptions);
+
+  // Create a ReaderService.
+  const service = await createClient(rpcServerAddress);
+
+  return {
+    service,
+    shutdown: () => {
+      // TODO: we should gracefully shutdown by sending a "shutdown" request
+      backend.kill();
+    },
+  };
 }

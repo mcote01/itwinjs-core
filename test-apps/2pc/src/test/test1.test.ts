@@ -47,8 +47,9 @@ async function doShutdownCall(client: ReaderClient): Promise<ShutdownResponse> {
 
 describe("test1", async () => {
   it("test1", async () => {
-    const rpcServerAddress = await getServerAddress();
-    await startMockReader(rpcServerAddress);
+    // const rpcServerAddress = await getServerAddress();
+    // await startMockReader(rpcServerAddress);
+    const rpcServerAddress = "[::]:50051";
     const client = await createClient(rpcServerAddress);
 
     await doServerStreamingCall(client);

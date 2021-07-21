@@ -2,59 +2,56 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-// import { assert } from "chai";
-// import * as grpc from "@grpc/grpc-js";
-import { createClient, getServerAddress } from "../Converter/Launch";
-import { ReaderClient } from "../generated/reader_grpc_pb";
-import { ShutdownRequest, ShutdownResponse, TestRequest, TestResponse } from "../generated/reader_pb";
-import { startMockReader } from "./MockReader";
+import * as path from "path";
+import { assert } from "chai";
+import { ChildProcess, spawn, SpawnOptions, StdioOptions } from "child_process";
+import { getServerAddress } from "../Converter/launchServer";
+import { createClient } from "../Converter/ReaderClient";
+import { doPingCallWithRetries, doServerStreamingCall, doShutdownCall } from "./testConverter";
+import { startMockTypescriptReader } from "./MockReader";
 
-async function doServerStreamingCall(client: ReaderClient): Promise<void> {
-  const clientMessage = new TestRequest();
-  clientMessage.setTestMessage("Message from client");
-  const stream = client.sww(clientMessage);
-  let i = 0;
-  return new Promise((resolve, reject) => {
-    stream.on("data", (response: TestResponse) => {
-      ++i;
-      if (response.getTestResponse() === "<done>") {
-        // eslint-disable-next-line no-console
-        console.log(`(client) got ${i} responses`);
-      }
-    });
-    stream.on("error", (err: Error) => {
-      reject(err);
-    });
-    stream.on("end", () => {
-      // eslint-disable-next-line no-console
-      console.log(`(client) stream has ended`);
-      resolve();
-    });
-  });
-}
+const useRunningServer = false;
+const usePython = true;
+const useIpc = true;
 
-async function doShutdownCall(client: ReaderClient): Promise<ShutdownResponse> {
-  const shutdownRequest = new ShutdownRequest();
-  shutdownRequest.setOptions("");
-  return new Promise((resolve, reject) => {
-    client.shutdown(shutdownRequest, (err, response) => {
-      if (err)
-        reject(err);
-      resolve(response);
-    });
-  });
+async function startMockPythonReader(addr: string): Promise<ChildProcess> {
+  const readerPyFile = path.join(__dirname, "../../src/test/MockReader.py");
+  const generatePbDir = path.join(__dirname, "../../src/generated");
+  const stdio: StdioOptions = (useIpc) ? ["ipc", "pipe", "pipe"] : "pipe";
+  const childEnv = { ...process.env };
+  childEnv.PYTHONPATH = generatePbDir;
+  const spawnOptions: SpawnOptions = { stdio, env: childEnv };
+  const childProcess = spawn(path.join("python"), [readerPyFile, addr], spawnOptions);
+  childProcess.stdout.on("data", (data: any) => process.stdout.write(data));
+  childProcess.stderr.on("data", (data: any) => process.stderr.write(data));
+  return childProcess;
 }
 
 describe("test1", async () => {
   it("test1", async () => {
-    // const rpcServerAddress = await getServerAddress();
-    // await startMockReader(rpcServerAddress);
-    const rpcServerAddress = "[::]:50051";
+    let rpcServerAddress = await getServerAddress();
+
+    if (!useRunningServer) {
+      if (usePython)
+        await startMockPythonReader(rpcServerAddress);
+      else
+        await startMockTypescriptReader(rpcServerAddress);
+    } else {
+      rpcServerAddress = "[::]:50051";
+    }
+
     const client = await createClient(rpcServerAddress);
+
+    try {
+      await doPingCallWithRetries(client);
+    } catch (err) {
+      assert.isTrue(false, err.message);
+    }
 
     await doServerStreamingCall(client);
 
     await doShutdownCall(client);
   });
+
 });
 

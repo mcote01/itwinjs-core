@@ -19,10 +19,74 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\"%\n\x0cTestResponse\x12\x15\n\rtest_response\x18\x01 \x01(\t\"#\n\x0bTestRequest\x12\x14\n\x0ctest_message\x18\x01 \x01(\t\"\"\n\x10ShutdownResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\"\n\x0fShutdownRequest\x12\x0f\n\x07options\x18\x01 \x01(\t2\xb1\x01\n\x06Reader\x12N\n\x03sww\x12 .TwoProcessConnector.TestRequest\x1a!.TwoProcessConnector.TestResponse\"\x00\x30\x01\x12W\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a%.TwoProcessConnector.ShutdownResponseb\x06proto3'
+  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\"\x1e\n\x0cPingResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x1a\n\x0bPingRequest\x12\x0b\n\x03nop\x18\x01 \x01(\t\"%\n\x0cTestResponse\x12\x15\n\rtest_response\x18\x01 \x01(\t\"#\n\x0bTestRequest\x12\x14\n\x0ctest_message\x18\x01 \x01(\t\"\"\n\x10ShutdownResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\"\n\x0fShutdownRequest\x12\x0f\n\x07options\x18\x01 \x01(\t2\x80\x02\n\x06Reader\x12M\n\x04ping\x12 .TwoProcessConnector.PingRequest\x1a!.TwoProcessConnector.PingResponse\"\x00\x12N\n\x03sww\x12 .TwoProcessConnector.TestRequest\x1a!.TwoProcessConnector.TestResponse\"\x00\x30\x01\x12W\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a%.TwoProcessConnector.ShutdownResponseb\x06proto3'
 )
 
 
+
+
+_PINGRESPONSE = _descriptor.Descriptor(
+  name='PingResponse',
+  full_name='TwoProcessConnector.PingResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='TwoProcessConnector.PingResponse.status', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=37,
+  serialized_end=67,
+)
+
+
+_PINGREQUEST = _descriptor.Descriptor(
+  name='PingRequest',
+  full_name='TwoProcessConnector.PingRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='nop', full_name='TwoProcessConnector.PingRequest.nop', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=69,
+  serialized_end=95,
+)
 
 
 _TESTRESPONSE = _descriptor.Descriptor(
@@ -52,8 +116,8 @@ _TESTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=37,
-  serialized_end=74,
+  serialized_start=97,
+  serialized_end=134,
 )
 
 
@@ -84,8 +148,8 @@ _TESTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=76,
-  serialized_end=111,
+  serialized_start=136,
+  serialized_end=171,
 )
 
 
@@ -116,8 +180,8 @@ _SHUTDOWNRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=113,
-  serialized_end=147,
+  serialized_start=173,
+  serialized_end=207,
 )
 
 
@@ -148,15 +212,31 @@ _SHUTDOWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=149,
-  serialized_end=183,
+  serialized_start=209,
+  serialized_end=243,
 )
 
+DESCRIPTOR.message_types_by_name['PingResponse'] = _PINGRESPONSE
+DESCRIPTOR.message_types_by_name['PingRequest'] = _PINGREQUEST
 DESCRIPTOR.message_types_by_name['TestResponse'] = _TESTRESPONSE
 DESCRIPTOR.message_types_by_name['TestRequest'] = _TESTREQUEST
 DESCRIPTOR.message_types_by_name['ShutdownResponse'] = _SHUTDOWNRESPONSE
 DESCRIPTOR.message_types_by_name['ShutdownRequest'] = _SHUTDOWNREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+PingResponse = _reflection.GeneratedProtocolMessageType('PingResponse', (_message.Message,), {
+  'DESCRIPTOR' : _PINGRESPONSE,
+  '__module__' : 'reader_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.PingResponse)
+  })
+_sym_db.RegisterMessage(PingResponse)
+
+PingRequest = _reflection.GeneratedProtocolMessageType('PingRequest', (_message.Message,), {
+  'DESCRIPTOR' : _PINGREQUEST,
+  '__module__' : 'reader_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.PingRequest)
+  })
+_sym_db.RegisterMessage(PingRequest)
 
 TestResponse = _reflection.GeneratedProtocolMessageType('TestResponse', (_message.Message,), {
   'DESCRIPTOR' : _TESTRESPONSE,
@@ -195,13 +275,23 @@ _READER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=186,
-  serialized_end=363,
+  serialized_start=246,
+  serialized_end=502,
   methods=[
+  _descriptor.MethodDescriptor(
+    name='ping',
+    full_name='TwoProcessConnector.Reader.ping',
+    index=0,
+    containing_service=None,
+    input_type=_PINGREQUEST,
+    output_type=_PINGRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
   _descriptor.MethodDescriptor(
     name='sww',
     full_name='TwoProcessConnector.Reader.sww',
-    index=0,
+    index=1,
     containing_service=None,
     input_type=_TESTREQUEST,
     output_type=_TESTRESPONSE,
@@ -211,7 +301,7 @@ _READER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='shutdown',
     full_name='TwoProcessConnector.Reader.shutdown',
-    index=1,
+    index=2,
     containing_service=None,
     input_type=_SHUTDOWNREQUEST,
     output_type=_SHUTDOWNRESPONSE,

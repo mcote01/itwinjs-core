@@ -8,6 +8,28 @@
 var grpc = require('@grpc/grpc-js');
 var reader_pb = require('./reader_pb.js');
 
+function serialize_TwoProcessConnector_PingRequest(arg) {
+  if (!(arg instanceof reader_pb.PingRequest)) {
+    throw new Error('Expected argument of type TwoProcessConnector.PingRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_TwoProcessConnector_PingRequest(buffer_arg) {
+  return reader_pb.PingRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_TwoProcessConnector_PingResponse(arg) {
+  if (!(arg instanceof reader_pb.PingResponse)) {
+    throw new Error('Expected argument of type TwoProcessConnector.PingResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_TwoProcessConnector_PingResponse(buffer_arg) {
+  return reader_pb.PingResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_TwoProcessConnector_ShutdownRequest(arg) {
   if (!(arg instanceof reader_pb.ShutdownRequest)) {
     throw new Error('Expected argument of type TwoProcessConnector.ShutdownRequest');
@@ -54,6 +76,17 @@ function deserialize_TwoProcessConnector_TestResponse(buffer_arg) {
 
 
 var ReaderService = exports.ReaderService = {
+  ping: {
+    path: '/TwoProcessConnector.Reader/ping',
+    requestStream: false,
+    responseStream: false,
+    requestType: reader_pb.PingRequest,
+    responseType: reader_pb.PingResponse,
+    requestSerialize: serialize_TwoProcessConnector_PingRequest,
+    requestDeserialize: deserialize_TwoProcessConnector_PingRequest,
+    responseSerialize: serialize_TwoProcessConnector_PingResponse,
+    responseDeserialize: deserialize_TwoProcessConnector_PingResponse,
+  },
   sww: {
     path: '/TwoProcessConnector.Reader/sww',
     requestStream: false,

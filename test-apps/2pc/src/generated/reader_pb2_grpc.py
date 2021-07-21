@@ -14,6 +14,11 @@ class ReaderStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.ping = channel.unary_unary(
+                '/TwoProcessConnector.Reader/ping',
+                request_serializer=reader__pb2.PingRequest.SerializeToString,
+                response_deserializer=reader__pb2.PingResponse.FromString,
+                )
         self.sww = channel.unary_stream(
                 '/TwoProcessConnector.Reader/sww',
                 request_serializer=reader__pb2.TestRequest.SerializeToString,
@@ -28,6 +33,12 @@ class ReaderStub(object):
 
 class ReaderServicer(object):
     """Missing associated documentation comment in .proto file."""
+
+    def ping(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def sww(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -47,6 +58,11 @@ class ReaderServicer(object):
 
 def add_ReaderServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'ping': grpc.unary_unary_rpc_method_handler(
+                    servicer.ping,
+                    request_deserializer=reader__pb2.PingRequest.FromString,
+                    response_serializer=reader__pb2.PingResponse.SerializeToString,
+            ),
             'sww': grpc.unary_stream_rpc_method_handler(
                     servicer.sww,
                     request_deserializer=reader__pb2.TestRequest.FromString,
@@ -66,6 +82,23 @@ def add_ReaderServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Reader(object):
     """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def ping(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Reader/ping',
+            reader__pb2.PingRequest.SerializeToString,
+            reader__pb2.PingResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def sww(request,

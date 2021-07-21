@@ -2,6 +2,14 @@ syntax = "proto3";
 
 package TwoProcessConnector;
 
+message PingResponse {
+  string status = 1;
+}
+
+message PingRequest {
+  string nop = 1;
+}
+
 message TestResponse {
   string test_response = 1;
 }
@@ -19,6 +27,7 @@ message ShutdownRequest {
 }
 
 service Reader {
+  rpc ping(PingRequest) returns (PingResponse) {}
   rpc sww(TestRequest) returns (stream TestResponse) {}
   rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
   // rpc serverStreamingCall(ClientMessage) returns (stream ServerMessage) {}

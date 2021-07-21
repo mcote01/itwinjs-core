@@ -5,7 +5,7 @@
   "description": "Example of two-process iModel connector",
   "scripts": {
     "compile": "npm run build",
-    "build": "npm run proto && npm run proto:ts-lib && npm run build:tsc",
+    "build": "npm run proto && npm run proto:py & npm run proto:ts-lib && npm run build:tsc",
     "build:tsc": "tsc 1>&2",
     "//why protoc?": "https://github.com/protobufjs/protobuf.js/issues/1007#issuecomment-378780758",
     "//why grpc_js?": "https://github.com/agreatfool/grpc_tools_node_protoc_ts/issues/59",

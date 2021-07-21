@@ -785,7 +785,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/test-apps/2pc/src/test/MockReader.py",
       "console": "integratedTerminal",
-      "runtimeArgs": ["[::]:50051"],
+      "args": ["[::]:50051"],
       "env": { "PYTHONPATH": "${workspaceFolder}/test-apps/2pc/lib/generated" }
     },
     {

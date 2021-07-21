@@ -23,8 +23,21 @@ import reader_pb2_grpc
 
 class MockReader(reader_pb2_grpc.ReaderServicer):
 
+    def ping(self, request, context):
+      logging.getLogger('MockReader').debug('ping')
+      return reader_pb2.PingResponse(status='0')
+
     def sww(self, request, context):
-      logging.getLogger('MockReader').info('sww')
+      logging.getLogger('MockReader').debug('sww')
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
+      yield reader_pb2.TestResponse(test_response='hello...');
       yield reader_pb2.TestResponse(test_response='hello...');
       yield reader_pb2.TestResponse(test_response='...world');
       yield reader_pb2.TestResponse(test_response='<done>');
@@ -45,10 +58,10 @@ def serve(addr):
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    # addr = sys.argv[1]
-    addr = '[::]:50051'
+    # logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename='d:/tmp/MockReader.log', encoding='utf-8', level=logging.DEBUG)
+    if len(sys.argv) != 2:
+      raise SyntaxError('URL must be the first (and only) command-line argument')
+    addr = sys.argv[1]
     logging.getLogger('MockReader').info('listening on ' + addr)
-    # if len(sys.argv) != 2:
-    #   throw "missing arg"
     serve(addr)

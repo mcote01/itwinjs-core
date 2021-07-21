@@ -7,12 +7,21 @@
   Run a gRPC server that implements the Reader service.
 */
 import * as grpc from "@grpc/grpc-js";
-import { ShutdownRequest, ShutdownResponse, TestRequest, TestResponse } from "../generated/reader_pb";
+import { PingRequest, PingResponse, ShutdownRequest, ShutdownResponse, TestRequest, TestResponse } from "../generated/reader_pb";
 import { IReaderServer, ReaderService } from "../generated/reader_grpc_pb";
 
 let server: grpc.Server;
 
+/*
+  Mock implementation of Reader server
+*/
 const readerServer: IReaderServer = {
+  ping(_call: grpc.ServerUnaryCall<PingRequest, PingResponse>, callback: grpc.sendUnaryData<PingResponse>) {
+    const response = new PingResponse();
+    response.setStatus("0");
+    callback(null, response);
+  },
+
   sww(call: grpc.ServerWritableStream<TestRequest, TestResponse>) {
     const response = new TestResponse();
     for (let i = 0; i < 1000; ++i) {
@@ -37,14 +46,12 @@ const readerServer: IReaderServer = {
 
 };
 
-function getServer(): grpc.Server {
+// For testing purposes, we can run the server in the same process as the client.
+// It will use the same gRPC stack as an out-of-process server, but it's simpler to debug.
+export async function startMockTypescriptReader(rpcServerAddress: string): Promise<void> {
   server = new grpc.Server();
   server.addService(ReaderService, readerServer);
-  return server;
-}
 
-export async function startMockReader(rpcServerAddress: string): Promise<void> {
-  server = getServer();
   return new Promise((resolve, reject) => {
     server.bindAsync(
       rpcServerAddress,

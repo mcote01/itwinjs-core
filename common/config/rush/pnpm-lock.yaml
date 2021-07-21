@@ -3375,6 +3375,7 @@ importers:
       '@types/chai': ^4.1.4
       '@types/mocha': ^8.2.2
       '@types/node': 10.14.1
+      '@types/sax': ^1.2.3
       '@types/yargs': ^12.0.5
       chai: ^4.1.2
       cpx: ^1.5.0
@@ -3385,16 +3386,19 @@ importers:
       mkdirp: ^1.0.4
       mocha: ^8.3.2
       rimraf: ^3.0.2
+      sax: ^1.2.4
       typescript: ~4.3.0
     dependencies:
       '@grpc/grpc-js': 1.3.5
       google-protobuf: 3.17.3
+      sax: 1.2.4
     devDependencies:
       '@bentley/build-tools': link:../../tools/build
       '@bentley/eslint-plugin': link:../../tools/eslint-plugin
       '@types/chai': 4.2.21
       '@types/mocha': 8.2.3
       '@types/node': 10.14.1
+      '@types/sax': 1.2.3
       '@types/yargs': 12.0.20
       chai: 4.3.4
       cpx: 1.5.0
@@ -10725,6 +10729,12 @@ packages:
     dependencies:
       '@types/glob': 5.0.37
       '@types/node': 10.14.1
+
+  /@types/sax/1.2.3:
+    resolution: {integrity: sha512-+QSw6Tqvs/KQpZX8DvIl3hZSjNFLW/OqE5nlyHXtTwODaJvioN2rOWpBNEWZp2HZUFhOh+VohmJku/WxEXU2XA==}
+    dependencies:
+      '@types/node': 10.14.1
+    dev: true
 
   /@types/semver/5.5.0:
     resolution: {integrity: sha512-41qEJgBH/TWgo5NFSvBCJ1qkoi3Q6ONSF2avrHq1LVEZfYpdHmj0y9SuTK+u9ZhG1sYQKBL1AWXKyLWP4RaUoQ==}

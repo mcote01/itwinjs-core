@@ -12,19 +12,15 @@ export async function doServerStreamingCall(client: ReaderClient): Promise<void>
   const stream = client.sww(clientMessage);
   let i = 0;
   return new Promise((resolve, reject) => {
-    stream.on("data", (response: TestResponse) => {
+    stream.on("data", (_response: TestResponse) => {
       ++i;
-      if (response.getTestResponse() === "<done>") {
-        // eslint-disable-next-line no-console
-        console.log(`(client) got ${i} responses`);
-      }
     });
     stream.on("error", (err: Error) => {
       reject(err);
     });
     stream.on("end", () => {
       // eslint-disable-next-line no-console
-      console.log(`(client) stream has ended`);
+      console.log(`(client) stream has ended. ${i} responses`);
       resolve();
     });
   });

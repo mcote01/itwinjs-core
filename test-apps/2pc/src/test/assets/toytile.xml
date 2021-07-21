@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ToyTile>
+    <Groups>
+        <TileGroup groupType="Starter Set" manufactureLocation="Philadelphia, PA" manufactureDate="2015-10-01" name="Birthday Present"/>
+        <TileGroup name="Yard Sale Find"/>
+    </Groups>
+    <Tiles>
+        <!-- SmallSquareTiles demonstrating change in pitch -->
+        <SmallSquareTile casingMaterial="RedPlastic" condition="New">
+            <Group>Birthday Present</Group>
+        </SmallSquareTile>
+        <SmallSquareTile casingMaterial="RedPlastic">
+            <Placement>
+                <Origin x="0.15"/>
+                <Angles pitch="30.0"/>
+            </Placement>
+        </SmallSquareTile>
+        <SmallSquareTile casingMaterial="RedPlastic" condition="Scratched">
+            <Placement>
+                <Origin x="0.3"/>
+                <Angles pitch="60.0"/>
+            </Placement>
+            <Group>Yard Sale Find</Group>
+        </SmallSquareTile>
+        <SmallSquareTile casingMaterial="RedPlastic" condition="Scratched">
+            <Placement>
+                <Origin x="0.45"/>
+                <Angles pitch="90.0"/>
+            </Placement>
+            <Group>Yard Sale Find</Group>
+        </SmallSquareTile>
+        <SmallSquareTile casingMaterial="RedPlastic" condition="Scratched">
+            <Placement>
+                <Origin x="0.6"/>
+                <Angles pitch="120.0"/>
+            </Placement>
+            <Group>Yard Sale Find</Group>
+        </SmallSquareTile>
+        <SmallSquareTile casingMaterial="RedPlastic" condition="Scratched">
+            <Placement>
+                <Origin x="0.75"/>
+                <Angles pitch="150.0"/>
+            </Placement>
+            <Group>Yard Sale Find</Group>
+        </SmallSquareTile>
+        <SmallSquareTile casingMaterial="RedPlastic" condition="Scratched">
+            <Placement>
+                <Origin x="0.9"/>
+                <Angles pitch="180.0"/>
+            </Placement>
+            <Group>Yard Sale Find</Group>
+        </SmallSquareTile>
+
+        <!-- LargeSquareTiles demonstrating change in roll -->
+        <LargeSquareTile casingMaterial="GreenPlastic" condition="New">
+            <Placement>
+                <Origin x="0.0" y="0.4"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </LargeSquareTile>
+        <LargeSquareTile casingMaterial="GreenPlastic" condition="New">
+            <Placement>
+                <Origin x="0.2" y="0.4"/>
+                <Angles roll="30.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </LargeSquareTile>
+        <LargeSquareTile casingMaterial="GreenPlastic" condition="New">
+            <Placement>
+                <Origin x="0.4" y="0.4"/>
+                <Angles roll="60.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </LargeSquareTile>
+        <LargeSquareTile casingMaterial="GreenPlastic" condition="New">
+            <Placement>
+                <Origin x="0.6" y="0.4"/>
+                <Angles roll="90.0"/>
+            </Placement>
+        </LargeSquareTile>
+        <LargeSquareTile casingMaterial="GreenPlastic" condition="New">
+            <Placement>
+                <Origin x="0.8" y="0.4"/>
+                <Angles roll="120.0"/>
+            </Placement>
+        </LargeSquareTile>
+        <LargeSquareTile casingMaterial="GreenPlastic" condition="New">
+            <Placement>
+                <Origin x="1.0" y="0.4"/>
+                <Angles roll="150.0"/>
+            </Placement>
+        </LargeSquareTile>
+        <LargeSquareTile casingMaterial="GreenPlastic" condition="New">
+            <Placement>
+                <Origin x="1.2" y="0.4"/>
+                <Angles roll="180.0"/>
+            </Placement>
+        </LargeSquareTile>
+
+        <!-- IsoscelesTriangleTiles demonstrating change in yaw -->
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="0.0" y="0.8"/>
+                <Angles yaw="0.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </IsoscelesTriangleTile>
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="0.2" y="0.8"/>
+                <Angles yaw="30.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </IsoscelesTriangleTile>
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="0.4" y="0.8"/>
+                <Angles yaw="60.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </IsoscelesTriangleTile>
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="0.6" y="0.8"/>
+                <Angles yaw="90.0"/>
+            </Placement>
+        </IsoscelesTriangleTile>
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="0.8" y="0.8"/>
+                <Angles yaw="120.0"/>
+            </Placement>
+        </IsoscelesTriangleTile>
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="1.0" y="0.8"/>
+                <Angles yaw="150.0"/>
+            </Placement>
+        </IsoscelesTriangleTile>
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="1.2" y="0.8"/>
+                <Angles yaw="180.0"/>
+            </Placement>
+        </IsoscelesTriangleTile>
+
+        <!-- EquilateralTriangleTiles demonstrating change in yaw -->
+        <EquilateralTriangleTile casingMaterial="OrangePlastic" condition="New">
+            <Placement>
+                <Origin x="0.0" y="1.1"/>
+                <Angles yaw="0.0" roll="90.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </EquilateralTriangleTile>
+        <EquilateralTriangleTile casingMaterial="OrangePlastic" condition="New">
+            <Placement>
+                <Origin x="0.1" y="1.1"/>
+                <Angles yaw="90.0" roll="90.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </EquilateralTriangleTile>
+        <EquilateralTriangleTile casingMaterial="OrangePlastic" condition="New">
+            <Placement>
+                <Origin x="0.2" y="1.1"/>
+                <Angles yaw="180.0" roll="90.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </EquilateralTriangleTile>
+        <EquilateralTriangleTile casingMaterial="OrangePlastic" condition="New">
+            <Placement>
+                <Origin x="0.3" y="1.1"/>
+                <Angles yaw="270.0" roll="90.0"/>
+            </Placement>
+        </EquilateralTriangleTile>
+        <EquilateralTriangleTile casingMaterial="OrangePlastic" condition="New">
+            <Placement>
+                <Origin x="0.4" y="1.1"/>
+                <Angles yaw="360.0" roll="90.0"/>
+            </Placement>
+        </EquilateralTriangleTile>
+
+        <!-- RightTriangleTiles demonstrating change in pitch -->
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="0.0" y="1.3"/>
+                <Angles pitch="0.0" roll="90.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="0.2" y="1.3"/>
+                <Angles pitch="45.0" roll="90.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="0.4" y="1.3"/>
+                <Angles pitch="90.0" roll="90.0"/>
+            </Placement>
+            <Group>Birthday Present</Group>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="0.6" y="1.3"/>
+                <Angles pitch="135.0" roll="90.0"/>
+            </Placement>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="0.8" y="1.3"/>
+                <Angles pitch="180.0" roll="90.0"/>
+            </Placement>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="1.0" y="1.3"/>
+                <Angles pitch="225.0" roll="90.0"/>
+            </Placement>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="1.2" y="1.3"/>
+                <Angles pitch="270.0" roll="90.0"/>
+            </Placement>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="1.4" y="1.3"/>
+                <Angles pitch="315.0" roll="90.0"/>
+            </Placement>
+        </RightTriangleTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="1.6" y="1.3"/>
+                <Angles pitch="360.0" roll="90.0"/>
+            </Placement>
+        </RightTriangleTile>
+        
+        <!-- Tiles demonstrating connection points -->
+        <LargeSquareTile casingMaterial="GreenPlastic">
+            <Placement>
+                <Origin x="0.0" y="1.5"/>
+            </Placement>
+        </LargeSquareTile>
+        <RectangleTile casingMaterial="YellowPlastic">
+            <Placement>
+                <Origin x="0.0" y="1.7"/>
+            </Placement>
+        </RectangleTile>
+        <SmallSquareTile casingMaterial="RedPlastic">
+            <Placement>
+                <Origin x="0.0" y="1.8"/>
+            </Placement>
+        </SmallSquareTile>
+        <RightTriangleTile casingMaterial="PurplePlastic">
+            <Placement>
+                <Origin x="0.1" y="1.8"/>
+            </Placement>
+        </RightTriangleTile>
+        <EquilateralTriangleTile casingMaterial="OrangePlastic" condition="New">
+            <Placement>
+                <Origin x="0.0" y="1.85"/>
+                <Angles yaw="90.0"/>
+            </Placement>
+        </EquilateralTriangleTile>
+        <IsoscelesTriangleTile casingMaterial="BluePlastic" condition="New">
+            <Placement>
+                <Origin x="0.05" y="1.9"/>
+            </Placement>
+        </IsoscelesTriangleTile>
+    </Tiles>
+</ToyTile>

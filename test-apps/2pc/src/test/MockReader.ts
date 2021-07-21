@@ -7,6 +7,9 @@
   Run a gRPC server that implements the Reader service.
 */
 import * as grpc from "@grpc/grpc-js";
+import * as path from "path";
+import * as fs from "fs";
+import * as sax from "sax";
 import { PingRequest, PingResponse, ShutdownRequest, ShutdownResponse, TestRequest, TestResponse } from "../generated/reader_pb";
 import { IReaderServer, ReaderService } from "../generated/reader_grpc_pb";
 
@@ -23,14 +26,43 @@ const readerServer: IReaderServer = {
   },
 
   sww(call: grpc.ServerWritableStream<TestRequest, TestResponse>) {
-    const response = new TestResponse();
-    for (let i = 0; i < 1000; ++i) {
-      response.setTestResponse(`part ${i}`);
+
+    const strict = true;
+    const options: sax.SAXOptions = {};
+    const saxStream = sax.createStream(strict, options);
+    saxStream.on("error", function (e) {
+      // unhandled errors will throw, since this is a proper node
+      // event emitter.
+      console.error("error!", e);
+      // clear the error
+      (this._parser.error as any) = null;
+      this._parser.resume();
+    });
+    saxStream.on("opentag", function (node) {
+      console.log(node);
+    });
+    saxStream.on("closetag", function (attr) {
+      console.log(attr);
+    });
+    saxStream.on("end", function () {
+      const response = new TestResponse();
+      response.setTestResponse("<done>");
       call.write(response);
-    }
-    response.setTestResponse("<done>");
-    call.write(response);
-    call.end();
+      call.end();
+    });
+
+    const xmlFile = path.join(__dirname, "assets/toytile.xml");
+    fs.createReadStream(xmlFile)
+      .pipe(saxStream);
+
+    // const response = new TestResponse();
+    // for (let i = 0; i < 1000; ++i) {
+    //   response.setTestResponse(`part ${i}`);
+    //   call.write(response);
+    // }
+    // response.setTestResponse("<done>");
+    // call.write(response);
+    // call.end();
   },
 
   shutdown(_call: grpc.ServerUnaryCall<ShutdownRequest, ShutdownResponse>, callback: grpc.sendUnaryData<ShutdownResponse>) {

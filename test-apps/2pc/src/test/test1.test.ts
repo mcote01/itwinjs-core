@@ -10,8 +10,8 @@ import { createClient } from "../Converter/ReaderClient";
 import { doPingCallWithRetries, doServerStreamingCall, doShutdownCall } from "./testConverter";
 import { startMockTypescriptReader } from "./MockReader";
 
-const useRunningServer = false;
-const usePython = true;
+const useRunningServer = true;
+const usePython = false;
 const useIpc = true;
 
 async function startMockPythonReader(addr: string): Promise<ChildProcess> {

@@ -2,7 +2,7 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-import { ChildProcess, spawn, SpawnOptions } from "child_process";
+import { ChildProcess, spawn, SpawnOptions, StdioOptions } from "child_process";
 import * as net from "net";
 import * as path from "path";
 
@@ -40,7 +40,18 @@ export async function getServerAddress(): Promise<string> {
 }
 
 /** Launches the specified reader.x process and creates a client to communciate with it. */
-export async function launchServer(exePath: string, rpcServerAddress: string): Promise<ChildProcess> {
-  const spawnOptions: SpawnOptions = { stdio: [undefined, "inherit", "inherit"], env: process.env };
-  return spawn(path.join(exePath), [rpcServerAddress], spawnOptions);
+export async function launchServer(exePath: string, args: string[], childEnv?: NodeJS.ProcessEnv): Promise<ChildProcess> {
+  const stdio: StdioOptions = ["ipc", "pipe", "pipe"];
+  const spawnOptions: SpawnOptions = { stdio, env: childEnv || process.env };
+  const childProcess = spawn(exePath, args, spawnOptions);
+  childProcess.stdout.on("data", (data: any) => process.stdout.write(data));
+  childProcess.stderr.on("data", (data: any) => process.stderr.write(data));
+  return childProcess;
+}
+
+export async function launchPythonSever(readerPyFile: string, rpcServerAddress: string): Promise<ChildProcess> {
+  const generatePbDir = path.join(__dirname, "../../src/generated");
+  const childEnv = { ...process.env };
+  childEnv.PYTHONPATH = generatePbDir;
+  return launchServer("python", [readerPyFile, rpcServerAddress], childEnv);
 }

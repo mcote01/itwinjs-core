@@ -1,43 +1,43 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ECSchema schemaName="TestBridge" alias="TestBridge" version="01.00" xmlns="http://www.bentley.com/schemas/Bentley.ECXML.3.1">
+<ECSchema schemaName="ToyTile" alias="ToyTile" version="01.00" xmlns="http://www.bentley.com/schemas/Bentley.ECXML.3.1">
 
     <ECSchemaReference name="BisCore" version="01.00" alias="bis"/>
 
-    <ECEntityClass typeName="TestBridgePhysicalElement" modifier="Abstract">
+    <ECEntityClass typeName="ToyTilePhysicalElement" modifier="Abstract">
         <BaseClass>bis:PhysicalElement</BaseClass>
         <ECProperty propertyName="Condition" typeName="string">
         </ECProperty>
     </ECEntityClass>
 
     <ECEntityClass typeName="SmallSquareTile">
-        <BaseClass>TestBridgePhysicalElement</BaseClass>
+        <BaseClass>ToyTilePhysicalElement</BaseClass>
     </ECEntityClass>
 
     <ECEntityClass typeName="LargeSquareTile">
-        <BaseClass>TestBridgePhysicalElement</BaseClass>
+        <BaseClass>ToyTilePhysicalElement</BaseClass>
     </ECEntityClass>
 
     <ECEntityClass typeName="RectangleTile">
-        <BaseClass>TestBridgePhysicalElement</BaseClass>
+        <BaseClass>ToyTilePhysicalElement</BaseClass>
     </ECEntityClass>
 
     <ECEntityClass typeName="EquilateralTriangleTile">
-        <BaseClass>TestBridgePhysicalElement</BaseClass>
+        <BaseClass>ToyTilePhysicalElement</BaseClass>
     </ECEntityClass>
 
     <ECEntityClass typeName="RightTriangleTile">
-        <BaseClass>TestBridgePhysicalElement</BaseClass>
+        <BaseClass>ToyTilePhysicalElement</BaseClass>
     </ECEntityClass>
 
     <ECEntityClass typeName="IsoscelesTriangleTile">
-        <BaseClass>TestBridgePhysicalElement</BaseClass>
+        <BaseClass>ToyTilePhysicalElement</BaseClass>
     </ECEntityClass>
 
-    <ECEntityClass typeName="TestBridgeGroupModel">
+    <ECEntityClass typeName="ToyTileGroupModel">
         <BaseClass>bis:GroupInformationModel</BaseClass>
     </ECEntityClass>
 
-    <ECEntityClass typeName="TestBridgeGroup">
+    <ECEntityClass typeName="ToyTileGroup">
         <BaseClass>bis:GroupInformationElement</BaseClass>
         <ECProperty propertyName="GroupType" typeName="string">
         </ECProperty>

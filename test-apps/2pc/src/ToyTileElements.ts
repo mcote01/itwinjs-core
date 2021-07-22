@@ -5,16 +5,16 @@
 import { GroupInformationElement, IModelDb, PhysicalElement, SpatialCategory } from "@bentley/imodeljs-backend";
 import { AxisAlignedBox3d, Code, CodeScopeProps, CodeSpec, ElementProps, IModelError, PhysicalElementProps, Placement3d, Placement3dProps } from "@bentley/imodeljs-common";
 import { Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
-import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
+import { ToyTileLoggerCategory } from "./ToyTile2PConnector";
 import { Point3d, XYZProps, YawPitchRollAngles, YawPitchRollProps } from "@bentley/geometry-core";
-import { EquilateralTriangleTileBuilder, IsoscelesTriangleTileBuilder, LargeSquareTileBuilder, RectangleTileBuilder, RightTriangleTileBuilder, SmallSquareTileBuilder, TileBuilder } from "./TestBridgeGeometry";
+import { EquilateralTriangleTileBuilder, IsoscelesTriangleTileBuilder, LargeSquareTileBuilder, RectangleTileBuilder, RightTriangleTileBuilder, SmallSquareTileBuilder, TileBuilder } from "./ToyTileGeometry";
 
 export enum CodeSpecs {
-  Group = "TestBridge:Group",
+  Group = "Base2PConnector:Group",
 }
 
 export enum Categories {
-  Category = "TestBridge",
+  Category = "Base2PConnector",
   Casing = "Casing",
   Magnet = "Magnet",
 }
@@ -35,30 +35,30 @@ export enum Materials {
   MagnetizedFerrite = "MagnetizedFerrite",
 }
 
-const loggerCategory: string = TestBridgeLoggerCategory.Bridge;
+const loggerCategory: string = ToyTileLoggerCategory.Connector;
 
-export class TestBridgePhysicalElement extends PhysicalElement implements TestBridgePhysicalProps {
+export class ToyTilePhysicalElement extends PhysicalElement implements ToyTilePhysicalProps {
   /** @internal */
-  public static override get className(): string { return "TestBridgePhysicalElement"; }
+  public static override get className(): string { return "ToyTilePhysicalElement"; }
 
   public condition?: string;
 
-  public constructor(props: TestBridgePhysicalProps, iModel: IModelDb) {
+  public constructor(props: ToyTilePhysicalProps, iModel: IModelDb) {
     super(props, iModel);
     this.condition = props.condition;
   }
   /** @internal */
-  public override toJSON(): TestBridgePhysicalProps {
-    const val = super.toJSON() as TestBridgePhysicalProps;
+  public override toJSON(): ToyTilePhysicalProps {
+    const val = super.toJSON() as ToyTilePhysicalProps;
     val.condition = this.condition;
     return val;
   }
 
   protected static createElement(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any, tileBuilder: TileBuilder, classFullName: string): PhysicalElement {
-    const code = TestBridgeGroup.createCode(imodel, physicalModelId, tile.guid);
+    const code = ToyTileGroup.createCode(imodel, physicalModelId, tile.guid);
     const categoryId = SpatialCategory.queryCategoryIdByName(imodel, definitionModelId, Categories.Category);
     if (undefined === categoryId) {
-      throw new IModelError(IModelStatus.BadElement, "Unable to find category id for TestBridge category");
+      throw new IModelError(IModelStatus.BadElement, "Unable to find category id for Base2PConnector category");
     }
     const stream = tileBuilder.createGeometry(categoryId, tile);
     let origin: XYZProps;
@@ -102,7 +102,7 @@ export class TestBridgePhysicalElement extends PhysicalElement implements TestBr
       imodel.updateProjectExtents(targetExtents);
     }
 
-    const props: TestBridgePhysicalProps = {
+    const props: ToyTilePhysicalProps = {
       code,
       category: categoryId,
       model: physicalModelId,
@@ -116,7 +116,7 @@ export class TestBridgePhysicalElement extends PhysicalElement implements TestBr
 
 }
 
-export namespace TestBridgePhysicalElement { // eslint-disable-line no-redeclare
+export namespace ToyTilePhysicalElement { // eslint-disable-line no-redeclare
   export enum CasingMaterialType {
     Invalid,
     RedPlastic,
@@ -128,7 +128,7 @@ export namespace TestBridgePhysicalElement { // eslint-disable-line no-redeclare
   }
 }
 
-export class SmallSquareTile extends TestBridgePhysicalElement {
+export class SmallSquareTile extends ToyTilePhysicalElement {
   public static override get className(): string { return "SmallSquareTile"; }
 
   public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
@@ -136,7 +136,7 @@ export class SmallSquareTile extends TestBridgePhysicalElement {
   }
 }
 
-export class LargeSquareTile extends TestBridgePhysicalElement {
+export class LargeSquareTile extends ToyTilePhysicalElement {
   public static override get className(): string { return "LargeSquareTile"; }
 
   public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
@@ -144,7 +144,7 @@ export class LargeSquareTile extends TestBridgePhysicalElement {
   }
 }
 
-export class RectangleTile extends TestBridgePhysicalElement {
+export class RectangleTile extends ToyTilePhysicalElement {
   public static override get className(): string { return "RectangleTile"; }
 
   public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
@@ -152,7 +152,7 @@ export class RectangleTile extends TestBridgePhysicalElement {
   }
 }
 
-export class EquilateralTriangleTile extends TestBridgePhysicalElement {
+export class EquilateralTriangleTile extends ToyTilePhysicalElement {
   public static override get className(): string { return "EquilateralTriangleTile"; }
 
   public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
@@ -160,7 +160,7 @@ export class EquilateralTriangleTile extends TestBridgePhysicalElement {
   }
 }
 
-export class RightTriangleTile extends TestBridgePhysicalElement {
+export class RightTriangleTile extends ToyTilePhysicalElement {
   public static override get className(): string { return "RightTriangleTile"; }
 
   public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
@@ -168,7 +168,7 @@ export class RightTriangleTile extends TestBridgePhysicalElement {
   }
 }
 
-export class IsoscelesTriangleTile extends TestBridgePhysicalElement {
+export class IsoscelesTriangleTile extends ToyTilePhysicalElement {
   public static override get className(): string { return "IsoscelesTriangleTile"; }
 
   public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
@@ -176,21 +176,21 @@ export class IsoscelesTriangleTile extends TestBridgePhysicalElement {
   }
 }
 
-export class TestBridgeGroup extends GroupInformationElement implements TestBridgeGroupProps {
-  public static override get className(): string { return "TestBridgeGroup"; }
+export class ToyTileGroup extends GroupInformationElement implements ToyTileGroupProps {
+  public static override get className(): string { return "ToyTileGroup"; }
   public groupType?: string;
   public manufactureLocation?: string;
   public manufactureDate?: Date;
 
-  public constructor(props: TestBridgeGroupProps, iModel: IModelDb) {
+  public constructor(props: ToyTileGroupProps, iModel: IModelDb) {
     super(props, iModel);
     this.groupType = props.groupType;
     this.manufactureLocation = props.manufactureLocation;
     this.manufactureDate = props.manufactureDate;
   }
 
-  public override toJSON(): TestBridgeGroupProps {
-    const val = super.toJSON() as TestBridgeGroupProps;
+  public override toJSON(): ToyTileGroupProps {
+    const val = super.toJSON() as ToyTileGroupProps;
     val.groupType = this.groupType;
     val.manufactureDate = this.manufactureDate;
     val.manufactureLocation = this.manufactureLocation;
@@ -203,11 +203,11 @@ export class TestBridgeGroup extends GroupInformationElement implements TestBrid
   }
 }
 
-export interface TestBridgePhysicalProps extends PhysicalElementProps {
+export interface ToyTilePhysicalProps extends PhysicalElementProps {
   condition?: string;
 }
 
-export interface TestBridgeGroupProps extends ElementProps {
+export interface ToyTileGroupProps extends ElementProps {
   groupType?: string;
   manufactureLocation?: string;
   manufactureDate?: Date;

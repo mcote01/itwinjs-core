@@ -2,19 +2,18 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-
 import * as path from "path";
 import { ClassRegistry, Schema, Schemas } from "@bentley/imodeljs-backend";
-import * as elementsModule from "./TestBridgeElements";
-import * as modelsModule from "./TestBridgeModels";
+import * as elementsModule from "./ToyTileElements";
+import * as modelsModule from "./ToyTileModels";
 
-/** Schema class for the TestBridge domain.
+/** Schema class for the Base2PConnector domain.
  * @beta
  */
-export class TestBridgeSchema extends Schema {
-  public static override get schemaName(): string { return "TestBridge"; }
+export class ToyTileSchema extends Schema {
+  public static override get schemaName(): string { return "ToyTile"; }
   public static get schemaFilePath(): string {
-    return path.join(__dirname, "assets/TestBridge.ecschema.xml");
+    return path.join(__dirname, "assets/ToyTile.ecschema.xml");
   }
   public static registerSchema() {
     if (this !== Schemas.getRegisteredSchema(this.schemaName)) {

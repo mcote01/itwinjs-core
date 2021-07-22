@@ -7,15 +7,14 @@ import { assert } from "chai";
 import * as path from "path";
 import { BentleyLoggerCategory, DbResult, Id64, Id64String, Logger, LogLevel } from "@bentley/bentleyjs-core";
 import {
-  BackendLoggerCategory, ECSqlStatement, ExternalSourceAspect, IModelDb, IModelHost, IModelHostConfiguration, IModelJsFs, NativeLoggerCategory,
+  BackendLoggerCategory, ECSqlStatement, ExternalSourceAspect, IModelDb, IModelJsFs, NativeLoggerCategory,
   PhysicalPartition, Subject,
 } from "@bentley/imodeljs-backend";
 import { IModel } from "@bentley/imodeljs-common";
 import { ITwinClientLoggerCategory } from "@bentley/itwin-client";
 import { BridgeLoggerCategory } from "@bentley/imodel-bridge";
-import { CodeSpecs, RectangleTile, SmallSquareTile } from "../TestBridgeElements";
-import { ModelNames } from "../TestiModelBridge";
-import { KnownTestLocations } from "./KnownTestLocations";
+import { CodeSpecs, RectangleTile, SmallSquareTile } from "../ToyTileElements";
+import { ModelNames } from "../ToyTile2PConnector";
 
 function getCount(imodel: IModelDb, className: string) {
   let count = 0;
@@ -71,21 +70,21 @@ export class BridgeTestUtils {
 
   public static verifyIModel(imodel: IModelDb, sourcePath: string, isUpdate: boolean = false) {
     // Confirm the schema was imported simply by trying to get the meta data for one of the classes.
-    assert.isDefined(imodel.getMetaData("TestBridge:TestBridgeGroup"));
+    assert.isDefined(imodel.getMetaData("ToyTile:ToyTileGroup"));
     assert.equal(1, getCount(imodel, "BisCore:RepositoryLink"));
     assert.equal(1, getCount(imodel, "BisCore:PhysicalModel"));
-    assert.equal(1, getCount(imodel, "TestBridge:TestBridgeGroupModel"));
+    assert.equal(1, getCount(imodel, "ToyTile:ToyTileGroupModel"));
     assert.equal(8, getCount(imodel, "BisCore:GeometryPart"));
     assert.equal(1, getCount(imodel, "BisCore:SpatialCategory"));
     assert.equal(2, getCount(imodel, "BisCore:RenderMaterial"));
-    assert.equal(2, getCount(imodel, "TestBridge:TestBridgeGroup"));
-    assert.equal(41, getCount(imodel, "TestBridge:TestBridgePhysicalElement"));
-    assert.equal(6, getCount(imodel, "TestBridge:EquilateralTriangleTile"));
-    assert.equal(8, getCount(imodel, "TestBridge:IsoscelesTriangleTile"));
-    assert.equal(isUpdate ? 7 : 8, getCount(imodel, "TestBridge:LargeSquareTile"));
-    assert.equal(isUpdate ? 2 : 1, getCount(imodel, "TestBridge:RectangleTile"));
-    assert.equal(10, getCount(imodel, "TestBridge:RightTriangleTile"));
-    assert.equal(8, getCount(imodel, "TestBridge:SmallSquareTile"));
+    assert.equal(2, getCount(imodel, "ToyTile:ToyTileGroup"));
+    assert.equal(41, getCount(imodel, "ToyTile:ToyTilePhysicalElement"));
+    assert.equal(6, getCount(imodel, "ToyTile:EquilateralTriangleTile"));
+    assert.equal(8, getCount(imodel, "ToyTile:IsoscelesTriangleTile"));
+    assert.equal(isUpdate ? 7 : 8, getCount(imodel, "ToyTile:LargeSquareTile"));
+    assert.equal(isUpdate ? 2 : 1, getCount(imodel, "ToyTile:RectangleTile"));
+    assert.equal(10, getCount(imodel, "ToyTile:RightTriangleTile"));
+    assert.equal(8, getCount(imodel, "ToyTile:SmallSquareTile"));
 
     assert.isTrue(imodel.codeSpecs.hasName(CodeSpecs.Group));
     const jobSubjectName = `TestiModelBridge:${sourcePath}`;

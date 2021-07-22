@@ -2,51 +2,52 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-import { assert, ClientRequestContext, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
-import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
-import {
-  CategorySelector, DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, IModelDb, IModelJsFs,
-  ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, RepositoryLink, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
-} from "@bentley/imodeljs-backend";
 import {
   CodeScopeSpec, CodeSpec, ColorByName, ColorDef, ColorDefProps, GeometryPartProps, GeometryStreamBuilder, IModel, IModelError, InformationPartitionElementProps,
-  RenderMode, SubCategoryAppearance, ViewFlags,
+  SubCategoryAppearance,
 } from "@bentley/imodeljs-common";
-import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, StandardViewIndex, Vector3d } from "@bentley/geometry-core";
-import { IModelBridge, ItemState, SourceItem, SynchronizationResults } from "@bentley/imodel-bridge";
-import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
-import { TestBridgeSchema } from "./TestBridgeSchema";
-import { TestBridgeGroupModel } from "./TestBridgeModels";
+import { assert, ClientRequestContext, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import {
-  Categories, CodeSpecs, EquilateralTriangleTile, GeometryParts, IsoscelesTriangleTile, LargeSquareTile, Materials, RectangleTile, RightTriangleTile, SmallSquareTile,
-  TestBridgeGroup, TestBridgeGroupProps,
-} from "./TestBridgeElements";
-import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./TestBridgeGeometry";
-
+  DefinitionModel, DefinitionPartition, ElementGroupsMembers, GeometryPart, GroupInformationPartition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
+} from "@bentley/imodeljs-backend";
+import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, Vector3d } from "@bentley/geometry-core";
+import { ItemState, SourceItem, SynchronizationResults } from "@bentley/imodel-bridge";
+import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
+import { Base2PConnector } from "./Base2PConnector";
+import { Categories, CodeSpecs, EquilateralTriangleTile, GeometryParts, IsoscelesTriangleTile, LargeSquareTile, Materials, RectangleTile, RightTriangleTile, SmallSquareTile, ToyTileGroup, ToyTileGroupProps } from "./ToyTileElements";
+import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./ToyTileGeometry";
+import { ToyTileGroupModel } from "./ToyTileModels";
+import { ToyTileSchema } from "./ToyTileSchema";
 import * as hash from "object-hash";
-import { getServerAddress } from "./launchServer";
-import { createClient } from "./ReaderClient";
 
-import { ReaderClient } from "./generated/reader_grpc_pb";
-import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "./generated/reader_pb";
 import { startMockTypescriptReader } from "./test/MockReader";
 
-const loggerCategory: string = TestBridgeLoggerCategory.Bridge;
+export enum ToyTileLoggerCategory {
+  /** The logger category used by the following classes:
+   * - [[BridgeSynchronizer]]
+   */
+  Connector = "ToyTile2PConnector.Connector",
+  Geometry = "ToyTile2PConnector.Geometry",
+}
 
-class TestBridge extends IModelBridge {
-  private _sourceFilenameState: ItemState = ItemState.New;
-  private _sourceFilename?: string;
-  private _repositoryLink?: RepositoryLink;
-  private _readerClient?: ReaderClient;
+const loggerCategory: string = ToyTileLoggerCategory.Connector;
 
-  public initialize(_params: any) {
-    // nothing to do here
+export class ToyTile2PConnector extends Base2PConnector {
+
+  protected get loggerCategory(): string { return ToyTileLoggerCategory.Connector; }
+
+  protected get defaultCategory(): string { return Categories.Category; }
+
+  public getApplicationId(): string {
+    return "2661";
+  }
+  public getApplicationVersion(): string {
+    return "1.0.0.0";
+  }
+  public getBridgeName(): string {
+    return "ToyTile2PConnector";
   }
 
-  public get repositoryLink(): RepositoryLink {
-    assert(this._repositoryLink !== undefined);
-    return this._repositoryLink;
-  }
   public async initializeJob(): Promise<void> {
     if (ItemState.New === this._sourceFilenameState) {
       this.createGroupModel();
@@ -55,76 +56,17 @@ class TestBridge extends IModelBridge {
     }
   }
 
-  public async doShutdownCall(): Promise<ShutdownResponse> {
-    const shutdownRequest = new ShutdownRequest();
-    shutdownRequest.setOptions("");
-    return new Promise((resolve, reject) => {
-      assert(this._readerClient !== undefined);
-      this._readerClient.shutdown(shutdownRequest, (err, response) => {
-        if (err)
-          reject(err);
-        resolve(response);
-      });
-    });
-  }
-
-  public async doInitializeCall(filename: string): Promise<InitializeResponse> {
-    assert(this._readerClient !== undefined);
-    const initializeRequest = new InitializeRequest();
-    initializeRequest.setFilename(filename);
-    return new Promise((resolve, reject) => {
-      assert(this._readerClient !== undefined);
-      this._readerClient.initialize(initializeRequest, (err, response) => {
-        if (err)
-          reject(err);
-        resolve(response);
-      });
-    });
-  }
-
-  public async doInitializeCallWithRetries(filename: string, retryCount?: number): Promise<InitializeResponse> {
-    if (retryCount === undefined)
-      retryCount = 3;
-    for (let i = 0; i < retryCount; ++i) {
-      try {
-        return await this.doInitializeCall(filename);
-      } catch (err) {
-        if (err.code === 12) // this means that the server did not implement the "ping" method
-          throw new Error("the server does not implement the 'ping' method!");
-        if (i === retryCount - 1)
-          throw err;
-      }
-    }
-    throw new Error("cannot reach Reader.x process");
-  }
-
-  public async openSourceData(sourcePath: string): Promise<void> {
-    this._sourceFilename = sourcePath;
-    const documentStatus = this.getDocumentStatus(); // make sure the repository link is created now, while we are in the repository channel
-    this._sourceFilenameState = documentStatus.itemState;
-    this._repositoryLink = documentStatus.element;
-
-    const rpcServerAddress = await getServerAddress();
-    await startMockTypescriptReader(rpcServerAddress);
-    this._readerClient = await createClient(rpcServerAddress);
-    await this.doInitializeCallWithRetries(this._sourceFilename);
-  }
-
-  public override async terminate(): Promise<void> {
-    await this.doShutdownCall();
+  protected async startServer(addr: string): Promise<void> {
+    return startMockTypescriptReader(addr);
   }
 
   public async importDomainSchema(_requestContext: AuthorizedClientRequestContext | ClientRequestContext): Promise<any> {
     if (this._sourceFilenameState === ItemState.Unchanged) {
       return;
     }
-    TestBridgeSchema.registerSchema();
-    const fileName = TestBridgeSchema.schemaFilePath;
+    ToyTileSchema.registerSchema();
+    const fileName = ToyTileSchema.schemaFilePath;
     await this.synchronizer.imodel.importSchemas(_requestContext, [fileName]);
-  }
-
-  public async importDynamicSchema(_requestContext: AuthorizedClientRequestContext | ClientRequestContext): Promise<any> {
-    // don't need to generate any schemas
   }
 
   // importDefinitions is for definitions that are written to shared models such as DictionaryModel
@@ -133,31 +75,6 @@ class TestBridge extends IModelBridge {
       return;
     }
     this.insertCodeSpecs();
-  }
-
-  public async processSourceData(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String): Promise<void> {
-    assert(this._readerClient !== undefined);
-    const clientMessage = new GetDataRequest();
-    const stream = this._readerClient.getData(clientMessage);
-    return new Promise((resolve, reject) => {
-      stream.on("data", (response: GetDataResponse) => {
-        const obj = JSON.parse(response.getTestResponse());
-        if (obj.objType === "Error") {
-          reject(new Error(obj.details));
-        } else if (obj.objType === "Group") {
-          this.convertGroupElement(obj, groupModelId);
-        } else {
-          const tileType = obj.tileType;
-          this.convertTile(physicalModelId, definitionModelId, groupModelId, obj, tileType);
-        }
-      });
-      stream.on("error", (err: Error) => {
-        reject(err);
-      });
-      stream.on("end", () => {
-        resolve();
-      });
-    });
   }
 
   public async updateExistingData() {
@@ -185,48 +102,27 @@ class TestBridge extends IModelBridge {
       this.insertGeometryParts();
     }
 
-    // this.convertGroupElements(groupModelId);
-    // this.convertPhysicalElements(physicalModelId, definitionModelId, groupModelId);
-    await this.processSourceData(physicalModelId, definitionModelId, groupModelId);
+    await this.processSourceData((data: string) => {
+      const obj = JSON.parse(data);
+      if (obj.objType === "Error") {
+        throw new Error(obj.details);
+      } else if (obj.objType === "Group") {
+        this.convertGroupElement(obj, groupModelId);
+      } else {
+        const tileType = obj.tileType;
+        this.convertTile(physicalModelId, definitionModelId, groupModelId, obj, tileType);
+      }
+    });
 
-    this.synchronizer.imodel.views.setDefaultViewId(this.createView(definitionModelId, physicalModelId, "TestBridgeView"));
-  }
-
-  public getApplicationId(): string {
-    return "2661";
-  }
-  public getApplicationVersion(): string {
-    return "1.0.0.0";
-  }
-  public getBridgeName(): string {
-    return "TestiModelBridge";
+    this.synchronizer.imodel.views.setDefaultViewId(this.createView(definitionModelId, physicalModelId, "ToyTileView"));
   }
 
-  private getDocumentStatus(): SynchronizationResults {
-    let timeStamp = Date.now();
-    assert(this._sourceFilename !== undefined, "we should not be in this method if the source file has not yet been opened");
-    const stat = IModelJsFs.lstatSync(this._sourceFilename); // will throw if this._sourceFilename names a file that does not exist. That would be a bug. Let it abort the job.
-    if (undefined !== stat) {
-      timeStamp = stat.mtimeMs;
-    }
-
-    const sourceItem: SourceItem = {
-      id: this._sourceFilename,
-      version: timeStamp.toString(),
-    };
-    const documentStatus = this.synchronizer.recordDocument(IModelDb.rootSubjectId, sourceItem);
-    if (undefined === documentStatus) {
-      const error = `Failed to retrieve a RepositoryLink for ${this._sourceFilename}`;
-      throw new IModelError(IModelStatus.BadArg, error, Logger.logError, loggerCategory);
-    }
-    return documentStatus;
-  }
   private createGroupModel(): Id64String {
     const existingId = this.queryGroupModel();
     if (undefined !== existingId) {
       return existingId;
     }
-    // Create an InformationPartitionElement for the TestBridgeGroupModel to model
+    // Create an InformationPartitionElement for the ToyTileGroupModel to model
     const partitionProps: InformationPartitionElementProps = {
       classFullName: GroupInformationPartition.classFullName,
       model: IModel.repositoryModelId,
@@ -235,7 +131,7 @@ class TestBridge extends IModelBridge {
     };
     const partitionId = this.synchronizer.imodel.elements.insertElement(partitionProps);
 
-    return this.synchronizer.imodel.models.insertModel({ classFullName: TestBridgeGroupModel.classFullName, modeledElement: { id: partitionId } });
+    return this.synchronizer.imodel.models.insertModel({ classFullName: ToyTileGroupModel.classFullName, modeledElement: { id: partitionId } });
   }
 
   private queryGroupModel(): Id64String | undefined {
@@ -270,7 +166,7 @@ class TestBridge extends IModelBridge {
       return existingId;
     }
 
-    // Create an InformationPartitionElement for the TestBridgeDefinitionModel to model
+    // Create an InformationPartitionElement for the ToyTileDefinitionModel to model
     const partitionProps: InformationPartitionElementProps = {
       classFullName: DefinitionPartition.classFullName,
       model: IModel.repositoryModelId,
@@ -325,13 +221,13 @@ class TestBridge extends IModelBridge {
   }
 
   private getColoredPlasticParams(): RenderMaterialElement.Params {
-    const params = new RenderMaterialElement.Params(Palettes.TestBridge);
+    const params = new RenderMaterialElement.Params(Palettes.Base2PConnector);
     params.transmit = 0.5;
     return params;
   }
 
   private getMagnetizedFerriteParams(): RenderMaterialElement.Params {
-    const params = new RenderMaterialElement.Params(Palettes.TestBridge);
+    const params = new RenderMaterialElement.Params(Palettes.Base2PConnector);
     const darkGrey = this.toRgbFactor(ColorByName.darkGrey);
     params.specularColor = darkGrey;
     params.color = darkGrey;
@@ -442,12 +338,12 @@ class TestBridge extends IModelBridge {
       return results.id;
     }
     if (group.name === undefined) {
-      throw new IModelError(IModelStatus.BadArg, "Name undefined for TestBridge group", Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, "Name undefined for Base2PConnector group", Logger.logError, loggerCategory);
     }
 
-    const code = TestBridgeGroup.createCode(this.synchronizer.imodel, groupModelId, group.name);
-    const props: TestBridgeGroupProps = {
-      classFullName: TestBridgeGroup.classFullName,
+    const code = ToyTileGroup.createCode(this.synchronizer.imodel, groupModelId, group.name);
+    const props: ToyTileGroupProps = {
+      classFullName: ToyTileGroup.classFullName,
       model: groupModelId,
       code,
       groupType: group.groupType,
@@ -492,7 +388,7 @@ class TestBridge extends IModelBridge {
       return;
     }
     if (tile.casingMaterial === undefined) {
-      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for TestBridge Tile ${tile.guid}`, Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for Base2PConnector Tile ${tile.guid}`, Logger.logError, loggerCategory);
     }
 
     let element: PhysicalElement;
@@ -531,7 +427,7 @@ class TestBridge extends IModelBridge {
     if (!tile.hasOwnProperty("Group")) {
       return;
     }
-    const groupCode = TestBridgeGroup.createCode(this.synchronizer.imodel, groupModelId, tile.Group);
+    const groupCode = ToyTileGroup.createCode(this.synchronizer.imodel, groupModelId, tile.Group);
     let groupElement = this.synchronizer.imodel.elements.queryElementIdByCode(groupCode);
     if (groupElement === undefined)
       groupElement = this.convertGroupElement({ name: "placeholder" }, groupModelId); // create a placeholder. We will update it when we get the group definition (eventually)
@@ -551,73 +447,18 @@ class TestBridge extends IModelBridge {
     }
 
   }
-
-  private createView(definitionModelId: Id64String, physicalModelId: Id64String, name: string): Id64String {
-    const code = OrthographicViewDefinition.createCode(this.synchronizer.imodel, definitionModelId, name);
-    const viewId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
-    if (undefined !== viewId) {
-      return viewId;
-    }
-
-    const categorySelectorId = this.createCategorySelector(definitionModelId);
-    const modelSelectorId = this.createModelSelector(definitionModelId, physicalModelId);
-    const displayStyleId = this.createDisplayStyle(definitionModelId);
-    const view = OrthographicViewDefinition.create(this.synchronizer.imodel, definitionModelId, name, modelSelectorId, categorySelectorId, displayStyleId, this.synchronizer.imodel.projectExtents, StandardViewIndex.Iso);
-    view.insert();
-    return view.id;
-  }
-
-  private createCategorySelector(definitionModelId: Id64String): Id64String {
-    const code = CategorySelector.createCode(this.synchronizer.imodel, definitionModelId, "Default");
-    const selectorId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
-    if (undefined !== selectorId) {
-      return selectorId;
-    }
-
-    const categoryId = SpatialCategory.queryCategoryIdByName(this.synchronizer.imodel, definitionModelId, Categories.Category);
-    if (undefined === categoryId) {
-      throw new IModelError(IModelStatus.BadElement, "Unable to find TestBridge Category", Logger.logError, loggerCategory);
-    }
-    return CategorySelector.insert(this.synchronizer.imodel, definitionModelId, "Default", [categoryId]);
-  }
-
-  private createModelSelector(definitionModelId: Id64String, physicalModelId: Id64String): Id64String {
-    const code = ModelSelector.createCode(this.synchronizer.imodel, definitionModelId, "Default");
-    const selectorId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
-    if (undefined !== selectorId) {
-      return selectorId;
-    }
-    return ModelSelector.insert(this.synchronizer.imodel, definitionModelId, "Default", [physicalModelId]);
-  }
-
-  private createDisplayStyle(definitionModelId: Id64String): Id64String {
-    const code = DisplayStyle3d.createCode(this.synchronizer.imodel, definitionModelId, "Default");
-    const displayStyleId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
-    if (undefined !== displayStyleId) {
-      return displayStyleId;
-    }
-    const viewFlags: ViewFlags = new ViewFlags();
-    viewFlags.renderMode = RenderMode.SmoothShade;
-    const options: DisplayStyleCreationOptions = {
-      backgroundColor: ColorDef.fromTbgr(ColorByName.white),
-      viewFlags,
-    };
-    const displayStyle: DisplayStyle3d = DisplayStyle3d.create(this.synchronizer.imodel, definitionModelId, "Default", options);
-    displayStyle.insert();
-    return displayStyle.id;
-  }
 }
 
 export function getBridgeInstance() {
-  return new TestBridge();
+  return new ToyTile2PConnector();
 }
 
 export enum ModelNames {
-  Physical = "TestBridge_Physical",
-  Definition = "TestBridge_Definitions",
-  Group = "TestBridge_Groups",
+  Physical = "ToyTile_Physical",
+  Definition = "ToyTile_Definitions",
+  Group = "ToyTile_Groups",
 }
 
 enum Palettes {
-  TestBridge = "TestBridge", // eslint-disable-line @typescript-eslint/no-shadow
+  Base2PConnector = "Base2PConnector", // eslint-disable-line @typescript-eslint/no-shadow
 }

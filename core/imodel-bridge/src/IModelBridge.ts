@@ -37,6 +37,11 @@ export abstract class IModelBridge {
    */
   public abstract openSourceData(sourcePath: string): Promise<void>;
 
+  /**
+   * The synchronization is finished.
+   */
+  public async terminate(): Promise<void> { }
+
   /** Import any elements that belong in a DefinitionModel (Categories, LineStyles, Materials, etc).  This includes elements necessary for all
    * imodels created by this bridge as well as any that are unique to this source data. Called in the [Repository channel]($docs/learning/backend/Channel).
    */

@@ -190,6 +190,7 @@ export class BridgeRunner {
       await this._bridge.onOpenIModel();
       await iModelDbBuilder.updateExistingIModel();
     } finally {
+      await this._bridge.terminate();
       if (iModelDbBuilder.imodel.isBriefcaseDb() || iModelDbBuilder.imodel.isSnapshotDb()) {
         iModelDbBuilder.imodel.close();
       }

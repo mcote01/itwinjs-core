@@ -10,43 +10,43 @@
 
 import * as jspb from "google-protobuf";
 
-export class PingResponse extends jspb.Message { 
+export class InitializeResponse extends jspb.Message { 
     getStatus(): string;
-    setStatus(value: string): PingResponse;
+    setStatus(value: string): InitializeResponse;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): PingResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: PingResponse): PingResponse.AsObject;
+    toObject(includeInstance?: boolean): InitializeResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: InitializeResponse): InitializeResponse.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: PingResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): PingResponse;
-    static deserializeBinaryFromReader(message: PingResponse, reader: jspb.BinaryReader): PingResponse;
+    static serializeBinaryToWriter(message: InitializeResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): InitializeResponse;
+    static deserializeBinaryFromReader(message: InitializeResponse, reader: jspb.BinaryReader): InitializeResponse;
 }
 
-export namespace PingResponse {
+export namespace InitializeResponse {
     export type AsObject = {
         status: string,
     }
 }
 
-export class PingRequest extends jspb.Message { 
-    getNop(): string;
-    setNop(value: string): PingRequest;
+export class InitializeRequest extends jspb.Message { 
+    getFilename(): string;
+    setFilename(value: string): InitializeRequest;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): PingRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: PingRequest): PingRequest.AsObject;
+    toObject(includeInstance?: boolean): InitializeRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: InitializeRequest): InitializeRequest.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: PingRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): PingRequest;
-    static deserializeBinaryFromReader(message: PingRequest, reader: jspb.BinaryReader): PingRequest;
+    static serializeBinaryToWriter(message: InitializeRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): InitializeRequest;
+    static deserializeBinaryFromReader(message: InitializeRequest, reader: jspb.BinaryReader): InitializeRequest;
 }
 
-export namespace PingRequest {
+export namespace InitializeRequest {
     export type AsObject = {
-        nop: string,
+        filename: string,
     }
 }
 

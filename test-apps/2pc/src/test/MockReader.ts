@@ -7,10 +7,8 @@
   Run a gRPC server that implements the Reader service.
 */
 import * as grpc from "@grpc/grpc-js";
-import * as path from "path";
 import * as fs from "fs";
-import * as sax from "sax";
-import { PingRequest, PingResponse, ShutdownRequest, ShutdownResponse, GetDataRequest, GetDataResponse } from "../generated/reader_pb";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "../generated/reader_pb";
 import { IReaderServer, ReaderService } from "../generated/reader_grpc_pb";
 
 let server: grpc.Server;
@@ -29,8 +27,9 @@ function writeTile(call: grpc.ServerWritableStream<GetDataRequest, GetDataRespon
 }
 
 const readerServer: IReaderServer = {
-  ping(_call: grpc.ServerUnaryCall<PingRequest, PingResponse>, callback: grpc.sendUnaryData<PingResponse>) {
-    const response = new PingResponse();
+  initialize(call: grpc.ServerUnaryCall<InitializeRequest, InitializeResponse>, callback: grpc.sendUnaryData<InitializeResponse>) {
+    sourcePath = call.request.getFilename();
+    const response = new InitializeResponse();
     response.setStatus("0");
     callback(null, response);
   },
@@ -78,11 +77,9 @@ const readerServer: IReaderServer = {
 
 // For testing purposes, we can run the server in the same process as the client.
 // It will use the same gRPC stack as an out-of-process server, but it's simpler to debug.
-export async function startMockTypescriptReader(rpcServerAddress: string, _sourcePath: string): Promise<void> {
+export async function startMockTypescriptReader(rpcServerAddress: string): Promise<void> {
   server = new grpc.Server();
   server.addService(ReaderService, readerServer);
-
-  sourcePath = _sourcePath;
 
   return new Promise((resolve, reject) => {
     server.bindAsync(

@@ -30,26 +30,26 @@ function deserialize_TwoProcessConnector_GetDataResponse(buffer_arg) {
   return reader_pb.GetDataResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_TwoProcessConnector_PingRequest(arg) {
-  if (!(arg instanceof reader_pb.PingRequest)) {
-    throw new Error('Expected argument of type TwoProcessConnector.PingRequest');
+function serialize_TwoProcessConnector_InitializeRequest(arg) {
+  if (!(arg instanceof reader_pb.InitializeRequest)) {
+    throw new Error('Expected argument of type TwoProcessConnector.InitializeRequest');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_TwoProcessConnector_PingRequest(buffer_arg) {
-  return reader_pb.PingRequest.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_TwoProcessConnector_InitializeRequest(buffer_arg) {
+  return reader_pb.InitializeRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_TwoProcessConnector_PingResponse(arg) {
-  if (!(arg instanceof reader_pb.PingResponse)) {
-    throw new Error('Expected argument of type TwoProcessConnector.PingResponse');
+function serialize_TwoProcessConnector_InitializeResponse(arg) {
+  if (!(arg instanceof reader_pb.InitializeResponse)) {
+    throw new Error('Expected argument of type TwoProcessConnector.InitializeResponse');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_TwoProcessConnector_PingResponse(buffer_arg) {
-  return reader_pb.PingResponse.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_TwoProcessConnector_InitializeResponse(buffer_arg) {
+  return reader_pb.InitializeResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_TwoProcessConnector_ShutdownRequest(arg) {
@@ -76,16 +76,16 @@ function deserialize_TwoProcessConnector_ShutdownResponse(buffer_arg) {
 
 
 var ReaderService = exports.ReaderService = {
-  ping: {
-    path: '/TwoProcessConnector.Reader/ping',
+  initialize: {
+    path: '/TwoProcessConnector.Reader/initialize',
     requestStream: false,
     responseStream: false,
-    requestType: reader_pb.PingRequest,
-    responseType: reader_pb.PingResponse,
-    requestSerialize: serialize_TwoProcessConnector_PingRequest,
-    requestDeserialize: deserialize_TwoProcessConnector_PingRequest,
-    responseSerialize: serialize_TwoProcessConnector_PingResponse,
-    responseDeserialize: deserialize_TwoProcessConnector_PingResponse,
+    requestType: reader_pb.InitializeRequest,
+    responseType: reader_pb.InitializeResponse,
+    requestSerialize: serialize_TwoProcessConnector_InitializeRequest,
+    requestDeserialize: deserialize_TwoProcessConnector_InitializeRequest,
+    responseSerialize: serialize_TwoProcessConnector_InitializeResponse,
+    responseDeserialize: deserialize_TwoProcessConnector_InitializeResponse,
   },
   getData: {
     path: '/TwoProcessConnector.Reader/getData',

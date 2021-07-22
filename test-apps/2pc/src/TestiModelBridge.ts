@@ -13,8 +13,7 @@ import {
   RenderMode, SubCategoryAppearance, ViewFlags,
 } from "@bentley/imodeljs-common";
 import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, StandardViewIndex, Vector3d } from "@bentley/geometry-core";
-import { ItemState, SourceItem, SynchronizationResults } from "../../../core/imodel-bridge/lib/Synchronizer"; // *** NEEDS WORK: SourceItem is not in imodel-bridge barrel!?
-import { IModelBridge } from "@bentley/imodel-bridge";
+import { IModelBridge, ItemState, SourceItem, SynchronizationResults } from "@bentley/imodel-bridge";
 import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
 import { TestBridgeSchema } from "./TestBridgeSchema";
 import { TestBridgeGroupModel } from "./TestBridgeModels";
@@ -25,13 +24,11 @@ import {
 import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./TestBridgeGeometry";
 
 import * as hash from "object-hash";
-import * as fs from "fs";
 import { getServerAddress } from "./launchServer";
 import { createClient } from "./ReaderClient";
 
 import { ReaderClient } from "./generated/reader_grpc_pb";
-import { PingRequest, PingResponse, ShutdownRequest, ShutdownResponse, GetDataRequest, GetDataResponse } from "./generated/reader_pb";
-import { group } from "console";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "./generated/reader_pb";
 import { startMockTypescriptReader } from "./test/MockReader";
 
 const loggerCategory: string = TestBridgeLoggerCategory.Bridge;
@@ -46,7 +43,7 @@ class TestBridge extends IModelBridge {
     // nothing to do here
   }
 
-  private get repositoryLink(): RepositoryLink {
+  public get repositoryLink(): RepositoryLink {
     assert(this._repositoryLink !== undefined);
     return this._repositoryLink;
   }
@@ -57,7 +54,6 @@ class TestBridge extends IModelBridge {
       this.createDefinitionModel();
     }
   }
-
 
   public async doShutdownCall(): Promise<ShutdownResponse> {
     const shutdownRequest = new ShutdownRequest();
@@ -72,12 +68,13 @@ class TestBridge extends IModelBridge {
     });
   }
 
-  public async doPingCall(): Promise<PingResponse> {
+  public async doInitializeCall(filename: string): Promise<InitializeResponse> {
     assert(this._readerClient !== undefined);
-    const pingRequest = new PingRequest();
+    const initializeRequest = new InitializeRequest();
+    initializeRequest.setFilename(filename);
     return new Promise((resolve, reject) => {
       assert(this._readerClient !== undefined);
-      this._readerClient.ping(pingRequest, (err, response) => {
+      this._readerClient.initialize(initializeRequest, (err, response) => {
         if (err)
           reject(err);
         resolve(response);
@@ -85,12 +82,12 @@ class TestBridge extends IModelBridge {
     });
   }
 
-  public async doPingCallWithRetries(retryCount?: number): Promise<PingResponse> {
+  public async doInitializeCallWithRetries(filename: string, retryCount?: number): Promise<InitializeResponse> {
     if (retryCount === undefined)
       retryCount = 3;
     for (let i = 0; i < retryCount; ++i) {
       try {
-        return await this.doPingCall();
+        return await this.doInitializeCall(filename);
       } catch (err) {
         if (err.code === 12) // this means that the server did not implement the "ping" method
           throw new Error("the server does not implement the 'ping' method!");
@@ -108,9 +105,13 @@ class TestBridge extends IModelBridge {
     this._repositoryLink = documentStatus.element;
 
     const rpcServerAddress = await getServerAddress();
-    await startMockTypescriptReader(rpcServerAddress, sourcePath);
+    await startMockTypescriptReader(rpcServerAddress);
     this._readerClient = await createClient(rpcServerAddress);
-    await this.doPingCallWithRetries();
+    await this.doInitializeCallWithRetries(this._sourceFilename);
+  }
+
+  public override async terminate(): Promise<void> {
+    await this.doShutdownCall();
   }
 
   public async importDomainSchema(_requestContext: AuthorizedClientRequestContext | ClientRequestContext): Promise<any> {
@@ -142,7 +143,7 @@ class TestBridge extends IModelBridge {
       stream.on("data", (response: GetDataResponse) => {
         const obj = JSON.parse(response.getTestResponse());
         if (obj.objType === "Error") {
-          reject(new Error(obj.details))
+          reject(new Error(obj.details));
         } else if (obj.objType === "Group") {
           this.convertGroupElement(obj, groupModelId);
         } else {
@@ -170,7 +171,7 @@ class TestBridge extends IModelBridge {
         : undefined === physicalModelId
           ? ModelNames.Physical
           : ModelNames.Definition
-        }`;
+      }`;
       throw new IModelError(IModelStatus.BadArg, error, Logger.logError, loggerCategory);
     }
 

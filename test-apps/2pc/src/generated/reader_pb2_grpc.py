@@ -16,8 +16,8 @@ class ReaderStub(object):
         """
         self.ping = channel.unary_unary(
                 '/TwoProcessConnector.Reader/ping',
-                request_serializer=reader__pb2.PingRequest.SerializeToString,
-                response_deserializer=reader__pb2.PingResponse.FromString,
+                request_serializer=reader__pb2.InitializeRequest.SerializeToString,
+                response_deserializer=reader__pb2.InitializeResponse.FromString,
                 )
         self.getData = channel.unary_stream(
                 '/TwoProcessConnector.Reader/getData',
@@ -60,8 +60,8 @@ def add_ReaderServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'ping': grpc.unary_unary_rpc_method_handler(
                     servicer.ping,
-                    request_deserializer=reader__pb2.PingRequest.FromString,
-                    response_serializer=reader__pb2.PingResponse.SerializeToString,
+                    request_deserializer=reader__pb2.InitializeRequest.FromString,
+                    response_serializer=reader__pb2.InitializeResponse.SerializeToString,
             ),
             'getData': grpc.unary_stream_rpc_method_handler(
                     servicer.getData,
@@ -95,8 +95,8 @@ class Reader(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Reader/ping',
-            reader__pb2.PingRequest.SerializeToString,
-            reader__pb2.PingResponse.FromString,
+            reader__pb2.InitializeRequest.SerializeToString,
+            reader__pb2.InitializeResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

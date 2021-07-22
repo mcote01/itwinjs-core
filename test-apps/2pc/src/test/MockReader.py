@@ -127,7 +127,7 @@ class MockReader(reader_pb2_grpc.ReaderServicer):
 
     def ping(self, request, context):
       logging.getLogger('MockReader').debug('ping')
-      return reader_pb2.PingResponse(status='0')
+      return reader_pb2.InitializeResponse(status='0')
 
     def getData(self, request, context):
       logging.getLogger('MockReader').debug('getData')

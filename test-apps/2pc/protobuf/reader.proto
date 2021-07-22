@@ -2,12 +2,12 @@ syntax = "proto3";
 
 package TwoProcessConnector;
 
-message PingResponse {
+message InitializeResponse {
   string status = 1;
 }
 
-message PingRequest {
-  string nop = 1;
+message InitializeRequest {
+  string filename = 1;
 }
 
 message GetDataResponse {
@@ -27,7 +27,7 @@ message ShutdownRequest {
 }
 
 service Reader {
-  rpc ping(PingRequest) returns (PingResponse) {}
+  rpc initialize(InitializeRequest) returns (InitializeResponse) {}
   rpc getData(GetDataRequest) returns (stream GetDataResponse) {}
   rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
   // rpc serverStreamingCall(ClientMessage) returns (stream ServerMessage) {}

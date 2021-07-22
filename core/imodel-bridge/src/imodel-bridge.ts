@@ -5,6 +5,7 @@
 export * from "./BridgeLoggerCategory";
 export * from "./BridgeRunner";
 export * from "./IModelBridge";
+export * from "./Synchronizer";
 
 /** @docs-package-description
  * Contains classes for supporting bridges to synchronize data into an imodel

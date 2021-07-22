@@ -19,22 +19,22 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\"\x1e\n\x0cPingResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x1a\n\x0bPingRequest\x12\x0b\n\x03nop\x18\x01 \x01(\t\"%\n\x0cTestResponse\x12\x15\n\rtest_response\x18\x01 \x01(\t\"#\n\x0bTestRequest\x12\x14\n\x0ctest_message\x18\x01 \x01(\t\"\"\n\x10ShutdownResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\"\n\x0fShutdownRequest\x12\x0f\n\x07options\x18\x01 \x01(\t2\x80\x02\n\x06Reader\x12M\n\x04ping\x12 .TwoProcessConnector.PingRequest\x1a!.TwoProcessConnector.PingResponse\"\x00\x12N\n\x03sww\x12 .TwoProcessConnector.GetDataRequest\x1a!.TwoProcessConnector.GetDataResponse\"\x00\x30\x01\x12W\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a%.TwoProcessConnector.ShutdownResponseb\x06proto3'
+  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\"\x1e\n\x0cPingResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x1a\n\x0bPingRequest\x12\x0b\n\x03nop\x18\x01 \x01(\t\"%\n\x0cTestResponse\x12\x15\n\rtest_response\x18\x01 \x01(\t\"#\n\x0bTestRequest\x12\x14\n\x0ctest_message\x18\x01 \x01(\t\"\"\n\x10ShutdownResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\"\n\x0fShutdownRequest\x12\x0f\n\x07options\x18\x01 \x01(\t2\x80\x02\n\x06Reader\x12M\n\x04ping\x12 .TwoProcessConnector.InitializeRequest\x1a!.TwoProcessConnector.InitializeResponse\"\x00\x12N\n\x03sww\x12 .TwoProcessConnector.GetDataRequest\x1a!.TwoProcessConnector.GetDataResponse\"\x00\x30\x01\x12W\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a%.TwoProcessConnector.ShutdownResponseb\x06proto3'
 )
 
 
 
 
 _PINGRESPONSE = _descriptor.Descriptor(
-  name='PingResponse',
-  full_name='TwoProcessConnector.PingResponse',
+  name='InitializeResponse',
+  full_name='TwoProcessConnector.InitializeResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='status', full_name='TwoProcessConnector.PingResponse.status', index=0,
+      name='status', full_name='TwoProcessConnector.InitializeResponse.status', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -58,15 +58,15 @@ _PINGRESPONSE = _descriptor.Descriptor(
 
 
 _PINGREQUEST = _descriptor.Descriptor(
-  name='PingRequest',
-  full_name='TwoProcessConnector.PingRequest',
+  name='InitializeRequest',
+  full_name='TwoProcessConnector.InitializeRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='nop', full_name='TwoProcessConnector.PingRequest.nop', index=0,
+      name='nop', full_name='TwoProcessConnector.InitializeRequest.nop', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -216,27 +216,27 @@ _SHUTDOWNREQUEST = _descriptor.Descriptor(
   serialized_end=243,
 )
 
-DESCRIPTOR.message_types_by_name['PingResponse'] = _PINGRESPONSE
-DESCRIPTOR.message_types_by_name['PingRequest'] = _PINGREQUEST
+DESCRIPTOR.message_types_by_name['InitializeResponse'] = _PINGRESPONSE
+DESCRIPTOR.message_types_by_name['InitializeRequest'] = _PINGREQUEST
 DESCRIPTOR.message_types_by_name['GetDataResponse'] = _TESTRESPONSE
 DESCRIPTOR.message_types_by_name['GetDataRequest'] = _TESTREQUEST
 DESCRIPTOR.message_types_by_name['ShutdownResponse'] = _SHUTDOWNRESPONSE
 DESCRIPTOR.message_types_by_name['ShutdownRequest'] = _SHUTDOWNREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-PingResponse = _reflection.GeneratedProtocolMessageType('PingResponse', (_message.Message,), {
+InitializeResponse = _reflection.GeneratedProtocolMessageType('InitializeResponse', (_message.Message,), {
   'DESCRIPTOR' : _PINGRESPONSE,
   '__module__' : 'reader_pb2'
-  # @@protoc_insertion_point(class_scope:TwoProcessConnector.PingResponse)
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.InitializeResponse)
   })
-_sym_db.RegisterMessage(PingResponse)
+_sym_db.RegisterMessage(InitializeResponse)
 
-PingRequest = _reflection.GeneratedProtocolMessageType('PingRequest', (_message.Message,), {
+InitializeRequest = _reflection.GeneratedProtocolMessageType('InitializeRequest', (_message.Message,), {
   'DESCRIPTOR' : _PINGREQUEST,
   '__module__' : 'reader_pb2'
-  # @@protoc_insertion_point(class_scope:TwoProcessConnector.PingRequest)
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.InitializeRequest)
   })
-_sym_db.RegisterMessage(PingRequest)
+_sym_db.RegisterMessage(InitializeRequest)
 
 GetDataResponse = _reflection.GeneratedProtocolMessageType('GetDataResponse', (_message.Message,), {
   'DESCRIPTOR' : _TESTRESPONSE,

@@ -50,41 +50,41 @@ export namespace PingRequest {
     }
 }
 
-export class TestResponse extends jspb.Message { 
+export class GetDataResponse extends jspb.Message { 
     getTestResponse(): string;
-    setTestResponse(value: string): TestResponse;
+    setTestResponse(value: string): GetDataResponse;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): TestResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: TestResponse): TestResponse.AsObject;
+    toObject(includeInstance?: boolean): GetDataResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: GetDataResponse): GetDataResponse.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: TestResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): TestResponse;
-    static deserializeBinaryFromReader(message: TestResponse, reader: jspb.BinaryReader): TestResponse;
+    static serializeBinaryToWriter(message: GetDataResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetDataResponse;
+    static deserializeBinaryFromReader(message: GetDataResponse, reader: jspb.BinaryReader): GetDataResponse;
 }
 
-export namespace TestResponse {
+export namespace GetDataResponse {
     export type AsObject = {
         testResponse: string,
     }
 }
 
-export class TestRequest extends jspb.Message { 
+export class GetDataRequest extends jspb.Message { 
     getTestMessage(): string;
-    setTestMessage(value: string): TestRequest;
+    setTestMessage(value: string): GetDataRequest;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): TestRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: TestRequest): TestRequest.AsObject;
+    toObject(includeInstance?: boolean): GetDataRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: GetDataRequest): GetDataRequest.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: TestRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): TestRequest;
-    static deserializeBinaryFromReader(message: TestRequest, reader: jspb.BinaryReader): TestRequest;
+    static serializeBinaryToWriter(message: GetDataRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetDataRequest;
+    static deserializeBinaryFromReader(message: GetDataRequest, reader: jspb.BinaryReader): GetDataRequest;
 }
 
-export namespace TestRequest {
+export namespace GetDataRequest {
     export type AsObject = {
         testMessage: string,
     }

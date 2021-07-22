@@ -10,11 +10,11 @@ message PingRequest {
   string nop = 1;
 }
 
-message TestResponse {
+message GetDataResponse {
   string test_response = 1;
 }
 
-message TestRequest {
+message GetDataRequest {
   string test_message = 1;
 }
 
@@ -28,7 +28,7 @@ message ShutdownRequest {
 
 service Reader {
   rpc ping(PingRequest) returns (PingResponse) {}
-  rpc sww(TestRequest) returns (stream TestResponse) {}
+  rpc getData(GetDataRequest) returns (stream GetDataResponse) {}
   rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
   // rpc serverStreamingCall(ClientMessage) returns (stream ServerMessage) {}
   // rpc clientStreamingCall(stream ClientMessage) returns (ServerMessage) {}

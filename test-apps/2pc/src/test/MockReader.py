@@ -129,26 +129,26 @@ class MockReader(reader_pb2_grpc.ReaderServicer):
       logging.getLogger('MockReader').debug('ping')
       return reader_pb2.PingResponse(status='0')
 
-    def sww(self, request, context):
-      logging.getLogger('MockReader').debug('sww')
+    def getData(self, request, context):
+      logging.getLogger('MockReader').debug('getData')
       tileParser = TileParser()
       doParse(tileParser)
       # return iter(tileParser._tiles)
       for tile in tileParser._tiles:
-        yield reader_pb2.TestResponse(test_response=tile)
+        yield reader_pb2.GetDataResponse(test_response=tile)
 
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='hello...');
-      # yield reader_pb2.TestResponse(test_response='...world');
-      # yield reader_pb2.TestResponse(test_response='<done>');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='hello...');
+      # yield reader_pb2.GetDataResponse(test_response='...world');
+      # yield reader_pb2.GetDataResponse(test_response='<done>');
 
     def shutdown(self, request, context):
       logging.getLogger('MockReader').info('shutting down ...')

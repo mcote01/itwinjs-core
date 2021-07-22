@@ -19,10 +19,10 @@ class ReaderStub(object):
                 request_serializer=reader__pb2.PingRequest.SerializeToString,
                 response_deserializer=reader__pb2.PingResponse.FromString,
                 )
-        self.sww = channel.unary_stream(
-                '/TwoProcessConnector.Reader/sww',
-                request_serializer=reader__pb2.TestRequest.SerializeToString,
-                response_deserializer=reader__pb2.TestResponse.FromString,
+        self.getData = channel.unary_stream(
+                '/TwoProcessConnector.Reader/getData',
+                request_serializer=reader__pb2.GetDataRequest.SerializeToString,
+                response_deserializer=reader__pb2.GetDataResponse.FromString,
                 )
         self.shutdown = channel.unary_unary(
                 '/TwoProcessConnector.Reader/shutdown',
@@ -40,7 +40,7 @@ class ReaderServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def sww(self, request, context):
+    def getData(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -63,10 +63,10 @@ def add_ReaderServicer_to_server(servicer, server):
                     request_deserializer=reader__pb2.PingRequest.FromString,
                     response_serializer=reader__pb2.PingResponse.SerializeToString,
             ),
-            'sww': grpc.unary_stream_rpc_method_handler(
-                    servicer.sww,
-                    request_deserializer=reader__pb2.TestRequest.FromString,
-                    response_serializer=reader__pb2.TestResponse.SerializeToString,
+            'getData': grpc.unary_stream_rpc_method_handler(
+                    servicer.getData,
+                    request_deserializer=reader__pb2.GetDataRequest.FromString,
+                    response_serializer=reader__pb2.GetDataResponse.SerializeToString,
             ),
             'shutdown': grpc.unary_unary_rpc_method_handler(
                     servicer.shutdown,
@@ -101,7 +101,7 @@ class Reader(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def sww(request,
+    def getData(request,
             target,
             options=(),
             channel_credentials=None,
@@ -111,9 +111,9 @@ class Reader(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/TwoProcessConnector.Reader/sww',
-            reader__pb2.TestRequest.SerializeToString,
-            reader__pb2.TestResponse.FromString,
+        return grpc.experimental.unary_stream(request, target, '/TwoProcessConnector.Reader/getData',
+            reader__pb2.GetDataRequest.SerializeToString,
+            reader__pb2.GetDataResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

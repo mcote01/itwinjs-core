@@ -13,7 +13,7 @@ import * as reader_pb from "./reader_pb";
 
 interface IReaderService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
     ping: IReaderService_Iping;
-    sww: IReaderService_Isww;
+    getData: IReaderService_IgetData;
     shutdown: IReaderService_Ishutdown;
 }
 
@@ -26,14 +26,14 @@ interface IReaderService_Iping extends grpc.MethodDefinition<reader_pb.PingReque
     responseSerialize: grpc.serialize<reader_pb.PingResponse>;
     responseDeserialize: grpc.deserialize<reader_pb.PingResponse>;
 }
-interface IReaderService_Isww extends grpc.MethodDefinition<reader_pb.TestRequest, reader_pb.TestResponse> {
-    path: "/TwoProcessConnector.Reader/sww";
+interface IReaderService_IgetData extends grpc.MethodDefinition<reader_pb.GetDataRequest, reader_pb.GetDataResponse> {
+    path: "/TwoProcessConnector.Reader/getData";
     requestStream: false;
     responseStream: true;
-    requestSerialize: grpc.serialize<reader_pb.TestRequest>;
-    requestDeserialize: grpc.deserialize<reader_pb.TestRequest>;
-    responseSerialize: grpc.serialize<reader_pb.TestResponse>;
-    responseDeserialize: grpc.deserialize<reader_pb.TestResponse>;
+    requestSerialize: grpc.serialize<reader_pb.GetDataRequest>;
+    requestDeserialize: grpc.deserialize<reader_pb.GetDataRequest>;
+    responseSerialize: grpc.serialize<reader_pb.GetDataResponse>;
+    responseDeserialize: grpc.deserialize<reader_pb.GetDataResponse>;
 }
 interface IReaderService_Ishutdown extends grpc.MethodDefinition<reader_pb.ShutdownRequest, reader_pb.ShutdownResponse> {
     path: "/TwoProcessConnector.Reader/shutdown";
@@ -49,7 +49,7 @@ export const ReaderService: IReaderService;
 
 export interface IReaderServer extends grpc.UntypedServiceImplementation {
     ping: grpc.handleUnaryCall<reader_pb.PingRequest, reader_pb.PingResponse>;
-    sww: grpc.handleServerStreamingCall<reader_pb.TestRequest, reader_pb.TestResponse>;
+    getData: grpc.handleServerStreamingCall<reader_pb.GetDataRequest, reader_pb.GetDataResponse>;
     shutdown: grpc.handleUnaryCall<reader_pb.ShutdownRequest, reader_pb.ShutdownResponse>;
 }
 
@@ -57,8 +57,8 @@ export interface IReaderClient {
     ping(request: reader_pb.PingRequest, callback: (error: grpc.ServiceError | null, response: reader_pb.PingResponse) => void): grpc.ClientUnaryCall;
     ping(request: reader_pb.PingRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: reader_pb.PingResponse) => void): grpc.ClientUnaryCall;
     ping(request: reader_pb.PingRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: reader_pb.PingResponse) => void): grpc.ClientUnaryCall;
-    sww(request: reader_pb.TestRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.TestResponse>;
-    sww(request: reader_pb.TestRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.TestResponse>;
+    getData(request: reader_pb.GetDataRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
+    getData(request: reader_pb.GetDataRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
     shutdown(request: reader_pb.ShutdownRequest, callback: (error: grpc.ServiceError | null, response: reader_pb.ShutdownResponse) => void): grpc.ClientUnaryCall;
     shutdown(request: reader_pb.ShutdownRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: reader_pb.ShutdownResponse) => void): grpc.ClientUnaryCall;
     shutdown(request: reader_pb.ShutdownRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: reader_pb.ShutdownResponse) => void): grpc.ClientUnaryCall;
@@ -69,8 +69,8 @@ export class ReaderClient extends grpc.Client implements IReaderClient {
     public ping(request: reader_pb.PingRequest, callback: (error: grpc.ServiceError | null, response: reader_pb.PingResponse) => void): grpc.ClientUnaryCall;
     public ping(request: reader_pb.PingRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: reader_pb.PingResponse) => void): grpc.ClientUnaryCall;
     public ping(request: reader_pb.PingRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: reader_pb.PingResponse) => void): grpc.ClientUnaryCall;
-    public sww(request: reader_pb.TestRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.TestResponse>;
-    public sww(request: reader_pb.TestRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.TestResponse>;
+    public getData(request: reader_pb.GetDataRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
+    public getData(request: reader_pb.GetDataRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
     public shutdown(request: reader_pb.ShutdownRequest, callback: (error: grpc.ServiceError | null, response: reader_pb.ShutdownResponse) => void): grpc.ClientUnaryCall;
     public shutdown(request: reader_pb.ShutdownRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: reader_pb.ShutdownResponse) => void): grpc.ClientUnaryCall;
     public shutdown(request: reader_pb.ShutdownRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: reader_pb.ShutdownResponse) => void): grpc.ClientUnaryCall;

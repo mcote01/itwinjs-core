@@ -29,7 +29,7 @@ function getCount(imodel: IModelDb, className: string) {
 export class BridgeTestUtils {
   public static setupLogging() {
     Logger.initializeToConsole();
-    Logger.setLevelDefault(LogLevel.Error);
+    Logger.setLevelDefault(LogLevel.Info);
 
     if (process.env.imjs_test_logging_config === undefined) {
       // eslint-disable-next-line no-console
@@ -56,6 +56,8 @@ export class BridgeTestUtils {
     Logger.setLevel(NativeLoggerCategory.DgnCore, reset ? LogLevel.Error : LogLevel.Warning);
     Logger.setLevel(NativeLoggerCategory.BeSQLite, reset ? LogLevel.Error : LogLevel.Warning);
     Logger.setLevel(NativeLoggerCategory.Licensing, reset ? LogLevel.Error : LogLevel.Warning);
+    Logger.setLevel("Base2PConnector", reset ? LogLevel.Error : LogLevel.Trace);
+    Logger.setLevel("ToyTile2Pconnector", reset ? LogLevel.Error : LogLevel.Trace);
   }
 
   // Setup typical programmatic log level overrides here

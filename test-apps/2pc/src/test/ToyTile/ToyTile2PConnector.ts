@@ -19,8 +19,10 @@ import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquar
 import { ToyTileGroupModel } from "./ToyTileModels";
 import { ToyTileSchema } from "./ToyTileSchema";
 import * as hash from "object-hash";
+import * as path from "path";
 
-import { startMockTypescriptReader } from "./MockReader";
+import { startMockTypescriptReader } from "./ToyTileReader";
+import { launchPythonSever } from "../../launchServer";
 import { ToyTileLoggerCategory } from "./ToyTileLoggerCategory";
 
 const loggerCategory: string = ToyTileLoggerCategory.Connector;
@@ -50,7 +52,16 @@ export class ToyTile2PConnector extends Base2PConnector {
   }
 
   protected async startServer(addr: string): Promise<void> {
-    return startMockTypescriptReader(addr);
+    if (process.env.toytile_server_address !== undefined)
+      return; // assume that the server is already running
+
+    if (process.env.toytile_inline_typescript_reader !== undefined) {
+      return startMockTypescriptReader(addr); // this is a TypeScript server impl that runs in the same process - it's easier to debug that way.
+    }
+
+    const readerPyFile = path.join(__dirname, "../assets/ToyTileReader.py"); // this is the python server that runs in a separate process
+    await launchPythonSever(readerPyFile, addr);
+    return;
   }
 
   public async importDomainSchema(_requestContext: AuthorizedClientRequestContext | ClientRequestContext): Promise<any> {
@@ -81,7 +92,7 @@ export class ToyTile2PConnector extends Base2PConnector {
         : undefined === physicalModelId
           ? ModelNames.Physical
           : ModelNames.Definition
-      }`;
+        }`;
       throw new IModelError(IModelStatus.BadArg, error, Logger.logError, loggerCategory);
     }
 

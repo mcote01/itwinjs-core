@@ -138,6 +138,7 @@ If the customer thinks the general-purpose streaming Reader interface is inadequ
 ## Implementing a Reader.x program
 
 ### Python
+
 https://grpc.io/docs/languages/python/
 
 Install python.
@@ -145,16 +146,20 @@ Install the grpc tools and runtime support.
 `python -m pip install grpc`
 
 The server-side bindings that you will need have already been generated. They are:
+
 ```
 + src
   + generated
     + test-apps\2pc\src\generated\reader_pb2_grpc.py
     + test-apps\2pc\src\generated\reader_pb2.py
 ```
+
 An empty implementation is here:
-`test-apps\2pc\src\test\MockReader.py`
+`test-apps\2pc\src\test\assets\ToyTileReader.py`
 
 You can start with that and change it to access the external data that you need.
+
+FYI It's much easier to develop a gRPC server when you have a test client making request in the same process. In ToyTileReader.py you will see an example of that.
 
 ## How to Simplify a Connector
 

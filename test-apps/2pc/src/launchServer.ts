@@ -5,6 +5,7 @@
 import { ChildProcess, spawn, SpawnOptions, StdioOptions } from "child_process";
 import * as net from "net";
 import * as path from "path";
+import { Logger } from "@bentley/bentleyjs-core";
 
 // NEEDS WORK: This same logic probably exists in many places -- find and use a standard, shared implementation
 async function getFreeTcpPort(): Promise<number> {
@@ -34,23 +35,47 @@ async function getFreeTcpPort(): Promise<number> {
 }
 
 export async function getServerAddress(): Promise<string> {
-  // IP address that the backend will use to bind the gRPC server.
+  if (process.env.toytile_server_address !== undefined)
+    return process.env.toytile_server_address;
+
   const port = await getFreeTcpPort();
   return `localhost:${port}`;
 }
 
-/** Launches the specified reader.x process and creates a client to communciate with it. */
+/** Launches the specified reader.x process */
 export async function launchServer(exePath: string, args: string[], childEnv?: NodeJS.ProcessEnv): Promise<ChildProcess> {
+  Logger.logInfo("Base2PConnector", `launching server ${exePath} ${args.join(" ")}`);
   const stdio: StdioOptions = ["ipc", "pipe", "pipe"];
   const spawnOptions: SpawnOptions = { stdio, env: childEnv || process.env };
   const childProcess = spawn(exePath, args, spawnOptions);
-  childProcess.stdout.on("data", (data: any) => process.stdout.write(data));
-  childProcess.stderr.on("data", (data: any) => process.stderr.write(data));
+  childProcess.stdout.on("data", (data: any) => {
+    Logger.logInfo("Base2PConnector", `stdout ${data}`);
+    process.stdout.write(data);
+  });
+  childProcess.stderr.on("data", (data: any) => {
+    Logger.logError("Base2PConnector", `stderr ${data}`);
+    process.stderr.write(data);
+  });
+  childProcess.on("close", (code, signal) => {
+    Logger.logInfo("Base2PConnector", `server CLOSED with code=${code} signal=${signal}`);
+  });
+  childProcess.on("exit", (code, signal) => {
+    Logger.logInfo("Base2PConnector", `server exited with code=${code} signal=${signal}`);
+  });
+  childProcess.on("error", (err) => {
+    Logger.logException("Base2PConnector", err);
+  });
+  childProcess.on("message", (message) => {
+    Logger.logInfo("Base2PConnector", `server MESSAGE with message=${message}`);
+  });
+  childProcess.on("disconnect", () => {
+    Logger.logInfo("Base2PConnector", `server DISCONNECT`);
+  });
   return childProcess;
 }
 
 export async function launchPythonSever(readerPyFile: string, rpcServerAddress: string): Promise<ChildProcess> {
-  const generatePbDir = path.join(__dirname, "../../src/generated");
+  const generatePbDir = path.join(__dirname, "generated");
   const childEnv = { ...process.env };
   childEnv.PYTHONPATH = generatePbDir;
   return launchServer("python", [readerPyFile, rpcServerAddress], childEnv);

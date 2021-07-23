@@ -2,22 +2,20 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-import { assert } from "chai";
-import { DbResult } from "@bentley/bentleyjs-core";
 import {
-  ECSqlStatement, IModelDb, IModelHost, IModelHostConfiguration,
+  IModelHost, IModelHostConfiguration,
 } from "@bentley/imodeljs-backend";
 import { KnownTestLocations } from "../KnownTestLocations";
 
-function getCount(imodel: IModelDb, className: string) {
-  let count = 0;
-  imodel.withPreparedStatement(`SELECT count(*) AS [count] FROM ${className}`, (stmt: ECSqlStatement) => {
-    assert.equal(DbResult.BE_SQLITE_ROW, stmt.step());
-    const row = stmt.getRow();
-    count = row.count;
-  });
-  return count;
-}
+// function getCount(imodel: IModelDb, className: string) {
+//   let count = 0;
+//   imodel.withPreparedStatement(`SELECT count(*) AS [count] FROM ${className}`, (stmt: ECSqlStatement) => {
+//     assert.equal(DbResult.BE_SQLITE_ROW, stmt.step());
+//     const row = stmt.getRow();
+//     count = row.count;
+//   });
+//   return count;
+// }
 
 export class StandaloneTestUtils {
 

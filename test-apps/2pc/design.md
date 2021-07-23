@@ -122,7 +122,11 @@ export class ToyTile2PConnector extends Base2PConnector {
       }
     });
 
-    ...
+  private convertTile(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String, tile: any, shape: string) { ... }
+
+  private convertGroupElement(group: any, groupModelId: Id64String): Id64String { ... }
+
+  ...
   }
 
 ```

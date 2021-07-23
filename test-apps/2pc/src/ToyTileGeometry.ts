@@ -8,7 +8,7 @@ import { Categories, GeometryParts, Materials } from "./ToyTileElements";
 import { GeometryPart, IModelDb, RenderMaterialElement, SubCategory } from "@bentley/imodeljs-backend";
 import { ColorByName, ColorDef, GeometryParams, GeometryStreamBuilder, GeometryStreamProps, IModelError } from "@bentley/imodeljs-common";
 import { Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
-import { ToyTileLoggerCategory } from "./ToyTile2PConnector";
+import { ToyTileLoggerCategory } from "./ToyTileLoggerCategory";
 
 const loggerCategory: string = ToyTileLoggerCategory.Geometry;
 

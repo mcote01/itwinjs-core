@@ -21,14 +21,7 @@ import { ToyTileSchema } from "./ToyTileSchema";
 import * as hash from "object-hash";
 
 import { startMockTypescriptReader } from "./test/MockReader";
-
-export enum ToyTileLoggerCategory {
-  /** The logger category used by the following classes:
-   * - [[BridgeSynchronizer]]
-   */
-  Connector = "ToyTile2PConnector.Connector",
-  Geometry = "ToyTile2PConnector.Geometry",
-}
+import { ToyTileLoggerCategory } from "./ToyTileLoggerCategory";
 
 const loggerCategory: string = ToyTileLoggerCategory.Connector;
 
@@ -221,13 +214,13 @@ export class ToyTile2PConnector extends Base2PConnector {
   }
 
   private getColoredPlasticParams(): RenderMaterialElement.Params {
-    const params = new RenderMaterialElement.Params(Palettes.Base2PConnector);
+    const params = new RenderMaterialElement.Params(Palettes.ToyTile);
     params.transmit = 0.5;
     return params;
   }
 
   private getMagnetizedFerriteParams(): RenderMaterialElement.Params {
-    const params = new RenderMaterialElement.Params(Palettes.Base2PConnector);
+    const params = new RenderMaterialElement.Params(Palettes.ToyTile);
     const darkGrey = this.toRgbFactor(ColorByName.darkGrey);
     params.specularColor = darkGrey;
     params.color = darkGrey;
@@ -460,5 +453,5 @@ export enum ModelNames {
 }
 
 enum Palettes {
-  Base2PConnector = "Base2PConnector", // eslint-disable-line @typescript-eslint/no-shadow
+  ToyTile = "ToyTile", // eslint-disable-line @typescript-eslint/no-shadow
 }

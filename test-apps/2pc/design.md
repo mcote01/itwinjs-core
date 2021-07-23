@@ -135,6 +135,27 @@ It can be a simple as that.
 
 If the customer thinks the general-purpose streaming Reader interface is inadequate, the customer _can_ write a complete custom connector with customized gRPC declarations. It's not that hard.
 
+## Implementing a Reader.x program
+
+### Python
+https://grpc.io/docs/languages/python/
+
+Install python.
+Install the grpc tools and runtime support.
+`python -m pip install grpc`
+
+The server-side bindings that you will need have already been generated. They are:
+```
++ src
+  + generated
+    + test-apps\2pc\src\generated\reader_pb2_grpc.py
+    + test-apps\2pc\src\generated\reader_pb2.py
+```
+An empty implementation is here:
+`test-apps\2pc\src\test\MockReader.py`
+
+You can start with that and change it to access the external data that you need.
+
 ## How to Simplify a Connector
 
 Commonly a converter will not know what definitions or even what class definitions are needed until it is in the midst of reading the data. We must accommodate this. We put too much of a burden on the connector when we require it to discover and create all schemas and definitions ahead of time, before converting any data. We must allow the connector to create needed definitions as it goes along _without changing channels_.

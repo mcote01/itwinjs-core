@@ -87,7 +87,7 @@ export class BridgeTestUtils {
     assert.equal(8, getCount(imodel, "ToyTile:SmallSquareTile"));
 
     assert.isTrue(imodel.codeSpecs.hasName(CodeSpecs.Group));
-    const jobSubjectName = `TestiModelBridge:${sourcePath}`;
+    const jobSubjectName = `ToyTile2PConnector:${sourcePath}`;
     const subjectId: Id64String = imodel.elements.queryElementIdByCode(Subject.createCode(imodel, IModel.rootSubjectId, jobSubjectName))!;
     assert.isTrue(Id64.isValidId64(subjectId));
 

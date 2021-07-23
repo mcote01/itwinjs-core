@@ -14,8 +14,8 @@ class ReaderStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ping = channel.unary_unary(
-                '/TwoProcessConnector.Reader/ping',
+        self.initialize = channel.unary_unary(
+                '/TwoProcessConnector.Reader/initialize',
                 request_serializer=reader__pb2.InitializeRequest.SerializeToString,
                 response_deserializer=reader__pb2.InitializeResponse.FromString,
                 )
@@ -34,7 +34,7 @@ class ReaderStub(object):
 class ReaderServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def ping(self, request, context):
+    def initialize(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -47,10 +47,7 @@ class ReaderServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def shutdown(self, request, context):
-        """rpc serverStreamingCall(ClientMessage) returns (stream ServerMessage) {}
-        rpc clientStreamingCall(stream ClientMessage) returns (ServerMessage) {}
-        rpc bidirectionalStreamingCall(stream ClientMessage) returns (stream ServerMessage) {}
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -58,8 +55,8 @@ class ReaderServicer(object):
 
 def add_ReaderServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ping': grpc.unary_unary_rpc_method_handler(
-                    servicer.ping,
+            'initialize': grpc.unary_unary_rpc_method_handler(
+                    servicer.initialize,
                     request_deserializer=reader__pb2.InitializeRequest.FromString,
                     response_serializer=reader__pb2.InitializeResponse.SerializeToString,
             ),
@@ -84,7 +81,7 @@ class Reader(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def ping(request,
+    def initialize(request,
             target,
             options=(),
             channel_credentials=None,
@@ -94,7 +91,7 @@ class Reader(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Reader/ping',
+        return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Reader/initialize',
             reader__pb2.InitializeRequest.SerializeToString,
             reader__pb2.InitializeResponse.FromString,
             options, channel_credentials,

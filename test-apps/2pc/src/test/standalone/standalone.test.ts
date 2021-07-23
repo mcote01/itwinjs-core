@@ -30,8 +30,8 @@ describe.only("standalone", () => {
 
   it.only("snapshot from toytile json data", async () => {
     const bridgeJobDef = new BridgeJobDefArgs();
-    bridgeJobDef.sourcePath = path.join(KnownTestLocations.assetsDir, "Base2PConnector.json");
-    bridgeJobDef.bridgeModule = path.join(__dirname, "../../TestiModelBridge.js");
+    bridgeJobDef.sourcePath = path.join(KnownTestLocations.assetsDir, "toytile.json");
+    bridgeJobDef.bridgeModule = path.join(__dirname, "../../ToyTile2PConnector.js");
     bridgeJobDef.outputDir = KnownTestLocations.outputDir;
     bridgeJobDef.isSnapshot = true;
 
@@ -39,7 +39,7 @@ describe.only("standalone", () => {
     const status = await runner.synchronize();
     expect(status === BentleyStatus.SUCCESS);
 
-    const filePath = path.join(KnownTestLocations.outputDir, "Base2PConnector.bim");
+    const filePath = path.join(KnownTestLocations.outputDir, "toytile.bim");
     const imodel = SnapshotDb.openFile(filePath);
     BridgeTestUtils.verifyIModel(imodel, filePath);
     imodel.close();

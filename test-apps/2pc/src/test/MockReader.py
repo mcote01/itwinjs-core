@@ -20,135 +20,17 @@ import sys
 import grpc
 import reader_pb2
 import reader_pb2_grpc
-import xml.sax
-
-
-# class MovieHandler(xml.sax.ContentHandler):
-#   def __init__(self):
-#     self.CurrentData = ""
-#     self.type = ""
-#     self.format = ""
-#     self.year = ""
-#     self.rating = ""
-#     self.stars = ""
-#     self.description = ""
-
-#   # Call when an element starts
-#   def startElement(self, tag, attributes):
-#     self.CurrentData = tag
-#     if tag == "movie":
-#       print "*****Movie*****"
-#       title = attributes["title"]
-#       print "Title:", title
-
-#   # Call when an elements ends
-#   def endElement(self, tag):
-#     if self.CurrentData == "type":
-#       print "Type:", self.type
-#     elif self.CurrentData == "format":
-#       print "Format:", self.format
-#     elif self.CurrentData == "year":
-#       print "Year:", self.year
-#     elif self.CurrentData == "rating":
-#       print "Rating:", self.rating
-#     elif self.CurrentData == "stars":
-#       print "Stars:", self.stars
-#     elif self.CurrentData == "description":
-#       print "Description:", self.description
-#     self.CurrentData = ""
-
-#    # Call when a character is read
-#   def characters(self, content):
-#     if self.CurrentData == "type":
-#       self.type = content
-#     elif self.CurrentData == "format":
-#       self.format = content
-#     elif self.CurrentData == "year":
-#       self.year = content
-#     elif self.CurrentData == "rating":
-#       self.rating = content
-#     elif self.CurrentData == "stars":
-#       self.stars = content
-#     elif self.CurrentData == "description":
-#       self.description = content
-
-def quote(str):
-  return '"' + str + '"'
-
-class TileParser(xml.sax.handler.ContentHandler):
-    def __init__(self):
-        self._charBuffer = []
-        self._inTile = False
-        self._tiles = []
-
-    def parse(self, f):
-        xml.sax.parse(f, self)
-        return self._result
-
-    # def characters(self, data):
-    #   logging.getLogger('MockReader').debug('ch ' + data)
-
-    def isTile(self, name):
-      return name == 'SmallSquareTile' or name == 'LargeSquareTile' or name == 'IsoscelesTriangleTile' or name == 'EquilateralTriangleTile'
-
-    def startElement(self, name, attrs):
-      if self.isTile(name):
-        self._inTile = True
-      else:
-        if not self._inTile:
-          return
-      self._charBuffer.append(quote(name) + ": {")
-      for key, value in attrs.items():
-        self._charBuffer.append(quote(key) + ':' + quote(value) + ",")
-
-    def endElement(self, name):
-      if not self._inTile:
-        return
-      self._charBuffer.append("},")
-      if self.isTile(name):
-        self._inTile = False
-        tileStr = ''.join(self._charBuffer)
-        self._charBuffer = []
-        self._tiles.append(tileStr)
-
-def doParse(handler):
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    xmlfile = os.path.join(dir_path, "assets", "toytile.xml")
-
-    # create an XMLReader
-    parser = xml.sax.make_parser()
-    # turn off namepsaces
-    parser.setFeature(xml.sax.handler.feature_namespaces, 0)
-    # override the default ContextHandler
-    parser.setContentHandler( handler )
-    parser.parse(xmlfile)
 
 class MockReader(reader_pb2_grpc.ReaderServicer):
 
-    def ping(self, request, context):
-      logging.getLogger('MockReader').debug('ping')
+    def initialize(self, request, context):
+      logging.getLogger('MockReader').debug('initialize ' + request.filename)
       return reader_pb2.InitializeResponse(status='0')
 
     def getData(self, request, context):
       logging.getLogger('MockReader').debug('getData')
-      tileParser = TileParser()
-      doParse(tileParser)
-      # return iter(tileParser._tiles)
-      for tile in tileParser._tiles:
-        yield reader_pb2.GetDataResponse(test_response=tile)
-
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='hello...');
-      # yield reader_pb2.GetDataResponse(test_response='...world');
-      # yield reader_pb2.GetDataResponse(test_response='<done>');
+      yield reader_pb2.GetDataResponse(data='hello...');
+      yield reader_pb2.GetDataResponse(data='...world');
 
     def shutdown(self, request, context):
       logging.getLogger('MockReader').info('shutting down ...')

@@ -13,7 +13,7 @@ import * as modelsModule from "./ToyTileModels";
 export class ToyTileSchema extends Schema {
   public static override get schemaName(): string { return "ToyTile"; }
   public static get schemaFilePath(): string {
-    return path.join(__dirname, "assets/ToyTile.ecschema.xml");
+    return path.join(__dirname, "test/assets/ToyTile.ecschema.xml");
   }
   public static registerSchema() {
     if (this !== Schemas.getRegisteredSchema(this.schemaName)) {

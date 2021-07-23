@@ -140,9 +140,14 @@ export abstract class Base2PConnector extends IModelBridge {
   protected getDocumentStatus(): SynchronizationResults {
     let timeStamp = Date.now();
     assert(this._sourceFilename !== undefined, "we should not be in this method if the source file has not yet been opened");
-    const stat = IModelJsFs.lstatSync(this._sourceFilename); // will throw if this._sourceFilename names a file that does not exist. That would be a bug. Let it abort the job.
-    if (undefined !== stat) {
-      timeStamp = stat.mtimeMs;
+    try {
+      const stat = IModelJsFs.lstatSync(this._sourceFilename); // will throw if this._sourceFilename names a file that does not exist. That would be a bug. Let it abort the job.
+      if (undefined !== stat) {
+        timeStamp = stat.mtimeMs;
+      }
+    } catch (err) {
+      Logger.logException(this.loggerCategory, err);
+      throw err;
     }
 
     const sourceItem: SourceItem = {

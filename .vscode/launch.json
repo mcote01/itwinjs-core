@@ -783,9 +783,9 @@
       "name": "2pc: MockReader.py",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}/test-apps/2pc/src/test/assets/MockReader.py",
+      "program": "${workspaceFolder}/test-apps/2pc/src/test/assets/ToyTileReader.py",
       "console": "integratedTerminal",
-      "args": ["[::]:50051", "d:/github/imodeljs/test-apps/2pc/src/test/assets/toytile.json"],
+      "args": ["[::]:50051", "${workspaceFolder}/test-apps/2pc/src/test/assets/toytile.json"],
       "env": { "PYTHONPATH": "${workspaceFolder}/test-apps/2pc/lib/generated" }
     },
     {

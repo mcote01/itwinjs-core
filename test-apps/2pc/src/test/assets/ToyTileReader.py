@@ -76,7 +76,7 @@ def test_clientCaller(arg):
         stub = reader_pb2_grpc.ReaderStub(channel)
         response = stub.getData(reader_pb2.GetDataRequest(req='you'))
         for x in response:
-          print x
+          print(x)
         response = stub.shutdown(reader_pb2.ShutdownRequest(options='0'))
 
 if __name__ == '__main__':

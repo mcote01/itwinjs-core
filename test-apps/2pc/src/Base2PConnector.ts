@@ -104,7 +104,7 @@ export abstract class Base2PConnector extends IModelBridge {
     const stream = this._readerClient.getData(clientMessage);
     return new Promise((resolve, reject) => {
       stream.on("data", (response: GetDataResponse) => {
-        onSourceData(response.getTestResponse());
+        onSourceData(response.getData());
       });
       stream.on("error", (err: Error) => {
         reject(err);

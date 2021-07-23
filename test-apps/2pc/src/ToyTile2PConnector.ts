@@ -88,7 +88,7 @@ export class ToyTile2PConnector extends Base2PConnector {
         : undefined === physicalModelId
           ? ModelNames.Physical
           : ModelNames.Definition
-        }`;
+      }`;
       throw new IModelError(IModelStatus.BadArg, error, Logger.logError, loggerCategory);
     }
 

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\"\x1e\n\x0cPingResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x1a\n\x0bPingRequest\x12\x0b\n\x03nop\x18\x01 \x01(\t\"%\n\x0cTestResponse\x12\x15\n\rtest_response\x18\x01 \x01(\t\"#\n\x0bTestRequest\x12\x14\n\x0ctest_message\x18\x01 \x01(\t\"\"\n\x10ShutdownResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\"\n\x0fShutdownRequest\x12\x0f\n\x07options\x18\x01 \x01(\t2\x80\x02\n\x06Reader\x12M\n\x04ping\x12 .TwoProcessConnector.InitializeRequest\x1a!.TwoProcessConnector.InitializeResponse\"\x00\x12N\n\x03sww\x12 .TwoProcessConnector.GetDataRequest\x1a!.TwoProcessConnector.GetDataResponse\"\x00\x30\x01\x12W\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a%.TwoProcessConnector.ShutdownResponseb\x06proto3'
+  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\"\x1e\n\x0cPingResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\x1a\n\x0bPingRequest\x12\x0b\n\x03nop\x18\x01 \x01(\t\"%\n\x0cDataResponse\x12\x15\n\rtest_response\x18\x01 \x01(\t\"#\n\x0bTestRequest\x12\x14\n\x0ctest_message\x18\x01 \x01(\t\"\"\n\x10ShutdownResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"\"\n\x0fShutdownRequest\x12\x0f\n\x07options\x18\x01 \x01(\t2\x80\x02\n\x06Reader\x12M\n\x04ping\x12 .TwoProcessConnector.InitializeRequest\x1a!.TwoProcessConnector.InitializeResponse\"\x00\x12N\n\x03sww\x12 .TwoProcessConnector.GetDataRequest\x1a!.TwoProcessConnector.GetDataResponse\"\x00\x30\x01\x12W\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a%.TwoProcessConnector.ShutdownResponseb\x06proto3'
 )
 
 

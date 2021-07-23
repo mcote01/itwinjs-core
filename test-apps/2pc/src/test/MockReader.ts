@@ -22,7 +22,7 @@ function writeTile(call: grpc.ServerWritableStream<GetDataRequest, GetDataRespon
   tile.objType = "Tile";
   tile.tileType = shape;
   const response = new GetDataResponse();
-  response.setTestResponse(JSON.stringify(tile));
+  response.setData(JSON.stringify(tile));
   call.write(response);
 }
 
@@ -42,7 +42,7 @@ const readerServer: IReaderServer = {
       data = JSON.parse(json);
     } catch (err) {
       const response = new GetDataResponse();
-      response.setTestResponse(JSON.stringify({ objType: "Error", details: err.message }));
+      response.setData(JSON.stringify({ objType: "Error", details: err.message }));
       call.write(response);
       call.end();
     }

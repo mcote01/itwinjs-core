@@ -51,8 +51,8 @@ export namespace InitializeRequest {
 }
 
 export class GetDataResponse extends jspb.Message { 
-    getTestResponse(): string;
-    setTestResponse(value: string): GetDataResponse;
+    getData(): string;
+    setData(value: string): GetDataResponse;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetDataResponse.AsObject;
@@ -66,13 +66,13 @@ export class GetDataResponse extends jspb.Message {
 
 export namespace GetDataResponse {
     export type AsObject = {
-        testResponse: string,
+        data: string,
     }
 }
 
 export class GetDataRequest extends jspb.Message { 
-    getTestMessage(): string;
-    setTestMessage(value: string): GetDataRequest;
+    getReq(): string;
+    setReq(value: string): GetDataRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetDataRequest.AsObject;
@@ -86,7 +86,7 @@ export class GetDataRequest extends jspb.Message {
 
 export namespace GetDataRequest {
     export type AsObject = {
-        testMessage: string,
+        req: string,
     }
 }
 

@@ -24,11 +24,110 @@ Converter/Connector-process -->|Elements| iModel;
 
 The two processes communicate using gRPC.
 
-The implementation of "2PConnector" includes both the conversion and update functions. Since the conversion function is logically distinct from the update function, we separate them using subclassing. We can write a general purpose base class that encapsulates the update (and IPC) mechanics. The customer can then write a subclass of that to implement the conversion logic for any given external format.
+The implementation of "2PConnector" includes both the conversion and update functions. Since the conversion function is logically distinct from the update function, we separate them using subclassing.
 
-Obviously, the "Reader.x" program must be specific to each external source. The format-specific connector subclass has to understand the external data that the reader sends over the wired. Nevertheless, the subclass can leave the IPC/gRPC mechanics to the base class. There is generally no need to make the gRPC declarations format-specific. (Or, the customer can write a custom connector with customized gRPC declarations. That's doable, if that's what the customer wants to do.)
+Obviously, both the "Reader.x" program and the format-specific connector subclass must be specific to each external source and format. Nevertheless, the IPC mechanism between them can be general-purpose. Specifically, there is probably no need to make the gRPC declarations format-specific. Bentley provides a general-purpose gRPC interface (Reader) that should be sufficient for most 2-process connectors. Bentley also provides a general-purpose Connector base class (Base2PConnector) that implements the client-side IPC mechanics for this general-purpose interface. Each format-specific Reader.x program just has to implement this simple gRPC interface, and each format-specific connector sub-class has to override a few methods to convert the data.
 
-## Design Restrictions
+The general-purpose gRPC interface is:
+
+```protobuf
+service Reader {
+  rpc initialize(InitializeRequest) returns (InitializeResponse) {}
+  rpc getData(GetDataRequest) returns (stream GetDataResponse) {}
+  rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
+}
+```
+Note that the interface requires the Reader.x program to return the external data as a *stream*.
+It is simple to generate server-side bindings for just about any language.
+
+Here are some highlights of the Bentley general-purpose Base2PConnector. Note how it handles client-side IPC mechanics. It collaborates with the format-specific subclass to start the right server and to process the returned data.
+
+```ts
+import * as grpc from "@grpc/grpc-js";
+import { ReaderClient } from "./generated/reader_grpc_pb";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "./generated/reader_pb";
+...
+
+export abstract class Base2PConnector extends IModelBridge {
+
+  // The base class can implement the client-side stubs. They can communicate with any Reader.x program.
+  protected _readerClient?: ReaderClient;
+  ...
+  private async createClient(address: string): Promise<void> {
+    this._readerClient = new ReaderClient(address, grpc.credentials.createInsecure());
+    ...
+  }
+
+  // COLLABORATE: The sub-class must start the Reader.x program
+  protected abstract startServer(addr: string): Promise<void>;
+
+  // handle the IModelBridge.openSourceData callback by starting the server and connecting to it.
+  public async openSourceData(sourcePath: string): Promise<void> {
+    ...
+    const rpcServerAddress = await getServerAddress();
+    await this.startServer(rpcServerAddress); // COLLABORATE
+    await this.createClient(rpcServerAddress);
+    await this.doInitializeCallWithRetries(this._sourceFilename);
+  }
+
+  ...
+
+  // COLLABORATE: The subclass calls this base-class method from its updateExistingData method to get data from Reader.x
+  protected async processSourceData(onSourceData: any): Promise<void> {
+    assert(this._readerClient !== undefined);
+    const clientMessage = new GetDataRequest();
+    const stream = this._readerClient.getData(clientMessage); // Reader.X *streams* the external data
+    return new Promise((resolve, reject) => {
+      stream.on("data", (response: GetDataResponse) => {
+        onSourceData(response.getTestResponse()); // --> COLLABORATE: Invoke the supplied callback to process the data
+      });
+      stream.on("error", (err: Error) => {
+        reject(err);
+      });
+      stream.on("end", () => {
+        resolve();
+      });
+    });
+  }
+
+  ...
+}
+```
+
+The customer can then write a format-specific subclass of Base2PConnector to implement the conversion logic for any given external format. For example:
+
+```ts
+export class ToyTile2PConnector extends Base2PConnector {
+  ...
+  protected async startServer(addr: string): Promise<void> {
+    const pyScript = path.join(__dirname, "toytile.reader.py");
+    return launchPythonSever(pyScript, addr);
+  }
+
+  public async updateExistingData() {
+    ... // update static stuff if need be
+
+    // COLLABORATE: Base class requests data from reader and calls me back on each item
+    await this.processSourceData((data: string) => {
+      //  `data` is the raw data for an item that was fetched by toytile.reader.py
+      const obj = JSON.parse(data);
+      if (obj.objType === "Group") {
+        this.convertGroupElement(obj, groupModelId);
+      } else {
+        const tileType = obj.tileType;
+        this.convertTile(physicalModelId, definitionModelId, groupModelId, obj, tileType);
+      }
+    });
+
+    ...
+  }
+
+```
+
+It can be a simple as that.
+
+If the customer thinks the general-purpose streaming Reader interface is inadequate, the customer *can* write a complete custom connector with customized gRPC declarations. It's not that hard.
+## How to Simplify a Connector
 
 Commonly a converter will not know what definitions or even what class definitions are needed until it is in the midst of reading the data. We must accommodate this. We put too much of a burden on the connector when we require it to discover and create all schemas and definitions ahead of time, before converting any data. We must allow the connector to create needed definitions as it goes along _without changing channels_.
 

@@ -109,9 +109,6 @@ var ReaderService = exports.ReaderService = {
     responseSerialize: serialize_TwoProcessConnector_ShutdownResponse,
     responseDeserialize: deserialize_TwoProcessConnector_ShutdownResponse,
   },
-  // rpc serverStreamingCall(ClientMessage) returns (stream ServerMessage) {}
-// rpc clientStreamingCall(stream ClientMessage) returns (ServerMessage) {}
-// rpc bidirectionalStreamingCall(stream ClientMessage) returns (stream ServerMessage) {}
 };
 
 exports.ReaderClient = grpc.makeGenericClientConstructor(ReaderService);

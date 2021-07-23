@@ -443,7 +443,7 @@ proto.TwoProcessConnector.GetDataResponse.prototype.toObject = function(opt_incl
  */
 proto.TwoProcessConnector.GetDataResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    testResponse: jspb.Message.getFieldWithDefault(msg, 1, "")
+    data: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -482,7 +482,7 @@ proto.TwoProcessConnector.GetDataResponse.deserializeBinaryFromReader = function
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTestResponse(value);
+      msg.setData(value);
       break;
     default:
       reader.skipField();
@@ -513,7 +513,7 @@ proto.TwoProcessConnector.GetDataResponse.prototype.serializeBinary = function()
  */
 proto.TwoProcessConnector.GetDataResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getTestResponse();
+  f = message.getData();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -524,10 +524,10 @@ proto.TwoProcessConnector.GetDataResponse.serializeBinaryToWriter = function(mes
 
 
 /**
- * optional string test_response = 1;
+ * optional string data = 1;
  * @return {string}
  */
-proto.TwoProcessConnector.GetDataResponse.prototype.getTestResponse = function() {
+proto.TwoProcessConnector.GetDataResponse.prototype.getData = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -536,7 +536,7 @@ proto.TwoProcessConnector.GetDataResponse.prototype.getTestResponse = function()
  * @param {string} value
  * @return {!proto.TwoProcessConnector.GetDataResponse} returns this
  */
-proto.TwoProcessConnector.GetDataResponse.prototype.setTestResponse = function(value) {
+proto.TwoProcessConnector.GetDataResponse.prototype.setData = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -573,7 +573,7 @@ proto.TwoProcessConnector.GetDataRequest.prototype.toObject = function(opt_inclu
  */
 proto.TwoProcessConnector.GetDataRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    testMessage: jspb.Message.getFieldWithDefault(msg, 1, "")
+    req: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -612,7 +612,7 @@ proto.TwoProcessConnector.GetDataRequest.deserializeBinaryFromReader = function(
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTestMessage(value);
+      msg.setReq(value);
       break;
     default:
       reader.skipField();
@@ -643,7 +643,7 @@ proto.TwoProcessConnector.GetDataRequest.prototype.serializeBinary = function() 
  */
 proto.TwoProcessConnector.GetDataRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getTestMessage();
+  f = message.getReq();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -654,10 +654,10 @@ proto.TwoProcessConnector.GetDataRequest.serializeBinaryToWriter = function(mess
 
 
 /**
- * optional string test_message = 1;
+ * optional string req = 1;
  * @return {string}
  */
-proto.TwoProcessConnector.GetDataRequest.prototype.getTestMessage = function() {
+proto.TwoProcessConnector.GetDataRequest.prototype.getReq = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -666,7 +666,7 @@ proto.TwoProcessConnector.GetDataRequest.prototype.getTestMessage = function() {
  * @param {string} value
  * @return {!proto.TwoProcessConnector.GetDataRequest} returns this
  */
-proto.TwoProcessConnector.GetDataRequest.prototype.setTestMessage = function(value) {
+proto.TwoProcessConnector.GetDataRequest.prototype.setReq = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 

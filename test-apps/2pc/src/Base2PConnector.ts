@@ -72,7 +72,7 @@ export abstract class Base2PConnector extends IModelBridge {
 
   protected abstract startServer(addr: string): Promise<void>;
 
-  public async createClient(address: string): Promise<ReaderClient> {
+  private async createClient(address: string): Promise<ReaderClient> {
 
     const client = new ReaderClient(address, grpc.credentials.createInsecure());
 
@@ -98,7 +98,7 @@ export abstract class Base2PConnector extends IModelBridge {
     await this.doInitializeCallWithRetries(this._sourceFilename);
   }
 
-  public async processSourceData(onSourceData: any): Promise<void> {
+  protected async processSourceData(onSourceData: any): Promise<void> {
     assert(this._readerClient !== undefined);
     const clientMessage = new GetDataRequest();
     const stream = this._readerClient.getData(clientMessage);

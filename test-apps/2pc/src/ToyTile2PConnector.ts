@@ -88,7 +88,7 @@ export class ToyTile2PConnector extends Base2PConnector {
         : undefined === physicalModelId
           ? ModelNames.Physical
           : ModelNames.Definition
-      }`;
+        }`;
       throw new IModelError(IModelStatus.BadArg, error, Logger.logError, loggerCategory);
     }
 
@@ -102,7 +102,7 @@ export class ToyTile2PConnector extends Base2PConnector {
       this.insertGeometryParts();
     }
 
-    await this.processSourceData((data: string) => {
+    await this.fetchExternalData((data: string) => {
       const obj = JSON.parse(data);
       if (obj.objType === "Error") {
         throw new Error(obj.details);

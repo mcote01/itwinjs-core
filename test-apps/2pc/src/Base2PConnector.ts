@@ -98,7 +98,7 @@ export abstract class Base2PConnector extends IModelBridge {
     await this.doInitializeCallWithRetries(this._sourceFilename);
   }
 
-  protected async processSourceData(onSourceData: any): Promise<void> {
+  protected async fetchExternalData(onSourceData: any): Promise<void> {
     assert(this._readerClient !== undefined);
     const clientMessage = new GetDataRequest();
     const stream = this._readerClient.getData(clientMessage);

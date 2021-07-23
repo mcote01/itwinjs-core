@@ -3,9 +3,10 @@
 This is a proposal for the design of a two-process (2P) connector.
 
 A connector has 3 things to do:
-1. *Read* data from an external source
-2. *Convert* that data to BIS Elements
-3. *Update* the briefcase with new, changed, and deleted elements
+
+1. _Read_ data from an external source
+2. _Convert_ that data to BIS Elements
+3. _Update_ the briefcase with new, changed, and deleted elements
 
 Reading is concerned only with the mechanics of accessing external data. It must use whatever technology is appropriate for doing that.
 
@@ -37,7 +38,8 @@ service Reader {
   rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
 }
 ```
-Note that the interface requires the Reader.x program to return the external data as a *stream*.
+
+Note that the interface requires the Reader.x program to return the external data as a _stream_.
 It is simple to generate server-side bindings for just about any language.
 
 Here are some highlights of the Bentley general-purpose Base2PConnector. Note how it handles client-side IPC mechanics. It collaborates with the format-specific subclass to start the right server and to process the returned data.
@@ -73,7 +75,7 @@ export abstract class Base2PConnector extends IModelBridge {
   ...
 
   // COLLABORATE: The subclass calls this base-class method from its updateExistingData method to get data from Reader.x
-  protected async processSourceData(onSourceData: any): Promise<void> {
+  protected async fetchExternalData(onSourceData: any): Promise<void> {
     assert(this._readerClient !== undefined);
     const clientMessage = new GetDataRequest();
     const stream = this._readerClient.getData(clientMessage); // Reader.X *streams* the external data
@@ -99,6 +101,7 @@ The customer can then write a format-specific subclass of Base2PConnector to imp
 ```ts
 export class ToyTile2PConnector extends Base2PConnector {
   ...
+  // COLLABORATE: Only I know what reader program to start.
   protected async startServer(addr: string): Promise<void> {
     const pyScript = path.join(__dirname, "toytile.reader.py");
     return launchPythonSever(pyScript, addr);
@@ -107,8 +110,8 @@ export class ToyTile2PConnector extends Base2PConnector {
   public async updateExistingData() {
     ... // update static stuff if need be
 
-    // COLLABORATE: Base class requests data from reader and calls me back on each item
-    await this.processSourceData((data: string) => {
+    // COLLABORATE: Request data from my external reader program and calls me back on each item that it returns
+    await this.fetchExternalData((data: string) => {
       //  `data` is the raw data for an item that was fetched by toytile.reader.py
       const obj = JSON.parse(data);
       if (obj.objType === "Group") {
@@ -126,7 +129,8 @@ export class ToyTile2PConnector extends Base2PConnector {
 
 It can be a simple as that.
 
-If the customer thinks the general-purpose streaming Reader interface is inadequate, the customer *can* write a complete custom connector with customized gRPC declarations. It's not that hard.
+If the customer thinks the general-purpose streaming Reader interface is inadequate, the customer _can_ write a complete custom connector with customized gRPC declarations. It's not that hard.
+
 ## How to Simplify a Connector
 
 Commonly a converter will not know what definitions or even what class definitions are needed until it is in the midst of reading the data. We must accommodate this. We put too much of a burden on the connector when we require it to discover and create all schemas and definitions ahead of time, before converting any data. We must allow the connector to create needed definitions as it goes along _without changing channels_.

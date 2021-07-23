@@ -12,7 +12,6 @@ import { KnownTestLocations } from "../KnownTestLocations";
 import { BridgeJobDefArgs, BridgeRunner } from "@bentley/imodel-bridge";
 
 import * as path from "path";
-import * as fs from "fs";
 import { StandaloneTestUtils } from "./utils";
 
 describe.only("standalone", () => {
@@ -31,7 +30,7 @@ describe.only("standalone", () => {
   it.only("snapshot from toytile json data", async () => {
     const bridgeJobDef = new BridgeJobDefArgs();
     bridgeJobDef.sourcePath = path.join(KnownTestLocations.assetsDir, "toytile.json");
-    bridgeJobDef.bridgeModule = path.join(__dirname, "../../ToyTile2PConnector.js");
+    bridgeJobDef.bridgeModule = path.join(__dirname, "../ToyTile/ToyTile2PConnector.js");
     bridgeJobDef.outputDir = KnownTestLocations.outputDir;
     bridgeJobDef.isSnapshot = true;
 
@@ -39,9 +38,9 @@ describe.only("standalone", () => {
     const status = await runner.synchronize();
     expect(status === BentleyStatus.SUCCESS);
 
-    const filePath = path.join(KnownTestLocations.outputDir, "toytile.bim");
-    const imodel = SnapshotDb.openFile(filePath);
-    BridgeTestUtils.verifyIModel(imodel, filePath);
+    const briefcaseFilePath = path.join(KnownTestLocations.outputDir, "toytile.bim");
+    const imodel = SnapshotDb.openFile(briefcaseFilePath);
+    BridgeTestUtils.verifyIModel(imodel, bridgeJobDef.sourcePath);
     imodel.close();
   });
 });

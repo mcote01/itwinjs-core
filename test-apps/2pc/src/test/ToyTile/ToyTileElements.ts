@@ -10,11 +10,11 @@ import { Point3d, XYZProps, YawPitchRollAngles, YawPitchRollProps } from "@bentl
 import { EquilateralTriangleTileBuilder, IsoscelesTriangleTileBuilder, LargeSquareTileBuilder, RectangleTileBuilder, RightTriangleTileBuilder, SmallSquareTileBuilder, TileBuilder } from "./ToyTileGeometry";
 
 export enum CodeSpecs {
-  Group = "Base2PConnector:Group",
+  Group = "ToyTile:Group",
 }
 
 export enum Categories {
-  Category = "Base2PConnector",
+  Category = "ToyTile",
   Casing = "Casing",
   Magnet = "Magnet",
 }
@@ -58,7 +58,7 @@ export class ToyTilePhysicalElement extends PhysicalElement implements ToyTilePh
     const code = ToyTileGroup.createCode(imodel, physicalModelId, tile.guid);
     const categoryId = SpatialCategory.queryCategoryIdByName(imodel, definitionModelId, Categories.Category);
     if (undefined === categoryId) {
-      throw new IModelError(IModelStatus.BadElement, "Unable to find category id for Base2PConnector category");
+      throw new IModelError(IModelStatus.BadElement, "Unable to find category id for ToyTile category");
     }
     const stream = tileBuilder.createGeometry(categoryId, tile);
     let origin: XYZProps;

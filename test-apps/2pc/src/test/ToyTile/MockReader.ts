@@ -8,8 +8,8 @@
 */
 import * as grpc from "@grpc/grpc-js";
 import * as fs from "fs";
-import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "../generated/reader_pb";
-import { IReaderServer, ReaderService } from "../generated/reader_grpc_pb";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "../../generated/reader_pb";
+import { IReaderServer, ReaderService } from "../../generated/reader_grpc_pb";
 
 let server: grpc.Server;
 
@@ -18,11 +18,18 @@ let server: grpc.Server;
 */
 let sourcePath: string;
 
-function writeTile(call: grpc.ServerWritableStream<GetDataRequest, GetDataResponse>, shape: string, tile: any) {
-  tile.objType = "Tile";
-  tile.tileType = shape;
+function writeTile(call: grpc.ServerWritableStream<GetDataRequest, GetDataResponse>, shape: string, data: any) {
+  data.objType = "Tile";
+  data.tileType = shape;
   const response = new GetDataResponse();
-  response.setData(JSON.stringify(tile));
+  response.setData(JSON.stringify(data));
+  call.write(response);
+}
+
+function writeGroup(call: grpc.ServerWritableStream<GetDataRequest, GetDataResponse>, data: any) {
+  data.objType = "Group";
+  const response = new GetDataResponse();
+  response.setData(JSON.stringify(data));
   call.write(response);
 }
 
@@ -47,8 +54,6 @@ const readerServer: IReaderServer = {
       call.end();
     }
 
-    // deliberately fail to write groups (or maybe return them out of order)
-
     for (const shape of Object.keys(data.Tiles)) {
       if (Array.isArray(data.Tiles[shape])) {
         for (const tile of data.Tiles[shape]) {
@@ -57,6 +62,12 @@ const readerServer: IReaderServer = {
       } else {
         writeTile(call, shape, data.Tiles[shape]);
       }
+    }
+
+    // deliberately return groups after tiles (which reference groups) to show that the client subclass must be ready for this
+
+    for (const i of Object.keys(data.Groups)) {
+      writeGroup(call, data.Groups[i]);
     }
 
     call.end();

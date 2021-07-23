@@ -13,14 +13,14 @@ import {
 import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, Vector3d } from "@bentley/geometry-core";
 import { ItemState, SourceItem, SynchronizationResults } from "@bentley/imodel-bridge";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
-import { Base2PConnector } from "./Base2PConnector";
+import { Base2PConnector } from "../../Base2PConnector";
 import { Categories, CodeSpecs, EquilateralTriangleTile, GeometryParts, IsoscelesTriangleTile, LargeSquareTile, Materials, RectangleTile, RightTriangleTile, SmallSquareTile, ToyTileGroup, ToyTileGroupProps } from "./ToyTileElements";
 import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./ToyTileGeometry";
 import { ToyTileGroupModel } from "./ToyTileModels";
 import { ToyTileSchema } from "./ToyTileSchema";
 import * as hash from "object-hash";
 
-import { startMockTypescriptReader } from "./test/MockReader";
+import { startMockTypescriptReader } from "./MockReader";
 import { ToyTileLoggerCategory } from "./ToyTileLoggerCategory";
 
 const loggerCategory: string = ToyTileLoggerCategory.Connector;
@@ -331,7 +331,7 @@ export class ToyTile2PConnector extends Base2PConnector {
       return results.id;
     }
     if (group.name === undefined) {
-      throw new IModelError(IModelStatus.BadArg, "Name undefined for Base2PConnector group", Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, "Name undefined for ToyTile group", Logger.logError, loggerCategory);
     }
 
     const code = ToyTileGroup.createCode(this.synchronizer.imodel, groupModelId, group.name);
@@ -381,7 +381,7 @@ export class ToyTile2PConnector extends Base2PConnector {
       return;
     }
     if (tile.casingMaterial === undefined) {
-      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for Base2PConnector Tile ${tile.guid}`, Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for ToyTile Tile ${tile.guid}`, Logger.logError, loggerCategory);
     }
 
     let element: PhysicalElement;
@@ -416,14 +416,14 @@ export class ToyTile2PConnector extends Base2PConnector {
     };
     this.synchronizer.updateIModel(sync, physicalModelId, sourceItem, "Tile");
 
-    // Relate to group
+    // Tile <--- group
     if (!tile.hasOwnProperty("Group")) {
       return;
     }
     const groupCode = ToyTileGroup.createCode(this.synchronizer.imodel, groupModelId, tile.Group);
     let groupElement = this.synchronizer.imodel.elements.queryElementIdByCode(groupCode);
     if (groupElement === undefined)
-      groupElement = this.convertGroupElement({ name: "placeholder" }, groupModelId); // create a placeholder. We will update it when we get the group definition (eventually)
+      groupElement = this.convertGroupElement({ name: tile.Group }, groupModelId); // create a placeholder. We have its name (which identifies it uniquely). We will update the rest of its properties when we get the group definition (eventually)
     assert(groupElement !== undefined);
     let doCreate = results.state === ItemState.New;
     if (results.state === ItemState.Changed) {

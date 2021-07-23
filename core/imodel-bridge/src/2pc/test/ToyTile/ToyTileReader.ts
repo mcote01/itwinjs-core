@@ -8,8 +8,8 @@
 */
 import * as grpc from "@grpc/grpc-js";
 import * as fs from "fs";
-import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "../../generated/reader_pb";
-import { IReaderServer, ReaderService } from "../../generated/reader_grpc_pb";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "../../../../../../test-apps/2pc/src/generated/reader_pb";
+import { IReaderServer, ReaderService } from "../../../../../../test-apps/2pc/src/generated/reader_grpc_pb";
 
 let server: grpc.Server;
 

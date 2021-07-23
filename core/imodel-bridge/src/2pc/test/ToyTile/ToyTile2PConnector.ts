@@ -11,7 +11,6 @@ import {
   DefinitionModel, DefinitionPartition, ElementGroupsMembers, GeometryPart, GroupInformationPartition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
 } from "@bentley/imodeljs-backend";
 import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, Vector3d } from "@bentley/geometry-core";
-import { ItemState, SourceItem, SynchronizationResults } from "@bentley/imodel-bridge";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
 import { Base2PConnector } from "../../Base2PConnector";
 import { Categories, CodeSpecs, EquilateralTriangleTile, GeometryParts, IsoscelesTriangleTile, LargeSquareTile, Materials, RectangleTile, RightTriangleTile, SmallSquareTile, ToyTileGroup, ToyTileGroupProps } from "./ToyTileElements";
@@ -24,6 +23,7 @@ import * as path from "path";
 import { startMockTypescriptReader } from "./ToyTileReader";
 import { launchPythonSever } from "../../launchServer";
 import { ToyTileLoggerCategory } from "./ToyTileLoggerCategory";
+import { ItemState, SourceItem, SynchronizationResults } from "../../../Synchronizer";
 
 const loggerCategory: string = ToyTileLoggerCategory.Connector;
 

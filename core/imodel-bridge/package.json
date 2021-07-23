@@ -14,12 +14,18 @@
   },
   "scripts": {
     "compile": "npm run build",
-    "build": "tsc 1>&2 && npm run copy:assets && npm run copy:test-assets",
+    "build": "npm run build:proto && npm run build:proto:ts-lib && tsc 1>&2 && npm run copy:assets && npm run copy:test-assets && npm run copy:2pc-test-assets",
+    "//why protoc?": "https://github.com/protobufjs/protobuf.js/issues/1007#issuecomment-378780758",
+    "//why grpc_js?": "https://github.com/agreatfool/grpc_tools_node_protoc_ts/issues/59",
+    "build:proto": "grpc_tools_node_protoc --grpc_out=grpc_js:src/2pc/generated --js_out=\"import_style=commonjs,binary:src/2pc/generated\" --ts_out=grpc_js:src/2pc/generated -I ./src/2pc/protobuf ./src/2pc/protobuf/*.proto",
+    "build:proto:ts-lib": "rimraf lib\\2pc\\generated && mkdir lib\\2pc\\generated && cpx src/2pc/generated/* lib/2pc/generated",
+    "build:proto:py": "python -m grpc_tools.protoc -I./src/2pc/protobuf --python_out=src/2pc/generated --grpc_python_out=src/2pc/generated src/2pc/protobuf/reader.proto",
     "clean": "rimraf lib .rush/temp/package-deps*.json",
     "docs": "betools docs --tsIndexFile=./imodel-bridge.ts --json=../../generated-docs/core/imodel-bridge/file.json --onlyJson",
     "copy:assets": "cpx \"./src/assets/**/*\" ./lib/assets",
     "copy:config": "internal-tools copy-config",
     "copy:test-assets": "cpx \"./src/test/assets/**/*\" ./lib/test/assets",
+    "copy:2pc-test-assets": "cpx \"./src/2pc/test/assets/**/*\" ./lib/2pc/test/assets",
     "cover": "nyc npm test",
     "cover:integration": "nyc npm run test:integration",
     "extract-api": "betools extract-api --entry=imodel-bridge",
@@ -74,14 +80,19 @@
     "chai": "^4.1.2",
     "cpx": "^1.5.0",
     "eslint": "^7.11.0",
+    "grpc-tools": "^1.11.2",
+    "grpc_tools_node_protoc_ts": "^5.0.1",
     "internal-tools": "workspace:*",
+    "mkdirp": "^1.0.4",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "typescript": "~4.3.0"
   },
   "dependencies": {
-    "object-hash": "^1.3.1"
+    "object-hash": "^1.3.1",
+    "@grpc/grpc-js": "^1.3.4",
+    "google-protobuf": "^3.13.0"
   },
   "nyc": {
     "extends": "./node_modules/@bentley/build-tools/.nycrc"

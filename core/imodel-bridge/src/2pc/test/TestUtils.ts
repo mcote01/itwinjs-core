@@ -12,9 +12,9 @@ import {
 } from "@bentley/imodeljs-backend";
 import { IModel } from "@bentley/imodeljs-common";
 import { ITwinClientLoggerCategory } from "@bentley/itwin-client";
-import { BridgeLoggerCategory } from "@bentley/imodel-bridge";
 import { CodeSpecs, RectangleTile, SmallSquareTile } from "./ToyTile/ToyTileElements";
 import { ModelNames } from "./ToyTile/ToyTile2PConnector";
+import { BridgeLoggerCategory } from "../../BridgeLoggerCategory";
 
 function getCount(imodel: IModelDb, className: string) {
   let count = 0;

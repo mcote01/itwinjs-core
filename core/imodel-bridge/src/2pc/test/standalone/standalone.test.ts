@@ -9,10 +9,10 @@ import { BentleyStatus } from "@bentley/bentleyjs-core";
 
 import { BridgeTestUtils } from "../TestUtils";
 import { KnownTestLocations } from "../KnownTestLocations";
-import { BridgeJobDefArgs, BridgeRunner } from "@bentley/imodel-bridge";
 
 import * as path from "path";
 import { StandaloneTestUtils } from "./utils";
+import { BridgeJobDefArgs, BridgeRunner } from "../../../BridgeRunner";
 
 describe.only("standalone", () => {
   before(async () => {

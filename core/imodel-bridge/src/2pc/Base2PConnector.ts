@@ -12,12 +12,13 @@ import {
   ColorByName, ColorDef, IModelError, RenderMode, ViewFlags,
 } from "@bentley/imodeljs-common";
 import { StandardViewIndex } from "@bentley/geometry-core";
-import { IModelBridge, ItemState, SourceItem, SynchronizationResults } from "@bentley/imodel-bridge";
 
 import * as grpc from "@grpc/grpc-js";
 import { ReaderClient } from "./generated/reader_grpc_pb";
 import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "./generated/reader_pb";
 import { getServerAddress } from "./launchServer";
+import { ItemState, SourceItem, SynchronizationResults } from "../Synchronizer";
+import { IModelBridge } from "../IModelBridge";
 
 export abstract class Base2PConnector extends IModelBridge {
   protected _sourceFilenameState: ItemState = ItemState.New;

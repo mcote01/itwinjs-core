@@ -268,7 +268,7 @@
     },
     {
       "name": "@grpc/grpc-js",
-      "allowedCategories": [ "internal" ]
+      "allowedCategories": [ "backend", "internal" ]
     },
     {
       "name": "@microsoft/api-extractor",
@@ -600,7 +600,7 @@
     },
     {
       "name": "google-protobuf",
-      "allowedCategories": [ "internal" ]
+      "allowedCategories": [ "backend", "internal" ]
     },
     {
       "name": "got",
@@ -608,11 +608,11 @@
     },
     {
       "name": "grpc_tools_node_protoc_ts",
-      "allowedCategories": [ "internal" ]
+      "allowedCategories": [ "backend", "internal" ]
     },
     {
       "name": "grpc-tools",
-      "allowedCategories": [ "internal" ]
+      "allowedCategories": [ "backend", "internal" ]
     },
     {
       "name": "highlight.js",
@@ -809,6 +809,10 @@
     {
       "name": "protobufjs",
       "allowedCategories": [ "internal" ]
+    },
+    {
+      "name": "protoc-gen-ts",
+      "allowedCategories": [ "backend" ]
     },
     {
       "name": "puppeteer",

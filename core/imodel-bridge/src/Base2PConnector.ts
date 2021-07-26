@@ -2,7 +2,7 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-import { assert, ClientRequestContext, IModelStatus, Logger } from "@bentley/bentleyjs-core";
+import { assert, BentleyStatus, ClientRequestContext, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
 import {
   IModelDb, IModelJsFs,
@@ -14,22 +14,27 @@ import {
 
 import * as grpc from "@grpc/grpc-js";
 import { ReaderClient } from "./generated/reader_grpc_pb";
-import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest } from "./generated/reader_pb";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, OnBriefcaseServerAvailableParams, ShutdownRequest } from "./generated/reader_pb";
 import { getServerAddress } from "./launchServer";
 import { ItemState, SourceItem, SynchronizationResults } from "./Synchronizer";
 import { IModelBridge } from "./IModelBridge";
+import { startBriefcaseGrpcServer } from "./BriefcaseServer";
 
 export abstract class Base2PConnector extends IModelBridge {
   protected _sourceFilenameState: ItemState = ItemState.New;
   protected _sourceFilename?: string;
   protected _repositoryLink?: RepositoryLink;
   protected _readerClient?: ReaderClient;
+  private _briefcaseServer?: grpc.Server;
 
-  // #region IPC
+  // #region Reader gRPC
 
-  protected async doShutdownCall(): Promise<void> {
+  // The subclass will launch the Reader gRPC server.
+  // Here is the implementation of the client-side stubs that send requests to it.
+
+  protected async callShutdown(status: number): Promise<void> {
     const shutdownRequest = new ShutdownRequest();
-    shutdownRequest.setOptions("");
+    shutdownRequest.setStatus(status);
     return new Promise((resolve, reject) => {
       assert(this._readerClient !== undefined);
       this._readerClient.shutdown(shutdownRequest, (err, _response) => {
@@ -48,7 +53,7 @@ export abstract class Base2PConnector extends IModelBridge {
     });
   }
 
-  protected async doInitializeCall(filename: string): Promise<InitializeResponse> {
+  protected async callIntialize(filename: string): Promise<InitializeResponse> {
     assert(this._readerClient !== undefined);
     const initializeRequest = new InitializeRequest();
     initializeRequest.setFilename(filename);
@@ -62,12 +67,12 @@ export abstract class Base2PConnector extends IModelBridge {
     });
   }
 
-  protected async doInitializeCallWithRetries(filename: string, retryCount?: number): Promise<InitializeResponse> {
+  protected async callIntializeWithRetries(filename: string, retryCount?: number): Promise<InitializeResponse> {
     if (retryCount === undefined)
       retryCount = 3;
     for (let i = 0; i < retryCount; ++i) {
       try {
-        return await this.doInitializeCall(filename);
+        return await this.callIntialize(filename);
       } catch (err) {
         if (err.code === 12) // this means that the server did not implement the "initialize" method
           throw new Error("the server does not implement the 'initialize' method!");
@@ -76,6 +81,20 @@ export abstract class Base2PConnector extends IModelBridge {
       }
     }
     throw new Error("cannot reach Reader.x process");
+  }
+
+  protected async callOnBriefcaseServerAvailable(addr: string): Promise<void> {
+    assert(this._readerClient !== undefined);
+    const params = new OnBriefcaseServerAvailableParams();
+    params.setAddress(addr);
+    return new Promise((resolve, reject) => {
+      assert(this._readerClient !== undefined);
+      this._readerClient.onBriefcaseServerAvailable(params, (err, _response) => {
+        if (err)
+          reject(err);
+        resolve();
+      });
+    });
   }
 
   protected abstract startServer(addr: string): Promise<void>;
@@ -103,7 +122,7 @@ export abstract class Base2PConnector extends IModelBridge {
     const rpcServerAddress = await getServerAddress();
     await this.startServer(rpcServerAddress);
     this._readerClient = await this.createClient(rpcServerAddress);
-    await this.doInitializeCallWithRetries(this._sourceFilename);
+    await this.callIntializeWithRetries(this._sourceFilename);
   }
 
   protected async fetchExternalData(onSourceData: any): Promise<void> {
@@ -125,12 +144,42 @@ export abstract class Base2PConnector extends IModelBridge {
 
   // #endregion
 
+  // #region Briefase gRPC server
+
+  // I also run a *server* that the reader process can hit with queries on the iModel
+
+  public override async onOpenIModel(): Promise<BentleyStatus> {
+    await this.startBriefcaseGrpcServer();
+    return BentleyStatus.SUCCESS;
+  }
+
+  private async startBriefcaseGrpcServer(): Promise<void> {
+    const myRpcServerAddress = await getServerAddress();
+    this._briefcaseServer = await startBriefcaseGrpcServer(myRpcServerAddress, this.synchronizer.imodel);
+    return this.callOnBriefcaseServerAvailable(myRpcServerAddress);
+  }
+
+  private async shutdownBriefcaseGrpcServer(): Promise<void> {
+    if (this._briefcaseServer === undefined)
+      return;
+    await new Promise<void>((resolve, reject) => {
+      this._briefcaseServer!.tryShutdown((err) => {
+        if (err)
+          reject(err);
+        resolve();
+      });
+    });
+  }
+
+  // #endregion
+
   public initialize(_params: any) {
     // nothing to do here
   }
 
   public override async terminate(): Promise<void> {
-    await this.doShutdownCall();
+    await this.callShutdown(0);
+    await this.shutdownBriefcaseGrpcServer();
   }
 
   public get repositoryLink(): RepositoryLink {

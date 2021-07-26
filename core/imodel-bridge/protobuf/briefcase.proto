@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package TwoProcessConnector;
+
+/* Look up an ExternalSourceAspect in the iModel */
+message ExternalSourceAspectIdentifier {
+  /* An element that scopes the combination of `kind` and `identifier` to uniquely identify the object from the external source. */
+  string scopeId = 1;
+  /* The identifier of the object in the source repository. */
+  string identifier = 2;
+  /* The kind of object within the source repository. */
+  string kind = 3;
+}
+
+message CodeProps {
+  /* Name of CodeSpec */
+  string spec = 1;
+  /* Id64 of element that is the scope of the code */
+  string scope = 2;
+  /* The code value */
+  string value = 3;
+}
+
+/* Options used to specify properties to include or exclude when querying ElementProps with functions like
+ * TryGetElementProps
+ * @public
+ */
+ message ElementLoadOptions {
+  /* If true, include the [[GeometryStreamProps]] for [[GeometricElementProps]] and [[GeometryPartProps]].
+   * Geometry streams can consist of many megabytes worth of JSON, so they are omitted by default.
+   */
+  optional bool wantGeometry = 1;
+  /* When including a geometry stream containing brep entries, whether to return the raw brep data or proxy geometry, false when undefined */
+  /* If true, include [[BRepEntity.DataProps.data]] in the [[GeometryStreamProps]] for [[GeometricElementProps]] and [[GeometryPartProps]].
+   * The data is a potentially large base-64-encoded opaque binary blob that cannot be directly inspected or manipulated on the frontend, so it is omitted by default.
+   */
+  optional bool wantBRepData = 2;
+  /* Options controlling which properties of [[DisplayStyleProps]] to include or exclude. */
+  // displayStyle?: DisplayStyleLoadProps;
+  /* Options controlling which properties of [[RenderTimelineProps]] to include or exclude. */
+  // renderTimeline?: RenderTimelineLoadProps;
+}
+
+/* Look up an element by its internal ID, its federation GUID, its Code, or its ExternalSourceAspect identifier */
+message TryGetElementPropsRequest {
+  /* The element's ID in the iModel. */
+  optional string id64 = 1;
+  /* The element's federation GUID. */
+  optional string federationGuid = 2;
+  /* The element's code */
+  optional CodeProps code = 3;
+  /* The element's ExternalSourceAspect identifier */
+  optional ExternalSourceAspectIdentifier externalSourceAspect = 4;
+
+  /* Options controlling what element properties to return */
+  optional ElementLoadOptions elementLoadOptions = 5;
+}
+
+message GetExternalSourceAspectPropsRequest {
+  /* The ID of the ExternalSourceAspect in the iModel. */
+  string externalSourceAspectId = 1;
+}
+
+message ExternalSourceAspectProps {
+  /* The Id64 of the element in the iModel that scopes the combination of `kind` and `identifier` to uniquely identify the object from the external source. */
+  string scopeId = 1;
+  /* The identifier of the object in the source repository. */
+  string identifier = 2;
+  /* The kind of object within the source repository. */
+  string kind = 3;
+  /* An optional value that is typically a version number or a pseudo version number like last modified time.
+   * It will be used by the synchronization process to detect that a source object is unchanged so that computing a cryptographic hash can be avoided.
+   * If present, this value must be guaranteed to change when any of the source object's content changes.
+   */
+  string version = 4;
+  /* The optional cryptographic hash (any algorithm) of the source object's content. If defined, it must be guaranteed to change when the source object's content changes. */
+  string checksum = 5;
+  /* A place where additional JSON properties can be stored. For example, provenance information or properties relating to the synchronization process. */
+  string jsonProperties = 6;
+  /* The Id64 of the ExternalSource element that is the source of the imported/synchronized object. Should point to an instance of [ExternalSource]($backend). */
+  string source = 7;
+
+  /* The Id64 of the element that has this external source aspect */
+  string element = 8;
+}
+
+message ElementProps {
+  /* The element's properties as a JSON string - TODO map this out in detail */
+  string propsJson = 1;
+}
+
+/* Query an iModel Briefcase
+ */
+service Briefcase {
+  /* Look up an element in the iModel */
+  rpc TryGetElementProps(TryGetElementPropsRequest) returns (ElementProps) {}
+  /* Get the properties of an ExernalSourceAspect */
+  rpc GetExternalSourceAspectProps(ExternalSourceAspectIdentifier) returns (ExternalSourceAspectProps) {}
+}

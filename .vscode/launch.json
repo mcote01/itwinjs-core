@@ -225,7 +225,21 @@
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "test:standalone"],
-      "outFiles": ["${workspaceFolder}/{core,clients}/*/lib/**/*.js"]
+      "outFiles": ["${workspaceFolder}/{core,clients}/*/lib/**/*.js"],
+      "env": {"test2pconnector_inline_typescript_reader": "1"}
+    },
+    {
+      "name": "Test2PReader.py",
+      "presentation": {
+        "group": "0_CoreTests",
+        "order": 5
+      },
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/core/imodel-bridge/src/test/assets/Test2pReader.py",
+      "args": ["localhost:3000", "${workspaceFolder}/core/imodel-bridge/src/test/assets/TestBridge.json"],
+      "env": {"PYTHONPATH": "${workspaceFolder}/core/imodel-bridge/src/generated"},
+      "console": "integratedTerminal"
     },
     {
       "name": "IModelBridgeFwk Tests (integration)",

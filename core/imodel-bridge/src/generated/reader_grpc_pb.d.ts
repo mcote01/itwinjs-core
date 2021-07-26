@@ -14,6 +14,7 @@ import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty
 
 interface IReaderService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
     initialize: IReaderService_Iinitialize;
+    onBriefcaseServerAvailable: IReaderService_IonBriefcaseServerAvailable;
     getData: IReaderService_IgetData;
     shutdown: IReaderService_Ishutdown;
 }
@@ -26,6 +27,15 @@ interface IReaderService_Iinitialize extends grpc.MethodDefinition<reader_pb.Ini
     requestDeserialize: grpc.deserialize<reader_pb.InitializeRequest>;
     responseSerialize: grpc.serialize<reader_pb.InitializeResponse>;
     responseDeserialize: grpc.deserialize<reader_pb.InitializeResponse>;
+}
+interface IReaderService_IonBriefcaseServerAvailable extends grpc.MethodDefinition<reader_pb.OnBriefcaseServerAvailableParams, google_protobuf_empty_pb.Empty> {
+    path: "/TwoProcessConnector.Reader/onBriefcaseServerAvailable";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<reader_pb.OnBriefcaseServerAvailableParams>;
+    requestDeserialize: grpc.deserialize<reader_pb.OnBriefcaseServerAvailableParams>;
+    responseSerialize: grpc.serialize<google_protobuf_empty_pb.Empty>;
+    responseDeserialize: grpc.deserialize<google_protobuf_empty_pb.Empty>;
 }
 interface IReaderService_IgetData extends grpc.MethodDefinition<reader_pb.GetDataRequest, reader_pb.GetDataResponse> {
     path: "/TwoProcessConnector.Reader/getData";
@@ -50,6 +60,7 @@ export const ReaderService: IReaderService;
 
 export interface IReaderServer extends grpc.UntypedServiceImplementation {
     initialize: grpc.handleUnaryCall<reader_pb.InitializeRequest, reader_pb.InitializeResponse>;
+    onBriefcaseServerAvailable: grpc.handleUnaryCall<reader_pb.OnBriefcaseServerAvailableParams, google_protobuf_empty_pb.Empty>;
     getData: grpc.handleServerStreamingCall<reader_pb.GetDataRequest, reader_pb.GetDataResponse>;
     shutdown: grpc.handleUnaryCall<reader_pb.ShutdownRequest, google_protobuf_empty_pb.Empty>;
 }
@@ -58,6 +69,9 @@ export interface IReaderClient {
     initialize(request: reader_pb.InitializeRequest, callback: (error: grpc.ServiceError | null, response: reader_pb.InitializeResponse) => void): grpc.ClientUnaryCall;
     initialize(request: reader_pb.InitializeRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: reader_pb.InitializeResponse) => void): grpc.ClientUnaryCall;
     initialize(request: reader_pb.InitializeRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: reader_pb.InitializeResponse) => void): grpc.ClientUnaryCall;
+    onBriefcaseServerAvailable(request: reader_pb.OnBriefcaseServerAvailableParams, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    onBriefcaseServerAvailable(request: reader_pb.OnBriefcaseServerAvailableParams, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    onBriefcaseServerAvailable(request: reader_pb.OnBriefcaseServerAvailableParams, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
     getData(request: reader_pb.GetDataRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
     getData(request: reader_pb.GetDataRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
     shutdown(request: reader_pb.ShutdownRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
@@ -70,6 +84,9 @@ export class ReaderClient extends grpc.Client implements IReaderClient {
     public initialize(request: reader_pb.InitializeRequest, callback: (error: grpc.ServiceError | null, response: reader_pb.InitializeResponse) => void): grpc.ClientUnaryCall;
     public initialize(request: reader_pb.InitializeRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: reader_pb.InitializeResponse) => void): grpc.ClientUnaryCall;
     public initialize(request: reader_pb.InitializeRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: reader_pb.InitializeResponse) => void): grpc.ClientUnaryCall;
+    public onBriefcaseServerAvailable(request: reader_pb.OnBriefcaseServerAvailableParams, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    public onBriefcaseServerAvailable(request: reader_pb.OnBriefcaseServerAvailableParams, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    public onBriefcaseServerAvailable(request: reader_pb.OnBriefcaseServerAvailableParams, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
     public getData(request: reader_pb.GetDataRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
     public getData(request: reader_pb.GetDataRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<reader_pb.GetDataResponse>;
     public shutdown(request: reader_pb.ShutdownRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;

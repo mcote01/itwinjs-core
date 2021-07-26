@@ -39,7 +39,13 @@ class Test2PReader(reader_pb2_grpc.ReaderServicer):
       logging.getLogger('Test2PReader.py').debug('initialize ' + request.filename)
       global filename
       filename=request.filename
-      return reader_pb2.InitializeResponse(status='0')
+      return reader_pb2.InitializeResponse()
+
+    def onBriefcaseServerAvailable(self, request, context):
+      global briefcaseServerAddr;
+      briefcaseServerAddr = request.address;
+      # TODO: create a briefcase query client
+      return empty_pb2.Empty()
 
     def getData(self, request, context):
       logging.getLogger('Test2PReader.py').debug('getData')
@@ -73,12 +79,12 @@ def serve(addr):
 # Exercise the server calls.
 # This is easier to debug than having the client be in a separate executable.
 def test_clientCaller(arg):
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel(addr) as channel:
         stub = reader_pb2_grpc.ReaderStub(channel)
         response = stub.getData(reader_pb2.GetDataRequest(req='you'))
         for x in response:
           print(x)
-        response = stub.shutdown(reader_pb2.ShutdownRequest(options='0'))
+        response = stub.shutdown(reader_pb2.ShutdownRequest(status=0))
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
@@ -86,6 +92,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) < 2:
       raise SyntaxError('syntax: Test2PReader.py URL [self-test-file]')
+    global addr
     addr = sys.argv[1]
     logging.getLogger('Test2PReader.py').info('listening on ' + addr)
 

@@ -8,7 +8,7 @@
 import * as grpc from "@grpc/grpc-js";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as fs from "fs";
-import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest } from "../../generated/reader_pb";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, OnBriefcaseServerAvailableParams, ShutdownRequest } from "../../generated/reader_pb";
 import { IReaderServer, ReaderService } from "../../generated/reader_grpc_pb";
 
 let server: grpc.Server;
@@ -37,8 +37,13 @@ const readerServer: IReaderServer = {
   initialize(call: grpc.ServerUnaryCall<InitializeRequest, InitializeResponse>, callback: grpc.sendUnaryData<InitializeResponse>) {
     sourcePath = call.request.getFilename();
     const response = new InitializeResponse();
-    response.setStatus("0");
     callback(null, response);
+  },
+
+  onBriefcaseServerAvailable(call: grpc.ServerUnaryCall<OnBriefcaseServerAvailableParams, google_protobuf_empty_pb.Empty>, callback: grpc.sendUnaryData<google_protobuf_empty_pb.Empty>) {
+    const bcserveraddr = call.request.getAddress();
+    // TODO: Create briefcase client
+    callback(null, new google_protobuf_empty_pb.Empty());
   },
 
   getData(call: grpc.ServerWritableStream<GetDataRequest, GetDataResponse>) {

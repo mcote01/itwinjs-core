@@ -20,43 +20,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\x1a\x1bgoogle/protobuf/empty.proto\"$\n\x12InitializeResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"%\n\x11InitializeRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"\x1f\n\x0fGetDataResponse\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\x1d\n\x0eGetDataRequest\x12\x0b\n\x03req\x18\x01 \x01(\t\"\"\n\x0fShutdownRequest\x12\x0f\n\x07options\x18\x01 \x01(\t2\x8d\x02\n\x06Reader\x12_\n\ninitialize\x12&.TwoProcessConnector.InitializeRequest\x1a\'.TwoProcessConnector.InitializeResponse\"\x00\x12X\n\x07getData\x12#.TwoProcessConnector.GetDataRequest\x1a$.TwoProcessConnector.GetDataResponse\"\x00\x30\x01\x12H\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a\x16.google.protobuf.Emptyb\x06proto3'
+  serialized_pb=b'\n\x0creader.proto\x12\x13TwoProcessConnector\x1a\x1bgoogle/protobuf/empty.proto\"%\n\x11InitializeRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"B\n\x12InitializeResponse\x12\x1a\n\rfailureReason\x18\x01 \x01(\tH\x00\x88\x01\x01\x42\x10\n\x0e_failureReason\"\x1d\n\x0eGetDataRequest\x12\x0b\n\x03req\x18\x01 \x01(\t\"\x1f\n\x0fGetDataResponse\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"3\n OnBriefcaseServerAvailableParams\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\"!\n\x0fShutdownRequest\x12\x0e\n\x06status\x18\x01 \x01(\x05\x32\xfa\x02\n\x06Reader\x12_\n\ninitialize\x12&.TwoProcessConnector.InitializeRequest\x1a\'.TwoProcessConnector.InitializeResponse\"\x00\x12k\n\x1aonBriefcaseServerAvailable\x12\x35.TwoProcessConnector.OnBriefcaseServerAvailableParams\x1a\x16.google.protobuf.Empty\x12X\n\x07getData\x12#.TwoProcessConnector.GetDataRequest\x1a$.TwoProcessConnector.GetDataResponse\"\x00\x30\x01\x12H\n\x08shutdown\x12$.TwoProcessConnector.ShutdownRequest\x1a\x16.google.protobuf.Emptyb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
 
-
-
-_INITIALIZERESPONSE = _descriptor.Descriptor(
-  name='InitializeResponse',
-  full_name='TwoProcessConnector.InitializeResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='status', full_name='TwoProcessConnector.InitializeResponse.status', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=66,
-  serialized_end=102,
-)
 
 
 _INITIALIZEREQUEST = _descriptor.Descriptor(
@@ -86,21 +54,21 @@ _INITIALIZEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=104,
-  serialized_end=141,
+  serialized_start=66,
+  serialized_end=103,
 )
 
 
-_GETDATARESPONSE = _descriptor.Descriptor(
-  name='GetDataResponse',
-  full_name='TwoProcessConnector.GetDataResponse',
+_INITIALIZERESPONSE = _descriptor.Descriptor(
+  name='InitializeResponse',
+  full_name='TwoProcessConnector.InitializeResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='data', full_name='TwoProcessConnector.GetDataResponse.data', index=0,
+      name='failureReason', full_name='TwoProcessConnector.InitializeResponse.failureReason', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -117,9 +85,14 @@ _GETDATARESPONSE = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
+    _descriptor.OneofDescriptor(
+      name='_failureReason', full_name='TwoProcessConnector.InitializeResponse._failureReason',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
   ],
-  serialized_start=143,
-  serialized_end=174,
+  serialized_start=105,
+  serialized_end=171,
 )
 
 
@@ -150,21 +123,21 @@ _GETDATAREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=176,
-  serialized_end=205,
+  serialized_start=173,
+  serialized_end=202,
 )
 
 
-_SHUTDOWNREQUEST = _descriptor.Descriptor(
-  name='ShutdownRequest',
-  full_name='TwoProcessConnector.ShutdownRequest',
+_GETDATARESPONSE = _descriptor.Descriptor(
+  name='GetDataResponse',
+  full_name='TwoProcessConnector.GetDataResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='options', full_name='TwoProcessConnector.ShutdownRequest.options', index=0,
+      name='data', full_name='TwoProcessConnector.GetDataResponse.data', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -182,23 +155,84 @@ _SHUTDOWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=207,
-  serialized_end=241,
+  serialized_start=204,
+  serialized_end=235,
 )
 
-DESCRIPTOR.message_types_by_name['InitializeResponse'] = _INITIALIZERESPONSE
+
+_ONBRIEFCASESERVERAVAILABLEPARAMS = _descriptor.Descriptor(
+  name='OnBriefcaseServerAvailableParams',
+  full_name='TwoProcessConnector.OnBriefcaseServerAvailableParams',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='address', full_name='TwoProcessConnector.OnBriefcaseServerAvailableParams.address', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=237,
+  serialized_end=288,
+)
+
+
+_SHUTDOWNREQUEST = _descriptor.Descriptor(
+  name='ShutdownRequest',
+  full_name='TwoProcessConnector.ShutdownRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='TwoProcessConnector.ShutdownRequest.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=290,
+  serialized_end=323,
+)
+
+_INITIALIZERESPONSE.oneofs_by_name['_failureReason'].fields.append(
+  _INITIALIZERESPONSE.fields_by_name['failureReason'])
+_INITIALIZERESPONSE.fields_by_name['failureReason'].containing_oneof = _INITIALIZERESPONSE.oneofs_by_name['_failureReason']
 DESCRIPTOR.message_types_by_name['InitializeRequest'] = _INITIALIZEREQUEST
-DESCRIPTOR.message_types_by_name['GetDataResponse'] = _GETDATARESPONSE
+DESCRIPTOR.message_types_by_name['InitializeResponse'] = _INITIALIZERESPONSE
 DESCRIPTOR.message_types_by_name['GetDataRequest'] = _GETDATAREQUEST
+DESCRIPTOR.message_types_by_name['GetDataResponse'] = _GETDATARESPONSE
+DESCRIPTOR.message_types_by_name['OnBriefcaseServerAvailableParams'] = _ONBRIEFCASESERVERAVAILABLEPARAMS
 DESCRIPTOR.message_types_by_name['ShutdownRequest'] = _SHUTDOWNREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-InitializeResponse = _reflection.GeneratedProtocolMessageType('InitializeResponse', (_message.Message,), {
-  'DESCRIPTOR' : _INITIALIZERESPONSE,
-  '__module__' : 'reader_pb2'
-  # @@protoc_insertion_point(class_scope:TwoProcessConnector.InitializeResponse)
-  })
-_sym_db.RegisterMessage(InitializeResponse)
 
 InitializeRequest = _reflection.GeneratedProtocolMessageType('InitializeRequest', (_message.Message,), {
   'DESCRIPTOR' : _INITIALIZEREQUEST,
@@ -207,12 +241,12 @@ InitializeRequest = _reflection.GeneratedProtocolMessageType('InitializeRequest'
   })
 _sym_db.RegisterMessage(InitializeRequest)
 
-GetDataResponse = _reflection.GeneratedProtocolMessageType('GetDataResponse', (_message.Message,), {
-  'DESCRIPTOR' : _GETDATARESPONSE,
+InitializeResponse = _reflection.GeneratedProtocolMessageType('InitializeResponse', (_message.Message,), {
+  'DESCRIPTOR' : _INITIALIZERESPONSE,
   '__module__' : 'reader_pb2'
-  # @@protoc_insertion_point(class_scope:TwoProcessConnector.GetDataResponse)
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.InitializeResponse)
   })
-_sym_db.RegisterMessage(GetDataResponse)
+_sym_db.RegisterMessage(InitializeResponse)
 
 GetDataRequest = _reflection.GeneratedProtocolMessageType('GetDataRequest', (_message.Message,), {
   'DESCRIPTOR' : _GETDATAREQUEST,
@@ -220,6 +254,20 @@ GetDataRequest = _reflection.GeneratedProtocolMessageType('GetDataRequest', (_me
   # @@protoc_insertion_point(class_scope:TwoProcessConnector.GetDataRequest)
   })
 _sym_db.RegisterMessage(GetDataRequest)
+
+GetDataResponse = _reflection.GeneratedProtocolMessageType('GetDataResponse', (_message.Message,), {
+  'DESCRIPTOR' : _GETDATARESPONSE,
+  '__module__' : 'reader_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.GetDataResponse)
+  })
+_sym_db.RegisterMessage(GetDataResponse)
+
+OnBriefcaseServerAvailableParams = _reflection.GeneratedProtocolMessageType('OnBriefcaseServerAvailableParams', (_message.Message,), {
+  'DESCRIPTOR' : _ONBRIEFCASESERVERAVAILABLEPARAMS,
+  '__module__' : 'reader_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.OnBriefcaseServerAvailableParams)
+  })
+_sym_db.RegisterMessage(OnBriefcaseServerAvailableParams)
 
 ShutdownRequest = _reflection.GeneratedProtocolMessageType('ShutdownRequest', (_message.Message,), {
   'DESCRIPTOR' : _SHUTDOWNREQUEST,
@@ -237,8 +285,8 @@ _READER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=244,
-  serialized_end=513,
+  serialized_start=326,
+  serialized_end=704,
   methods=[
   _descriptor.MethodDescriptor(
     name='initialize',
@@ -251,9 +299,19 @@ _READER = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='onBriefcaseServerAvailable',
+    full_name='TwoProcessConnector.Reader.onBriefcaseServerAvailable',
+    index=1,
+    containing_service=None,
+    input_type=_ONBRIEFCASESERVERAVAILABLEPARAMS,
+    output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='getData',
     full_name='TwoProcessConnector.Reader.getData',
-    index=1,
+    index=2,
     containing_service=None,
     input_type=_GETDATAREQUEST,
     output_type=_GETDATARESPONSE,
@@ -263,7 +321,7 @@ _READER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='shutdown',
     full_name='TwoProcessConnector.Reader.shutdown',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_SHUTDOWNREQUEST,
     output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,

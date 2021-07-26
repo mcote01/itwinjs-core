@@ -11,26 +11,6 @@
 import * as jspb from "google-protobuf";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
-export class InitializeResponse extends jspb.Message { 
-    getStatus(): string;
-    setStatus(value: string): InitializeResponse;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): InitializeResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: InitializeResponse): InitializeResponse.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: InitializeResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): InitializeResponse;
-    static deserializeBinaryFromReader(message: InitializeResponse, reader: jspb.BinaryReader): InitializeResponse;
-}
-
-export namespace InitializeResponse {
-    export type AsObject = {
-        status: string,
-    }
-}
-
 export class InitializeRequest extends jspb.Message { 
     getFilename(): string;
     setFilename(value: string): InitializeRequest;
@@ -51,23 +31,26 @@ export namespace InitializeRequest {
     }
 }
 
-export class GetDataResponse extends jspb.Message { 
-    getData(): string;
-    setData(value: string): GetDataResponse;
+export class InitializeResponse extends jspb.Message { 
+
+    hasFailurereason(): boolean;
+    clearFailurereason(): void;
+    getFailurereason(): string | undefined;
+    setFailurereason(value: string): InitializeResponse;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): GetDataResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: GetDataResponse): GetDataResponse.AsObject;
+    toObject(includeInstance?: boolean): InitializeResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: InitializeResponse): InitializeResponse.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: GetDataResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): GetDataResponse;
-    static deserializeBinaryFromReader(message: GetDataResponse, reader: jspb.BinaryReader): GetDataResponse;
+    static serializeBinaryToWriter(message: InitializeResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): InitializeResponse;
+    static deserializeBinaryFromReader(message: InitializeResponse, reader: jspb.BinaryReader): InitializeResponse;
 }
 
-export namespace GetDataResponse {
+export namespace InitializeResponse {
     export type AsObject = {
-        data: string,
+        failurereason?: string,
     }
 }
 
@@ -91,9 +74,49 @@ export namespace GetDataRequest {
     }
 }
 
+export class GetDataResponse extends jspb.Message { 
+    getData(): string;
+    setData(value: string): GetDataResponse;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): GetDataResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: GetDataResponse): GetDataResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: GetDataResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetDataResponse;
+    static deserializeBinaryFromReader(message: GetDataResponse, reader: jspb.BinaryReader): GetDataResponse;
+}
+
+export namespace GetDataResponse {
+    export type AsObject = {
+        data: string,
+    }
+}
+
+export class OnBriefcaseServerAvailableParams extends jspb.Message { 
+    getAddress(): string;
+    setAddress(value: string): OnBriefcaseServerAvailableParams;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): OnBriefcaseServerAvailableParams.AsObject;
+    static toObject(includeInstance: boolean, msg: OnBriefcaseServerAvailableParams): OnBriefcaseServerAvailableParams.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: OnBriefcaseServerAvailableParams, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): OnBriefcaseServerAvailableParams;
+    static deserializeBinaryFromReader(message: OnBriefcaseServerAvailableParams, reader: jspb.BinaryReader): OnBriefcaseServerAvailableParams;
+}
+
+export namespace OnBriefcaseServerAvailableParams {
+    export type AsObject = {
+        address: string,
+    }
+}
+
 export class ShutdownRequest extends jspb.Message { 
-    getOptions(): string;
-    setOptions(value: string): ShutdownRequest;
+    getStatus(): number;
+    setStatus(value: number): ShutdownRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ShutdownRequest.AsObject;
@@ -107,6 +130,6 @@ export class ShutdownRequest extends jspb.Message {
 
 export namespace ShutdownRequest {
     export type AsObject = {
-        options: string,
+        status: number,
     }
 }

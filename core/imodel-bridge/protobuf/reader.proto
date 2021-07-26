@@ -4,28 +4,48 @@ import "google/protobuf/empty.proto";
 
 package TwoProcessConnector;
 
-message InitializeResponse {
-  string status = 1;
-}
-
+/* Input to the initialize request */
 message InitializeRequest {
+  /* The name of the input file to the connector */
   string filename = 1;
 }
 
+/* Returned by the initialize request handler */
+message InitializeResponse {
+  /* If the Reader cannot start up, return a human-readable explanation here */
+  optional string failureReason = 1;
+}
+
+/* Input to the getData request */
+message GetDataRequest {
+  /* future use */
+  string req = 1;
+}
+
+/* A single item in the stream of objects returned by getData */
 message GetDataResponse {
   string data = 1;
 }
 
-message GetDataRequest {
-  string req = 1;
+/* Input to the onBriefcaseServerAvailable request */
+message OnBriefcaseServerAvailableParams {
+  string address = 1;
 }
 
+/* Input to the shutdown request */
 message ShutdownRequest {
-  string options = 1;
+  /* if 0, the client has finished sucessfully; otherwise, the client is shutting down due to an error. */
+  int32 status = 1;
 }
 
+/* Service that must be implemented by an external source reader */
 service Reader {
+  /* Tell the reader to initialize. The input file to the connector is passed as a parameter, in case the Reader wants to open that or use it in some way. */
   rpc initialize(InitializeRequest) returns (InitializeResponse) {}
+  /* Inform the Reader that a server is now available to take requests to query the iModel */
+  rpc onBriefcaseServerAvailable(OnBriefcaseServerAvailableParams) returns (google.protobuf.Empty);
+  /* The Reader should send the data in the external source to the client (in a stream) */
   rpc getData(GetDataRequest) returns (stream GetDataResponse) {}
+  /* The Reader should shut down */
   rpc shutdown(ShutdownRequest) returns (google.protobuf.Empty);
 }

@@ -53,6 +53,17 @@ function deserialize_TwoProcessConnector_InitializeResponse(buffer_arg) {
   return reader_pb.InitializeResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_TwoProcessConnector_OnBriefcaseServerAvailableParams(arg) {
+  if (!(arg instanceof reader_pb.OnBriefcaseServerAvailableParams)) {
+    throw new Error('Expected argument of type TwoProcessConnector.OnBriefcaseServerAvailableParams');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_TwoProcessConnector_OnBriefcaseServerAvailableParams(buffer_arg) {
+  return reader_pb.OnBriefcaseServerAvailableParams.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_TwoProcessConnector_ShutdownRequest(arg) {
   if (!(arg instanceof reader_pb.ShutdownRequest)) {
     throw new Error('Expected argument of type TwoProcessConnector.ShutdownRequest');
@@ -76,8 +87,10 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 }
 
 
+// Service that must be implemented by an external source reader 
 var ReaderService = exports.ReaderService = {
-  initialize: {
+  // Tell the reader to initialize. The input file to the connector is passed as a parameter, in case the Reader wants to open that or use it in some way. 
+initialize: {
     path: '/TwoProcessConnector.Reader/initialize',
     requestStream: false,
     responseStream: false,
@@ -88,7 +101,20 @@ var ReaderService = exports.ReaderService = {
     responseSerialize: serialize_TwoProcessConnector_InitializeResponse,
     responseDeserialize: deserialize_TwoProcessConnector_InitializeResponse,
   },
-  getData: {
+  // Inform the Reader that a server is now available to take requests to query the iModel 
+onBriefcaseServerAvailable: {
+    path: '/TwoProcessConnector.Reader/onBriefcaseServerAvailable',
+    requestStream: false,
+    responseStream: false,
+    requestType: reader_pb.OnBriefcaseServerAvailableParams,
+    responseType: google_protobuf_empty_pb.Empty,
+    requestSerialize: serialize_TwoProcessConnector_OnBriefcaseServerAvailableParams,
+    requestDeserialize: deserialize_TwoProcessConnector_OnBriefcaseServerAvailableParams,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
+  },
+  // The Reader should send the data in the external source to the client (in a stream) 
+getData: {
     path: '/TwoProcessConnector.Reader/getData',
     requestStream: false,
     responseStream: true,
@@ -99,7 +125,8 @@ var ReaderService = exports.ReaderService = {
     responseSerialize: serialize_TwoProcessConnector_GetDataResponse,
     responseDeserialize: deserialize_TwoProcessConnector_GetDataResponse,
   },
-  shutdown: {
+  // The Reader should shut down 
+shutdown: {
     path: '/TwoProcessConnector.Reader/shutdown',
     requestStream: false,
     responseStream: false,

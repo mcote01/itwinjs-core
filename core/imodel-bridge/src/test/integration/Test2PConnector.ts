@@ -2,31 +2,35 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
+import { assert, ClientRequestContext, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
+import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
+import {
+  CategorySelector, DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, IModelDb, IModelJsFs,
+  ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, RepositoryLink, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
+} from "@bentley/imodeljs-backend";
 import {
   CodeScopeSpec, CodeSpec, ColorByName, ColorDef, ColorDefProps, GeometryPartProps, GeometryStreamBuilder, IModel, IModelError, InformationPartitionElementProps,
-  RenderMode,
-  SubCategoryAppearance,
-  ViewFlags,
+  RenderMode, SubCategoryAppearance, ViewFlags,
 } from "@bentley/imodeljs-common";
-import { assert, ClientRequestContext, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
-import {
-  CategorySelector,
-  DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
-} from "@bentley/imodeljs-backend";
 import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, StandardViewIndex, Vector3d } from "@bentley/geometry-core";
-import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
-import { Base2PConnector } from "../../Base2PConnector";
-import * as hash from "object-hash";
-import * as path from "path";
 
-import { startMockTypescriptReader } from "./Test2PReader";
-import { launchPythonSever } from "../../launchServer";
 import { ItemState, SourceItem, SynchronizationResults } from "../../Synchronizer";
-import { Categories, CodeSpecs, Materials, GeometryParts, SmallSquareTile, LargeSquareTile, IsoscelesTriangleTile, EquilateralTriangleTile, RightTriangleTile, RectangleTile, TestBridgeGroup, TestBridgeGroupProps } from "./TestBridgeElements";
-import { SmallSquareCasing, LargeSquareCasing, RectangleCasing, EquilateralTriangleCasing, IsoscelesTriangleCasing, RightTriangleCasing, RectangularMagnetCasing, QuadCasing, TriangleCasing, Casings } from "./TestBridgeGeometry";
+import { IModelBridge } from "../../IModelBridge";
 import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
 import { TestBridgeSchema } from "./TestBridgeSchema";
 import { TestBridgeGroupModel } from "./TestBridgeModels";
+import {
+  Categories, CodeSpecs, EquilateralTriangleTile, GeometryParts, IsoscelesTriangleTile, LargeSquareTile, Materials, RectangleTile, RightTriangleTile, SmallSquareTile,
+  TestBridgeGroup, TestBridgeGroupProps,
+} from "./TestBridgeElements";
+import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./TestBridgeGeometry";
+
+import * as hash from "object-hash";
+import * as fs from "fs";
+
+import { Base2PConnector } from "../../Base2PConnector";
+import { startMockTypescriptReader } from "./Test2PReader";
+import { launchPythonSever } from "../../launchServer";
 
 const loggerCategory: string = TestBridgeLoggerCategory.Bridge;
 
@@ -35,16 +39,6 @@ export class Test2PConnector extends Base2PConnector {
   protected get loggerCategory(): string { return loggerCategory; }
 
   protected get defaultCategory(): string { return Categories.Category; }
-
-  public getApplicationId(): string {
-    return "2661";
-  }
-  public getApplicationVersion(): string {
-    return "1.0.0.0";
-  }
-  public getBridgeName(): string {
-    return "TestiModelBridge"; // (Use the same name as the existing TestiModelBridge, since we will be using the same utility functions to check the results)
-  }
 
   public async initializeJob(): Promise<void> {
     if (ItemState.New === this._sourceFilenameState) {
@@ -90,12 +84,7 @@ export class Test2PConnector extends Base2PConnector {
     const definitionModelId = this.queryDefinitionModel();
 
     if (undefined === groupModelId || undefined === physicalModelId || undefined === definitionModelId) {
-      const error = `Unable to find model Id for ${undefined === groupModelId
-        ? ModelNames.Group
-        : undefined === physicalModelId
-          ? ModelNames.Physical
-          : ModelNames.Definition
-        }`;
+      const error = `Unable to find model Id for ${undefined === groupModelId ? ModelNames.Group : (undefined === physicalModelId ? ModelNames.Physical : ModelNames.Definition)}`;
       throw new IModelError(IModelStatus.BadArg, error, Logger.logError, loggerCategory);
     }
 
@@ -123,6 +112,17 @@ export class Test2PConnector extends Base2PConnector {
 
     this.synchronizer.imodel.views.setDefaultViewId(this.createView(definitionModelId, physicalModelId, "TestBridgeView"));
   }
+  
+public getApplicationId(): string {
+    return "2661";
+  }
+  public getApplicationVersion(): string {
+    return "1.0.0.0";
+  }
+  public getBridgeName(): string {
+    return "TestiModelBridge"; // (Use the same name as the existing TestiModelBridge, since we will be using the same utility functions to check the results)
+  }
+
 
   private createGroupModel(): Id64String {
     const existingId = this.queryGroupModel();
@@ -365,24 +365,6 @@ export class Test2PConnector extends Base2PConnector {
     return sync.element.id;
   }
 
-  // private convertGroupElements(groupModelId: Id64String) {
-  //   for (const group of this._data.Groups) {
-  //     this.convertGroupElement(group, groupModelId);
-  //   }
-  // }
-
-  // private convertPhysicalElements(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String) {
-  //   for (const shape of Object.keys(this._data.Tiles)) {
-  //     if (Array.isArray(this._data.Tiles[shape])) {
-  //       for (const tile of this._data.Tiles[shape]) {
-  //         this.convertTile(physicalModelId, definitionModelId, groupModelId, tile, shape);
-  //       }
-  //     } else {
-  //       this.convertTile(physicalModelId, definitionModelId, groupModelId, this._data.Tiles[shape], shape);
-  //     }
-  //   }
-  // }
-
   private convertTile(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String, tile: any, shape: string) {
     const str = JSON.stringify(tile);
     const sourceItem: SourceItem = {
@@ -436,8 +418,11 @@ export class Test2PConnector extends Base2PConnector {
     }
     const groupCode = TestBridgeGroup.createCode(this.synchronizer.imodel, groupModelId, tile.Group);
     let groupElement = this.synchronizer.imodel.elements.queryElementIdByCode(groupCode);
-    if (groupElement === undefined)
-      groupElement = this.convertGroupElement({ name: tile.Group }, groupModelId); // create a placeholder. We have its name (which identifies it uniquely). We will update the rest of its properties when we get the group definition (eventually)
+    if (groupElement === undefined) {
+      // handle out-of-order data fetch from server
+      // create a placeholder. We have its name (which identifies it uniquely). We will update the rest of its properties when we get the group definition (eventually)
+      groupElement = this.convertGroupElement({ name: tile.Group }, groupModelId);
+    }
     assert(groupElement !== undefined);
     let doCreate = results.state === ItemState.New;
     if (results.state === ItemState.Changed) {

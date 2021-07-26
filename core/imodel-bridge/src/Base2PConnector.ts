@@ -41,7 +41,7 @@ export abstract class Base2PConnector extends IModelBridge {
         // tries to read the response (despite the fact that it's declared as empty!) and finds that the pipe has been closed.
         // Well, the server is gone, and that's what we want, so treat this as not an error.
         if (err && err.message !== "13 INTERNAL: Received RST_STREAM with code 0") {
-          Logger.logException("Base2PConnector", err);
+          Logger.logException(this.loggerCategory, err);
           reject(err);
         }
         resolve();

@@ -35,8 +35,8 @@ async function getFreeTcpPort(): Promise<number> {
 }
 
 export async function getServerAddress(): Promise<string> {
-  if (process.env.toytile_server_address !== undefined)
-    return process.env.toytile_server_address;
+  if (process.env.test2pconnector_server_address !== undefined)
+    return process.env.test2pconnector_server_address;
 
   const port = await getFreeTcpPort();
   return `localhost:${port}`;

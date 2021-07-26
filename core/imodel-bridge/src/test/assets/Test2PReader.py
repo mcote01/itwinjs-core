@@ -33,16 +33,16 @@ def toGroup(obj):
   obj['objType'] = 'Group'
   return reader_pb2.GetDataResponse(data=json.dumps(obj))
 
-class ToyTileReader(reader_pb2_grpc.ReaderServicer):
+class Test2PReader(reader_pb2_grpc.ReaderServicer):
 
     def initialize(self, request, context):
-      logging.getLogger('ToyTileReader.py').debug('initialize ' + request.filename)
+      logging.getLogger('Test2PReader.py').debug('initialize ' + request.filename)
       global filename
       filename=request.filename
       return reader_pb2.InitializeResponse(status='0')
 
     def getData(self, request, context):
-      logging.getLogger('ToyTileReader.py').debug('getData')
+      logging.getLogger('Test2PReader.py').debug('getData')
 
       f = open(filename,)
       data = json.load(f)
@@ -57,14 +57,14 @@ class ToyTileReader(reader_pb2_grpc.ReaderServicer):
         yield toGroup(group)
 
     def shutdown(self, request, context):
-      logging.getLogger('ToyTileReader.py').info('shutting down ...')
+      logging.getLogger('Test2PReader.py').info('shutting down ...')
       server.stop(5)
       return empty_pb2.Empty()
 
 def serve(addr):
     global server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    reader_pb2_grpc.add_ReaderServicer_to_server(ToyTileReader(), server)
+    reader_pb2_grpc.add_ReaderServicer_to_server(Test2PReader(), server)
     server.add_insecure_port(addr)
     server.start()
     server.wait_for_termination()
@@ -82,12 +82,12 @@ def test_clientCaller(arg):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    # logging.basicConfig(filename='d:/tmp/ToyTileReader.log', encoding='utf-8', level=logging.DEBUG)
+    # logging.basicConfig(filename='d:/tmp/Test2PReader.log', encoding='utf-8', level=logging.DEBUG)
 
     if len(sys.argv) < 2:
-      raise SyntaxError('syntax: ToyTileReader.py URL [self-test-file]')
+      raise SyntaxError('syntax: Test2PReader.py URL [self-test-file]')
     addr = sys.argv[1]
-    logging.getLogger('ToyTileReader.py').info('listening on ' + addr)
+    logging.getLogger('Test2PReader.py').info('listening on ' + addr)
 
     if len(sys.argv) == 3:
       # run standlone test using supplied input filename

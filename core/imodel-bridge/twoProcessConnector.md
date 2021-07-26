@@ -99,11 +99,11 @@ export abstract class Base2PConnector extends IModelBridge {
 The customer can then write a format-specific subclass of Base2PConnector to implement the conversion logic for any given external format. For example:
 
 ```ts
-export class ToyTile2PConnector extends Base2PConnector {
+export class Test2PConnector extends Base2PConnector {
   ...
   // COLLABORATE: Only I know what reader program to start.
   protected async startServer(addr: string): Promise<void> {
-    const pyScript = path.join(__dirname, "toytile.reader.py");
+    const pyScript = path.join(__dirname, "Test2PReader.py");
     return launchPythonSever(pyScript, addr);
   }
 
@@ -112,7 +112,7 @@ export class ToyTile2PConnector extends Base2PConnector {
 
     // COLLABORATE: Request data from my external reader program and calls me back on each item that it returns
     await this.fetchExternalData((data: string) => {
-      //  `data` is the raw data for an item that was fetched by toytile.reader.py
+      //  `data` is the raw data for an item that was fetched by Test2PReader.py
       const obj = JSON.parse(data);
       if (obj.objType === "Group") {
         this.convertGroupElement(obj, groupModelId);
@@ -150,16 +150,16 @@ The server-side bindings that you will need have already been generated. They ar
 ```
 + src
   + generated
-    + test-apps\2pc\src\generated\reader_pb2_grpc.py
-    + test-apps\2pc\src\generated\reader_pb2.py
+    + reader_pb2_grpc.py
+    + reader_pb2.py
 ```
 
 An empty implementation is here:
-`test-apps\2pc\src\test\assets\ToyTileReader.py`
+`src\test\assets\Test2PReader.py`
 
 You can start with that and change it to access the external data that you need.
 
-FYI It's much easier to develop a gRPC server when you have a test client making request in the same process. In ToyTileReader.py you will see an example of that.
+FYI It's much easier to develop a gRPC server when you have a test client making request in the same process. In Test2PReader.py you will see an example of that.
 
 ## How to Simplify a Connector
 

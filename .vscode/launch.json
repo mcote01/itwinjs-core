@@ -775,36 +775,6 @@
       "args": ["--input=d:/tmp/shaunSpaces/", "--output=d:/tmp/shaun.bim"],
       "outputCapture": "std"
     },
-
-    {
-      "presentation": {
-        "group": "6_Misc"
-      },
-      "name": "2pc: MockReader.py",
-      "type": "python",
-      "request": "launch",
-      "program": "${workspaceFolder}/test-apps/2pc/src/test/assets/ToyTileReader.py",
-      "console": "integratedTerminal",
-      "args": ["[::]:50051", "${workspaceFolder}/test-apps/2pc/src/test/assets/toytile.json"],
-      "env": { "PYTHONPATH": "${workspaceFolder}/test-apps/2pc/lib/generated" }
-    },
-    {
-      "name": "2pc",
-      "presentation": {
-        "group": "6_Misc"
-      },
-      "cwd": "${workspaceFolder}/test-apps/2pc",
-      "type": "pwa-node",
-      "request": "launch",
-      "program": "${workspaceFolder}/test-apps/2pc/node_modules/mocha/bin/_mocha",
-      "args": ["--no-timeouts", "lib/test/**/*.test.js"],
-      "skipFiles": ["<node_internals>/**/*.js", "node_modules/rxjs/**/*"],
-      "outFiles": ["${workspaceFolder}/test-apps/2pc/lib/**/*.js"],
-      "env": {
-        "//toytile_inline_typescript_reader": "1",
-        "//toytile_server_address": "[::]:50051"
-      }
-    },
     {
       "name": "imodel-from-geojson",
       "presentation": {

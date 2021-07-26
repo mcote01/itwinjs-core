@@ -13,23 +13,23 @@ import {
 import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, Vector3d } from "@bentley/geometry-core";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
 import { Base2PConnector } from "../../Base2PConnector";
-import { Categories, CodeSpecs, EquilateralTriangleTile, GeometryParts, IsoscelesTriangleTile, LargeSquareTile, Materials, RectangleTile, RightTriangleTile, SmallSquareTile, ToyTileGroup, ToyTileGroupProps } from "./ToyTileElements";
-import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./ToyTileGeometry";
-import { ToyTileGroupModel } from "./ToyTileModels";
-import { ToyTileSchema } from "./ToyTileSchema";
 import * as hash from "object-hash";
 import * as path from "path";
 
-import { startMockTypescriptReader } from "./ToyTileReader";
+import { startMockTypescriptReader } from "./Test2PReader";
 import { launchPythonSever } from "../../launchServer";
-import { ToyTileLoggerCategory } from "./ToyTileLoggerCategory";
-import { ItemState, SourceItem, SynchronizationResults } from "../../../Synchronizer";
+import { ItemState, SourceItem, SynchronizationResults } from "../../Synchronizer";
+import { Categories, CodeSpecs, Materials, GeometryParts, SmallSquareTile, LargeSquareTile, IsoscelesTriangleTile, EquilateralTriangleTile, RightTriangleTile, RectangleTile, TestBridgeGroup, TestBridgeGroupProps } from "./TestBridgeElements";
+import { SmallSquareCasing, LargeSquareCasing, RectangleCasing, EquilateralTriangleCasing, IsoscelesTriangleCasing, RightTriangleCasing, RectangularMagnetCasing, QuadCasing, TriangleCasing, Casings } from "./TestBridgeGeometry";
+import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
+import { TestBridgeSchema } from "./TestBridgeSchema";
+import { TestBridgeGroupModel } from "./TestBridgeModels";
 
-const loggerCategory: string = ToyTileLoggerCategory.Connector;
+const loggerCategory: string = TestBridgeLoggerCategory.Bridge;
 
-export class ToyTile2PConnector extends Base2PConnector {
+export class Test2PConnector extends Base2PConnector {
 
-  protected get loggerCategory(): string { return ToyTileLoggerCategory.Connector; }
+  protected get loggerCategory(): string { return loggerCategory; }
 
   protected get defaultCategory(): string { return Categories.Category; }
 
@@ -40,7 +40,7 @@ export class ToyTile2PConnector extends Base2PConnector {
     return "1.0.0.0";
   }
   public getBridgeName(): string {
-    return "ToyTile2PConnector";
+    return "TestiModelBridge"; // (Use the same name as the existing TestiModelBridge, since we will be using the same utility functions to check the results)
   }
 
   public async initializeJob(): Promise<void> {
@@ -52,14 +52,14 @@ export class ToyTile2PConnector extends Base2PConnector {
   }
 
   protected async startServer(addr: string): Promise<void> {
-    if (process.env.toytile_server_address !== undefined)
+    if (process.env.test2pconnector_server_address !== undefined)
       return; // assume that the server is already running
 
-    if (process.env.toytile_inline_typescript_reader !== undefined) {
+    if (process.env.test2pconnector_inline_typescript_reader !== undefined) {
       return startMockTypescriptReader(addr); // this is a TypeScript server impl that runs in the same process - it's easier to debug that way.
     }
 
-    const readerPyFile = path.join(__dirname, "../assets/ToyTileReader.py"); // this is the python server that runs in a separate process
+    const readerPyFile = path.join(__dirname, "../assets/Test2PReader.py"); // this is the python server that runs in a separate process
     await launchPythonSever(readerPyFile, addr);
     return;
   }
@@ -68,8 +68,8 @@ export class ToyTile2PConnector extends Base2PConnector {
     if (this._sourceFilenameState === ItemState.Unchanged) {
       return;
     }
-    ToyTileSchema.registerSchema();
-    const fileName = ToyTileSchema.schemaFilePath;
+    TestBridgeSchema.registerSchema();
+    const fileName = TestBridgeSchema.schemaFilePath;
     await this.synchronizer.imodel.importSchemas(_requestContext, [fileName]);
   }
 
@@ -118,7 +118,7 @@ export class ToyTile2PConnector extends Base2PConnector {
       }
     });
 
-    this.synchronizer.imodel.views.setDefaultViewId(this.createView(definitionModelId, physicalModelId, "ToyTileView"));
+    this.synchronizer.imodel.views.setDefaultViewId(this.createView(definitionModelId, physicalModelId, "TestBridgeView"));
   }
 
   private createGroupModel(): Id64String {
@@ -126,7 +126,7 @@ export class ToyTile2PConnector extends Base2PConnector {
     if (undefined !== existingId) {
       return existingId;
     }
-    // Create an InformationPartitionElement for the ToyTileGroupModel to model
+    // Create an InformationPartitionElement for the TestBridgeGroupModel to model
     const partitionProps: InformationPartitionElementProps = {
       classFullName: GroupInformationPartition.classFullName,
       model: IModel.repositoryModelId,
@@ -135,7 +135,7 @@ export class ToyTile2PConnector extends Base2PConnector {
     };
     const partitionId = this.synchronizer.imodel.elements.insertElement(partitionProps);
 
-    return this.synchronizer.imodel.models.insertModel({ classFullName: ToyTileGroupModel.classFullName, modeledElement: { id: partitionId } });
+    return this.synchronizer.imodel.models.insertModel({ classFullName: TestBridgeGroupModel.classFullName, modeledElement: { id: partitionId } });
   }
 
   private queryGroupModel(): Id64String | undefined {
@@ -170,7 +170,7 @@ export class ToyTile2PConnector extends Base2PConnector {
       return existingId;
     }
 
-    // Create an InformationPartitionElement for the ToyTileDefinitionModel to model
+    // Create an InformationPartitionElement for the TestBridgeDefinitionModel to model
     const partitionProps: InformationPartitionElementProps = {
       classFullName: DefinitionPartition.classFullName,
       model: IModel.repositoryModelId,
@@ -225,13 +225,13 @@ export class ToyTile2PConnector extends Base2PConnector {
   }
 
   private getColoredPlasticParams(): RenderMaterialElement.Params {
-    const params = new RenderMaterialElement.Params(Palettes.ToyTile);
+    const params = new RenderMaterialElement.Params(Palettes.TestBridge);
     params.transmit = 0.5;
     return params;
   }
 
   private getMagnetizedFerriteParams(): RenderMaterialElement.Params {
-    const params = new RenderMaterialElement.Params(Palettes.ToyTile);
+    const params = new RenderMaterialElement.Params(Palettes.TestBridge);
     const darkGrey = this.toRgbFactor(ColorByName.darkGrey);
     params.specularColor = darkGrey;
     params.color = darkGrey;
@@ -342,12 +342,12 @@ export class ToyTile2PConnector extends Base2PConnector {
       return results.id;
     }
     if (group.name === undefined) {
-      throw new IModelError(IModelStatus.BadArg, "Name undefined for ToyTile group", Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, "Name undefined for TestBridge group", Logger.logError, loggerCategory);
     }
 
-    const code = ToyTileGroup.createCode(this.synchronizer.imodel, groupModelId, group.name);
-    const props: ToyTileGroupProps = {
-      classFullName: ToyTileGroup.classFullName,
+    const code = TestBridgeGroup.createCode(this.synchronizer.imodel, groupModelId, group.name);
+    const props: TestBridgeGroupProps = {
+      classFullName: TestBridgeGroup.classFullName,
       model: groupModelId,
       code,
       groupType: group.groupType,
@@ -392,7 +392,7 @@ export class ToyTile2PConnector extends Base2PConnector {
       return;
     }
     if (tile.casingMaterial === undefined) {
-      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for ToyTile Tile ${tile.guid}`, Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for TestBridge Tile ${tile.guid}`, Logger.logError, loggerCategory);
     }
 
     let element: PhysicalElement;
@@ -431,7 +431,7 @@ export class ToyTile2PConnector extends Base2PConnector {
     if (!tile.hasOwnProperty("Group")) {
       return;
     }
-    const groupCode = ToyTileGroup.createCode(this.synchronizer.imodel, groupModelId, tile.Group);
+    const groupCode = TestBridgeGroup.createCode(this.synchronizer.imodel, groupModelId, tile.Group);
     let groupElement = this.synchronizer.imodel.elements.queryElementIdByCode(groupCode);
     if (groupElement === undefined)
       groupElement = this.convertGroupElement({ name: tile.Group }, groupModelId); // create a placeholder. We have its name (which identifies it uniquely). We will update the rest of its properties when we get the group definition (eventually)
@@ -454,15 +454,15 @@ export class ToyTile2PConnector extends Base2PConnector {
 }
 
 export function getBridgeInstance() {
-  return new ToyTile2PConnector();
+  return new Test2PConnector();
 }
 
 export enum ModelNames {
-  Physical = "ToyTile_Physical",
-  Definition = "ToyTile_Definitions",
-  Group = "ToyTile_Groups",
+  Physical = "TestBridge_Physical",
+  Definition = "TestBridge_Definitions",
+  Group = "TestBridge_Groups",
 }
 
 enum Palettes {
-  ToyTile = "ToyTile", // eslint-disable-line @typescript-eslint/no-shadow
+  TestBridge = "TestBridge", // eslint-disable-line @typescript-eslint/no-shadow
 }

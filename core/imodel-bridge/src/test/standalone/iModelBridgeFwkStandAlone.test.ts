@@ -52,4 +52,21 @@ describe("IModelBridgeFwkStandAlone", () => {
     BridgeTestUtils.verifyIModel(imodel, bridgeJobDef);
     imodel.close();
   });
+
+  it.only("2PC - snapshot", async () => {
+    const bridgeJobDef = new BridgeJobDefArgs();
+    bridgeJobDef.sourcePath = path.join(KnownTestLocations.assetsDir, "TestBridge.json");
+    bridgeJobDef.bridgeModule = "./test/integration/Test2PConnector.js";
+    bridgeJobDef.outputDir = KnownTestLocations.outputDir;
+    bridgeJobDef.isSnapshot = true;
+
+    const runner = new BridgeRunner(bridgeJobDef);
+    const status = await runner.synchronize();
+    expect(status === BentleyStatus.SUCCESS);
+
+    const briefcaseFilePath = path.join(KnownTestLocations.outputDir, "TestBridge.bim");
+    const imodel = SnapshotDb.openFile(briefcaseFilePath);
+    BridgeTestUtils.verifyIModel(imodel, bridgeJobDef);
+    imodel.close();
+  });
 });

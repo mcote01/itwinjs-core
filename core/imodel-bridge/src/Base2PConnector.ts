@@ -17,8 +17,8 @@ import * as grpc from "@grpc/grpc-js";
 import { ReaderClient } from "./generated/reader_grpc_pb";
 import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest } from "./generated/reader_pb";
 import { getServerAddress } from "./launchServer";
-import { ItemState, SourceItem, SynchronizationResults } from "../Synchronizer";
-import { IModelBridge } from "../IModelBridge";
+import { ItemState, SourceItem, SynchronizationResults } from "./Synchronizer";
+import { IModelBridge } from "./IModelBridge";
 
 export abstract class Base2PConnector extends IModelBridge {
   protected _sourceFilenameState: ItemState = ItemState.New;
@@ -34,7 +34,7 @@ export abstract class Base2PConnector extends IModelBridge {
     return new Promise((resolve, reject) => {
       assert(this._readerClient !== undefined);
       this._readerClient.shutdown(shutdownRequest, (err, _response) => {
-        // "Regarding the error itself, the message indicates that the server unexpectedly closed the stream before the client considered 
+        // "Regarding the error itself, the message indicates that the server unexpectedly closed the stream before the client considered
         // it to be complete. The code 0 indicates that the server did consider the stream to be complete."
         // https://github.com/grpc/grpc-node/issues/1532#issuecomment-700599867
         // We get this when the python server calls server.stop and then returns the "empty" response. The gRPC client, evidentally,

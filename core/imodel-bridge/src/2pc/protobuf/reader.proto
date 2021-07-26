@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package TwoProcessConnector;
 
 message InitializeResponse {
@@ -18,10 +20,6 @@ message GetDataRequest {
   string req = 1;
 }
 
-message ShutdownResponse {
-  string status = 1;
-}
-
 message ShutdownRequest {
   string options = 1;
 }
@@ -29,5 +27,5 @@ message ShutdownRequest {
 service Reader {
   rpc initialize(InitializeRequest) returns (InitializeResponse) {}
   rpc getData(GetDataRequest) returns (stream GetDataResponse) {}
-  rpc shutdown(ShutdownRequest) returns (ShutdownResponse);
+  rpc shutdown(ShutdownRequest) returns (google.protobuf.Empty);
 }

@@ -18,6 +18,7 @@ import logging
 import os
 import sys
 import grpc
+from google.protobuf import empty_pb2
 import reader_pb2
 import reader_pb2_grpc
 import json
@@ -35,13 +36,13 @@ def toGroup(obj):
 class ToyTileReader(reader_pb2_grpc.ReaderServicer):
 
     def initialize(self, request, context):
-      logging.getLogger('ToyTileReader').debug('initialize ' + request.filename)
+      logging.getLogger('ToyTileReader.py').debug('initialize ' + request.filename)
       global filename
       filename=request.filename
       return reader_pb2.InitializeResponse(status='0')
 
     def getData(self, request, context):
-      logging.getLogger('ToyTileReader').debug('getData')
+      logging.getLogger('ToyTileReader.py').debug('getData')
 
       f = open(filename,)
       data = json.load(f)
@@ -56,9 +57,9 @@ class ToyTileReader(reader_pb2_grpc.ReaderServicer):
         yield toGroup(group)
 
     def shutdown(self, request, context):
-      logging.getLogger('ToyTileReader').info('shutting down ...')
+      logging.getLogger('ToyTileReader.py').info('shutting down ...')
       server.stop(5)
-      return reader_pb2.ShutdownResponse(status='0')
+      return empty_pb2.Empty()
 
 def serve(addr):
     global server
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
       raise SyntaxError('syntax: ToyTileReader.py URL [self-test-file]')
     addr = sys.argv[1]
-    logging.getLogger('ToyTileReader').info('listening on ' + addr)
+    logging.getLogger('ToyTileReader.py').info('listening on ' + addr)
 
     if len(sys.argv) == 3:
       # run standlone test using supplied input filename

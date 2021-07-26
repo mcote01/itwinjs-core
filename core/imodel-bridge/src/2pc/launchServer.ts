@@ -49,11 +49,11 @@ export async function launchServer(exePath: string, args: string[], childEnv?: N
   const spawnOptions: SpawnOptions = { stdio, env: childEnv || process.env };
   const childProcess = spawn(exePath, args, spawnOptions);
   childProcess.stdout.on("data", (data: any) => {
-    Logger.logInfo("Base2PConnector", `stdout ${data}`);
+    Logger.logInfo("Base2PConnector.Server", `${data}`);
     process.stdout.write(data);
   });
   childProcess.stderr.on("data", (data: any) => {
-    Logger.logError("Base2PConnector", `stderr ${data}`);
+    Logger.logInfo("Base2PConnector.Server", `!${data}`);
     process.stderr.write(data);
   });
   childProcess.on("close", (code, signal) => {

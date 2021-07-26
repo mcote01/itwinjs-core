@@ -2,6 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 import reader_pb2 as reader__pb2
 
 
@@ -27,7 +28,7 @@ class ReaderStub(object):
         self.shutdown = channel.unary_unary(
                 '/TwoProcessConnector.Reader/shutdown',
                 request_serializer=reader__pb2.ShutdownRequest.SerializeToString,
-                response_deserializer=reader__pb2.ShutdownResponse.FromString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
 
 
@@ -68,7 +69,7 @@ def add_ReaderServicer_to_server(servicer, server):
             'shutdown': grpc.unary_unary_rpc_method_handler(
                     servicer.shutdown,
                     request_deserializer=reader__pb2.ShutdownRequest.FromString,
-                    response_serializer=reader__pb2.ShutdownResponse.SerializeToString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -127,6 +128,6 @@ class Reader(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Reader/shutdown',
             reader__pb2.ShutdownRequest.SerializeToString,
-            reader__pb2.ShutdownResponse.FromString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -7,6 +7,7 @@
 'use strict';
 var grpc = require('@grpc/grpc-js');
 var reader_pb = require('./reader_pb.js');
+var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 
 function serialize_TwoProcessConnector_GetDataRequest(arg) {
   if (!(arg instanceof reader_pb.GetDataRequest)) {
@@ -63,15 +64,15 @@ function deserialize_TwoProcessConnector_ShutdownRequest(buffer_arg) {
   return reader_pb.ShutdownRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_TwoProcessConnector_ShutdownResponse(arg) {
-  if (!(arg instanceof reader_pb.ShutdownResponse)) {
-    throw new Error('Expected argument of type TwoProcessConnector.ShutdownResponse');
+function serialize_google_protobuf_Empty(arg) {
+  if (!(arg instanceof google_protobuf_empty_pb.Empty)) {
+    throw new Error('Expected argument of type google.protobuf.Empty');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_TwoProcessConnector_ShutdownResponse(buffer_arg) {
-  return reader_pb.ShutdownResponse.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_google_protobuf_Empty(buffer_arg) {
+  return google_protobuf_empty_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -103,11 +104,11 @@ var ReaderService = exports.ReaderService = {
     requestStream: false,
     responseStream: false,
     requestType: reader_pb.ShutdownRequest,
-    responseType: reader_pb.ShutdownResponse,
+    responseType: google_protobuf_empty_pb.Empty,
     requestSerialize: serialize_TwoProcessConnector_ShutdownRequest,
     requestDeserialize: deserialize_TwoProcessConnector_ShutdownRequest,
-    responseSerialize: serialize_TwoProcessConnector_ShutdownResponse,
-    responseDeserialize: deserialize_TwoProcessConnector_ShutdownResponse,
+    responseSerialize: serialize_google_protobuf_Empty,
+    responseDeserialize: deserialize_google_protobuf_Empty,
   },
 };
 

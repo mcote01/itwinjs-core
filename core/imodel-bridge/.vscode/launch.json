@@ -42,7 +42,7 @@
               "${workspaceFolder}/lib/2pc/**/*.js"
             ],
             "env": {
-              "//toytile_inline_typescript_reader": "1",
+              "toytile_inline_typescript_reader": "1",
               "//toytile_server_address": "[::]:50051"
             }
           }

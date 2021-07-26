@@ -3,13 +3,13 @@
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
 /*
-  Pretend to be Reader.x.
   Run a gRPC server that implements the Reader service.
 */
 import * as grpc from "@grpc/grpc-js";
+import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as fs from "fs";
-import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest, ShutdownResponse } from "../../../../../../test-apps/2pc/src/generated/reader_pb";
-import { IReaderServer, ReaderService } from "../../../../../../test-apps/2pc/src/generated/reader_grpc_pb";
+import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, ShutdownRequest } from "../../generated/reader_pb";
+import { IReaderServer, ReaderService } from "../../generated/reader_grpc_pb";
 
 let server: grpc.Server;
 
@@ -73,10 +73,8 @@ const readerServer: IReaderServer = {
     call.end();
   },
 
-  shutdown(_call: grpc.ServerUnaryCall<ShutdownRequest, ShutdownResponse>, callback: grpc.sendUnaryData<ShutdownResponse>) {
-    const response = new ShutdownResponse();
-    response.setStatus("0");
-    callback(null, response);
+  shutdown(_call: grpc.ServerUnaryCall<ShutdownRequest, google_protobuf_empty_pb.Empty>, callback: grpc.sendUnaryData<google_protobuf_empty_pb.Empty>) {
+    callback(null, new google_protobuf_empty_pb.Empty());
     server.tryShutdown((err?: Error) => {
       if (err)
         // eslint-disable-next-line no-console

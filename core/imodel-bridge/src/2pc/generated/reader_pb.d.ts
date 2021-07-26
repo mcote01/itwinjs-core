@@ -9,6 +9,7 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
+import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 
 export class InitializeResponse extends jspb.Message { 
     getStatus(): string;
@@ -87,26 +88,6 @@ export class GetDataRequest extends jspb.Message {
 export namespace GetDataRequest {
     export type AsObject = {
         req: string,
-    }
-}
-
-export class ShutdownResponse extends jspb.Message { 
-    getStatus(): string;
-    setStatus(value: string): ShutdownResponse;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): ShutdownResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: ShutdownResponse): ShutdownResponse.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: ShutdownResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): ShutdownResponse;
-    static deserializeBinaryFromReader(message: ShutdownResponse, reader: jspb.BinaryReader): ShutdownResponse;
-}
-
-export namespace ShutdownResponse {
-    export type AsObject = {
-        status: string,
     }
 }
 

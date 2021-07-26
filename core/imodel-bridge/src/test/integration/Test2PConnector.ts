@@ -4,13 +4,16 @@
 *--------------------------------------------------------------------------------------------*/
 import {
   CodeScopeSpec, CodeSpec, ColorByName, ColorDef, ColorDefProps, GeometryPartProps, GeometryStreamBuilder, IModel, IModelError, InformationPartitionElementProps,
+  RenderMode,
   SubCategoryAppearance,
+  ViewFlags,
 } from "@bentley/imodeljs-common";
 import { assert, ClientRequestContext, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import {
-  DefinitionModel, DefinitionPartition, ElementGroupsMembers, GeometryPart, GroupInformationPartition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
+  CategorySelector,
+  DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
 } from "@bentley/imodeljs-backend";
-import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, Vector3d } from "@bentley/geometry-core";
+import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, StandardViewIndex, Vector3d } from "@bentley/geometry-core";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
 import { Base2PConnector } from "../../Base2PConnector";
 import * as hash from "object-hash";
@@ -450,6 +453,61 @@ export class Test2PConnector extends Base2PConnector {
       rel.insert();
     }
 
+  }
+
+  private createView(definitionModelId: Id64String, physicalModelId: Id64String, name: string): Id64String {
+    const code = OrthographicViewDefinition.createCode(this.synchronizer.imodel, definitionModelId, name);
+    const viewId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
+    if (undefined !== viewId) {
+      return viewId;
+    }
+
+    const categorySelectorId = this.createCategorySelector(definitionModelId);
+    const modelSelectorId = this.createModelSelector(definitionModelId, physicalModelId);
+    const displayStyleId = this.createDisplayStyle(definitionModelId);
+    const view = OrthographicViewDefinition.create(this.synchronizer.imodel, definitionModelId, name, modelSelectorId, categorySelectorId, displayStyleId, this.synchronizer.imodel.projectExtents, StandardViewIndex.Iso);
+    view.insert();
+    return view.id;
+  }
+
+  private createCategorySelector(definitionModelId: Id64String): Id64String {
+    const code = CategorySelector.createCode(this.synchronizer.imodel, definitionModelId, "Default");
+    const selectorId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
+    if (undefined !== selectorId) {
+      return selectorId;
+    }
+
+    const categoryId = SpatialCategory.queryCategoryIdByName(this.synchronizer.imodel, definitionModelId, Categories.Category);
+    if (undefined === categoryId) {
+      throw new IModelError(IModelStatus.BadElement, "Unable to find TestBridge Category", Logger.logError, loggerCategory);
+    }
+    return CategorySelector.insert(this.synchronizer.imodel, definitionModelId, "Default", [categoryId]);
+  }
+
+  private createModelSelector(definitionModelId: Id64String, physicalModelId: Id64String): Id64String {
+    const code = ModelSelector.createCode(this.synchronizer.imodel, definitionModelId, "Default");
+    const selectorId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
+    if (undefined !== selectorId) {
+      return selectorId;
+    }
+    return ModelSelector.insert(this.synchronizer.imodel, definitionModelId, "Default", [physicalModelId]);
+  }
+
+  private createDisplayStyle(definitionModelId: Id64String): Id64String {
+    const code = DisplayStyle3d.createCode(this.synchronizer.imodel, definitionModelId, "Default");
+    const displayStyleId = this.synchronizer.imodel.elements.queryElementIdByCode(code);
+    if (undefined !== displayStyleId) {
+      return displayStyleId;
+    }
+    const viewFlags: ViewFlags = new ViewFlags();
+    viewFlags.renderMode = RenderMode.SmoothShade;
+    const options: DisplayStyleCreationOptions = {
+      backgroundColor: ColorDef.fromTbgr(ColorByName.white),
+      viewFlags,
+    };
+    const displayStyle: DisplayStyle3d = DisplayStyle3d.create(this.synchronizer.imodel, definitionModelId, "Default", options);
+    displayStyle.insert();
+    return displayStyle.id;
   }
 }
 

@@ -2,16 +2,15 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-import { assert, ClientRequestContext, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
+import { assert, ClientRequestContext, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
 import {
-  CategorySelector, DisplayStyle3d, DisplayStyleCreationOptions, IModelDb, IModelJsFs,
-  ModelSelector, OrthographicViewDefinition, RepositoryLink, SpatialCategory,
+  IModelDb, IModelJsFs,
+  RepositoryLink,
 } from "@bentley/imodeljs-backend";
 import {
-  ColorByName, ColorDef, IModelError, RenderMode, ViewFlags,
+  IModelError,
 } from "@bentley/imodeljs-common";
-import { StandardViewIndex } from "@bentley/geometry-core";
 
 import * as grpc from "@grpc/grpc-js";
 import { ReaderClient } from "./generated/reader_grpc_pb";

@@ -5,8 +5,7 @@
 import { assert, ClientRequestContext, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
 import {
-  CategorySelector, DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, IModelDb, IModelJsFs,
-  ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, RepositoryLink, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
+  CategorySelector, DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
 } from "@bentley/imodeljs-backend";
 import {
   CodeScopeSpec, CodeSpec, ColorByName, ColorDef, ColorDefProps, GeometryPartProps, GeometryStreamBuilder, IModel, IModelError, InformationPartitionElementProps,
@@ -15,7 +14,6 @@ import {
 import { Box, Cone, LinearSweep, Loop, Point3d, SolidPrimitive, StandardViewIndex, Vector3d } from "@bentley/geometry-core";
 
 import { ItemState, SourceItem, SynchronizationResults } from "../../Synchronizer";
-import { IModelBridge } from "../../IModelBridge";
 import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
 import { TestBridgeSchema } from "./TestBridgeSchema";
 import { TestBridgeGroupModel } from "./TestBridgeModels";
@@ -26,7 +24,7 @@ import {
 import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./TestBridgeGeometry";
 
 import * as hash from "object-hash";
-import * as fs from "fs";
+import * as path from "path";
 
 import { Base2PConnector } from "../../Base2PConnector";
 import { startMockTypescriptReader } from "./Test2PReader";
@@ -112,8 +110,8 @@ export class Test2PConnector extends Base2PConnector {
 
     this.synchronizer.imodel.views.setDefaultViewId(this.createView(definitionModelId, physicalModelId, "TestBridgeView"));
   }
-  
-public getApplicationId(): string {
+
+  public getApplicationId(): string {
     return "2661";
   }
   public getApplicationVersion(): string {
@@ -122,7 +120,6 @@ public getApplicationId(): string {
   public getBridgeName(): string {
     return "TestiModelBridge"; // (Use the same name as the existing TestiModelBridge, since we will be using the same utility functions to check the results)
   }
-
 
   private createGroupModel(): Id64String {
     const existingId = this.queryGroupModel();

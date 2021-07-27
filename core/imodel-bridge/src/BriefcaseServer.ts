@@ -50,6 +50,7 @@ const _briefcaseServer: IBriefcaseServer = {
     }
     response.setId64(props.id);
     response.setPropsjson(JSON.stringify(props));
+    callback(null, response);
   },
 
   getExternalSourceAspectProps(call: grpc.ServerUnaryCall<briefcase_pb.GetExternalSourceAspectPropsRequest, briefcase_pb.ExternalSourceAspectProps>, callback: grpc.sendUnaryData<briefcase_pb.ExternalSourceAspectProps>) {

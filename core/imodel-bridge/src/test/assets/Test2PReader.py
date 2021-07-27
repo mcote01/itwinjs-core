@@ -27,7 +27,9 @@ import json
 from threading import Thread
 
 global briefcaseStub
+briefcaseStub = None
 global briefcaseChannel
+
 
 def toTile(shape, obj):
     obj['objType'] = 'Tile'
@@ -46,16 +48,17 @@ def makeBriefcaseStub(addr):
     global briefcaseStub
     briefcaseStub = briefcase_pb2_grpc.BriefcaseStub(briefcaseChannel)
 
+
 def findElement(guid):
     global briefcaseStub
     if briefcaseStub == None:
         return None
-    logging.getLogger('Test2PReader.py').debug('tryGetElementProps ' + guid)
     req = briefcase_pb2.TryGetElementPropsRequest(federationGuid=guid)
     response = briefcaseStub.TryGetElementProps(req)
-    if hasattr(response, 'id64'):
-      return response.id64
+    if hasattr(response, 'id64') and response.id64 != '':
+        return response.id64
     return None
+
 
 class Test2PReader(reader_pb2_grpc.ReaderServicer):
 
@@ -80,9 +83,10 @@ class Test2PReader(reader_pb2_grpc.ReaderServicer):
         for shape in data['Tiles']:
             if isinstance(data['Tiles'][shape], list):
                 for tile in data['Tiles'][shape]:
-                    exist = findElement(tile['guid'])
-                    if exist != None:
-                      logging.getLogger('Test2PReader.py').debug('tile already converted: ' + tile['guid'])
+                    existingId = findElement(tile['guid'])
+                    if existingId != None:
+                        logging.getLogger('Test2PReader.py').debug(
+                            'tile ' + tile['guid'] + ' was already converted to ' + existingId)
                     yield toTile(shape, tile)
             else:
                 yield toTile(shape, data['Tiles'][shape])

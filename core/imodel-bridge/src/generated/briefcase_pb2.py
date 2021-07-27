@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0f\x62riefcase.proto\x12\x13TwoProcessConnector\"S\n\x1e\x45xternalSourceAspectIdentifier\x12\x0f\n\x07scopeId\x18\x01 \x01(\t\x12\x12\n\nidentifier\x18\x02 \x01(\t\x12\x0c\n\x04kind\x18\x03 \x01(\t\"7\n\tCodeProps\x12\x0c\n\x04spec\x18\x01 \x01(\t\x12\r\n\x05scope\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\xa8\x02\n\x19TryGetElementPropsRequest\x12\x11\n\x04id64\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x1b\n\x0e\x66\x65\x64\x65rationGuid\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x31\n\x04\x63ode\x18\x03 \x01(\x0b\x32\x1e.TwoProcessConnector.CodePropsH\x02\x88\x01\x01\x12`\n\x1e\x65xternalSourceAspectIdentifier\x18\x04 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifierH\x03\x88\x01\x01\x42\x07\n\x05_id64B\x11\n\x0f_federationGuidB\x07\n\x05_codeB!\n\x1f_externalSourceAspectIdentifier\"E\n#GetExternalSourceAspectPropsRequest\x12\x1e\n\x16\x65xternalSourceAspectId\x18\x01 \x01(\t\"[\n\x13\x45xternalSourceState\x12\x14\n\x07version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x15\n\x08\x63hecksum\x18\x02 \x01(\tH\x01\x88\x01\x01\x42\n\n\x08_versionB\x0b\n\t_checksum\"\xe8\x01\n\x19\x45xternalSourceAspectProps\x12\x11\n\telementId\x18\x01 \x01(\t\x12G\n\nidentifier\x18\x02 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x03 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\x12\x16\n\x0ejsonProperties\x18\x04 \x01(\t\x12\x13\n\x06source\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\t\n\x07_source\"\x97\x01\n\x13\x44\x65tectChangeRequest\x12G\n\nidentifier\x18\x01 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x02 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\"\xa0\x01\n\x12\x44\x65tectChangeResult\x12\x16\n\telementId\x18\x01 \x01(\tH\x00\x88\x01\x01\x12#\n\x16\x65xternalSourceAspectId\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x16\n\tisChanged\x18\x03 \x01(\x08H\x02\x88\x01\x01\x42\x0c\n\n_elementIdB\x19\n\x17_externalSourceAspectIdB\x0c\n\n_isChanged\"!\n\x0c\x45lementProps\x12\x11\n\tpropsJson\x18\x01 \x01(\t2\xe8\x02\n\tBriefcase\x12\x63\n\x0c\x44\x65tectChange\x12(.TwoProcessConnector.DetectChangeRequest\x1a\'.TwoProcessConnector.DetectChangeResult\"\x00\x12i\n\x12TryGetElementProps\x12..TwoProcessConnector.TryGetElementPropsRequest\x1a!.TwoProcessConnector.ElementProps\"\x00\x12\x8a\x01\n\x1cGetExternalSourceAspectProps\x12\x38.TwoProcessConnector.GetExternalSourceAspectPropsRequest\x1a..TwoProcessConnector.ExternalSourceAspectProps\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0f\x62riefcase.proto\x12\x13TwoProcessConnector\"S\n\x1e\x45xternalSourceAspectIdentifier\x12\x0f\n\x07scopeId\x18\x01 \x01(\t\x12\x12\n\nidentifier\x18\x02 \x01(\t\x12\x0c\n\x04kind\x18\x03 \x01(\t\"7\n\tCodeProps\x12\x0c\n\x04spec\x18\x01 \x01(\t\x12\r\n\x05scope\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\xa8\x02\n\x19TryGetElementPropsRequest\x12\x11\n\x04id64\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x1b\n\x0e\x66\x65\x64\x65rationGuid\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x31\n\x04\x63ode\x18\x03 \x01(\x0b\x32\x1e.TwoProcessConnector.CodePropsH\x02\x88\x01\x01\x12`\n\x1e\x65xternalSourceAspectIdentifier\x18\x04 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifierH\x03\x88\x01\x01\x42\x07\n\x05_id64B\x11\n\x0f_federationGuidB\x07\n\x05_codeB!\n\x1f_externalSourceAspectIdentifier\"\\\n\x18TryGetElementPropsResult\x12\x11\n\x04id64\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x16\n\tpropsJson\x18\x02 \x01(\tH\x01\x88\x01\x01\x42\x07\n\x05_id64B\x0c\n\n_propsJson\"E\n#GetExternalSourceAspectPropsRequest\x12\x1e\n\x16\x65xternalSourceAspectId\x18\x01 \x01(\t\"[\n\x13\x45xternalSourceState\x12\x14\n\x07version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x15\n\x08\x63hecksum\x18\x02 \x01(\tH\x01\x88\x01\x01\x42\n\n\x08_versionB\x0b\n\t_checksum\"\xe8\x01\n\x19\x45xternalSourceAspectProps\x12\x11\n\telementId\x18\x01 \x01(\t\x12G\n\nidentifier\x18\x02 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x03 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\x12\x16\n\x0ejsonProperties\x18\x04 \x01(\t\x12\x13\n\x06source\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\t\n\x07_source\"\x97\x01\n\x13\x44\x65tectChangeRequest\x12G\n\nidentifier\x18\x01 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x02 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\"\xa0\x01\n\x12\x44\x65tectChangeResult\x12\x16\n\telementId\x18\x01 \x01(\tH\x00\x88\x01\x01\x12#\n\x16\x65xternalSourceAspectId\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x16\n\tisChanged\x18\x03 \x01(\x08H\x02\x88\x01\x01\x42\x0c\n\n_elementIdB\x19\n\x17_externalSourceAspectIdB\x0c\n\n_isChanged2\xf4\x02\n\tBriefcase\x12\x63\n\x0c\x44\x65tectChange\x12(.TwoProcessConnector.DetectChangeRequest\x1a\'.TwoProcessConnector.DetectChangeResult\"\x00\x12u\n\x12TryGetElementProps\x12..TwoProcessConnector.TryGetElementPropsRequest\x1a-.TwoProcessConnector.TryGetElementPropsResult\"\x00\x12\x8a\x01\n\x1cGetExternalSourceAspectProps\x12\x38.TwoProcessConnector.GetExternalSourceAspectPropsRequest\x1a..TwoProcessConnector.ExternalSourceAspectProps\"\x00\x62\x06proto3'
 )
 
 
@@ -190,6 +190,55 @@ _TRYGETELEMENTPROPSREQUEST = _descriptor.Descriptor(
 )
 
 
+_TRYGETELEMENTPROPSRESULT = _descriptor.Descriptor(
+  name='TryGetElementPropsResult',
+  full_name='TwoProcessConnector.TryGetElementPropsResult',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id64', full_name='TwoProcessConnector.TryGetElementPropsResult.id64', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='propsJson', full_name='TwoProcessConnector.TryGetElementPropsResult.propsJson', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='_id64', full_name='TwoProcessConnector.TryGetElementPropsResult._id64',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+    _descriptor.OneofDescriptor(
+      name='_propsJson', full_name='TwoProcessConnector.TryGetElementPropsResult._propsJson',
+      index=1, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=481,
+  serialized_end=573,
+)
+
+
 _GETEXTERNALSOURCEASPECTPROPSREQUEST = _descriptor.Descriptor(
   name='GetExternalSourceAspectPropsRequest',
   full_name='TwoProcessConnector.GetExternalSourceAspectPropsRequest',
@@ -217,8 +266,8 @@ _GETEXTERNALSOURCEASPECTPROPSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=481,
-  serialized_end=550,
+  serialized_start=575,
+  serialized_end=644,
 )
 
 
@@ -266,8 +315,8 @@ _EXTERNALSOURCESTATE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=552,
-  serialized_end=643,
+  serialized_start=646,
+  serialized_end=737,
 )
 
 
@@ -331,8 +380,8 @@ _EXTERNALSOURCEASPECTPROPS = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=646,
-  serialized_end=878,
+  serialized_start=740,
+  serialized_end=972,
 )
 
 
@@ -370,8 +419,8 @@ _DETECTCHANGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=881,
-  serialized_end=1032,
+  serialized_start=975,
+  serialized_end=1126,
 )
 
 
@@ -431,40 +480,8 @@ _DETECTCHANGERESULT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1035,
-  serialized_end=1195,
-)
-
-
-_ELEMENTPROPS = _descriptor.Descriptor(
-  name='ElementProps',
-  full_name='TwoProcessConnector.ElementProps',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='propsJson', full_name='TwoProcessConnector.ElementProps.propsJson', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1197,
-  serialized_end=1230,
+  serialized_start=1129,
+  serialized_end=1289,
 )
 
 _TRYGETELEMENTPROPSREQUEST.fields_by_name['code'].message_type = _CODEPROPS
@@ -481,6 +498,12 @@ _TRYGETELEMENTPROPSREQUEST.fields_by_name['code'].containing_oneof = _TRYGETELEM
 _TRYGETELEMENTPROPSREQUEST.oneofs_by_name['_externalSourceAspectIdentifier'].fields.append(
   _TRYGETELEMENTPROPSREQUEST.fields_by_name['externalSourceAspectIdentifier'])
 _TRYGETELEMENTPROPSREQUEST.fields_by_name['externalSourceAspectIdentifier'].containing_oneof = _TRYGETELEMENTPROPSREQUEST.oneofs_by_name['_externalSourceAspectIdentifier']
+_TRYGETELEMENTPROPSRESULT.oneofs_by_name['_id64'].fields.append(
+  _TRYGETELEMENTPROPSRESULT.fields_by_name['id64'])
+_TRYGETELEMENTPROPSRESULT.fields_by_name['id64'].containing_oneof = _TRYGETELEMENTPROPSRESULT.oneofs_by_name['_id64']
+_TRYGETELEMENTPROPSRESULT.oneofs_by_name['_propsJson'].fields.append(
+  _TRYGETELEMENTPROPSRESULT.fields_by_name['propsJson'])
+_TRYGETELEMENTPROPSRESULT.fields_by_name['propsJson'].containing_oneof = _TRYGETELEMENTPROPSRESULT.oneofs_by_name['_propsJson']
 _EXTERNALSOURCESTATE.oneofs_by_name['_version'].fields.append(
   _EXTERNALSOURCESTATE.fields_by_name['version'])
 _EXTERNALSOURCESTATE.fields_by_name['version'].containing_oneof = _EXTERNALSOURCESTATE.oneofs_by_name['_version']
@@ -506,12 +529,12 @@ _DETECTCHANGERESULT.fields_by_name['isChanged'].containing_oneof = _DETECTCHANGE
 DESCRIPTOR.message_types_by_name['ExternalSourceAspectIdentifier'] = _EXTERNALSOURCEASPECTIDENTIFIER
 DESCRIPTOR.message_types_by_name['CodeProps'] = _CODEPROPS
 DESCRIPTOR.message_types_by_name['TryGetElementPropsRequest'] = _TRYGETELEMENTPROPSREQUEST
+DESCRIPTOR.message_types_by_name['TryGetElementPropsResult'] = _TRYGETELEMENTPROPSRESULT
 DESCRIPTOR.message_types_by_name['GetExternalSourceAspectPropsRequest'] = _GETEXTERNALSOURCEASPECTPROPSREQUEST
 DESCRIPTOR.message_types_by_name['ExternalSourceState'] = _EXTERNALSOURCESTATE
 DESCRIPTOR.message_types_by_name['ExternalSourceAspectProps'] = _EXTERNALSOURCEASPECTPROPS
 DESCRIPTOR.message_types_by_name['DetectChangeRequest'] = _DETECTCHANGEREQUEST
 DESCRIPTOR.message_types_by_name['DetectChangeResult'] = _DETECTCHANGERESULT
-DESCRIPTOR.message_types_by_name['ElementProps'] = _ELEMENTPROPS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ExternalSourceAspectIdentifier = _reflection.GeneratedProtocolMessageType('ExternalSourceAspectIdentifier', (_message.Message,), {
@@ -534,6 +557,13 @@ TryGetElementPropsRequest = _reflection.GeneratedProtocolMessageType('TryGetElem
   # @@protoc_insertion_point(class_scope:TwoProcessConnector.TryGetElementPropsRequest)
   })
 _sym_db.RegisterMessage(TryGetElementPropsRequest)
+
+TryGetElementPropsResult = _reflection.GeneratedProtocolMessageType('TryGetElementPropsResult', (_message.Message,), {
+  'DESCRIPTOR' : _TRYGETELEMENTPROPSRESULT,
+  '__module__' : 'briefcase_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.TryGetElementPropsResult)
+  })
+_sym_db.RegisterMessage(TryGetElementPropsResult)
 
 GetExternalSourceAspectPropsRequest = _reflection.GeneratedProtocolMessageType('GetExternalSourceAspectPropsRequest', (_message.Message,), {
   'DESCRIPTOR' : _GETEXTERNALSOURCEASPECTPROPSREQUEST,
@@ -570,13 +600,6 @@ DetectChangeResult = _reflection.GeneratedProtocolMessageType('DetectChangeResul
   })
 _sym_db.RegisterMessage(DetectChangeResult)
 
-ElementProps = _reflection.GeneratedProtocolMessageType('ElementProps', (_message.Message,), {
-  'DESCRIPTOR' : _ELEMENTPROPS,
-  '__module__' : 'briefcase_pb2'
-  # @@protoc_insertion_point(class_scope:TwoProcessConnector.ElementProps)
-  })
-_sym_db.RegisterMessage(ElementProps)
-
 
 
 _BRIEFCASE = _descriptor.ServiceDescriptor(
@@ -586,8 +609,8 @@ _BRIEFCASE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1233,
-  serialized_end=1593,
+  serialized_start=1292,
+  serialized_end=1664,
   methods=[
   _descriptor.MethodDescriptor(
     name='DetectChange',
@@ -605,7 +628,7 @@ _BRIEFCASE = _descriptor.ServiceDescriptor(
     index=1,
     containing_service=None,
     input_type=_TRYGETELEMENTPROPSREQUEST,
-    output_type=_ELEMENTPROPS,
+    output_type=_TRYGETELEMENTPROPSRESULT,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

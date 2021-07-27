@@ -8,6 +8,7 @@ import { AccessToken, AuthorizedClientRequestContext } from "@bentley/itwin-clie
 import { TestUsers, TestUtility } from "@bentley/oidc-signin-tool";
 import { expect } from "chai";
 import * as path from "path";
+import * as fs from "fs";
 import { BridgeJobDefArgs, BridgeRunner } from "../../BridgeRunner";
 import { ServerArgs } from "../../IModelHubUtils";
 import { BridgeTestUtils, TestIModelInfo } from "../BridgeTestUtils";
@@ -76,7 +77,10 @@ describe("IModelBridgeFwk (#integration)", () => {
     const targetPath = path.join(KnownTestLocations.assetsDir, "TestBridge_.json");
     IModelJsFs.copySync(sourcePath, targetPath, { overwrite: true });
     bridgeJobDef.sourcePath = targetPath;
-    bridgeJobDef.bridgeModule = "./test/integration/TestiModelBridge.js";
+    if (process.env.imodel_bridge_runner_test_use_2pc)
+      bridgeJobDef.bridgeModule = "./test/integration/Test2PConnector.js";
+    else
+      bridgeJobDef.bridgeModule = "./test/integration/TestiModelBridge.js";
 
     const serverArgs = new ServerArgs();  // TODO have an iModelBank version of this test
     serverArgs.contextId = testProjectId;
@@ -92,6 +96,14 @@ describe("IModelBridgeFwk (#integration)", () => {
 
     // verify that a changed source changes the imodel
     IModelJsFs.copySync(path.join(KnownTestLocations.assetsDir, "TestBridge_v2.json"), targetPath, { overwrite: true });
+
+    try {
+      const time = new Date();
+      fs.utimesSync(targetPath, time, time);
+    } catch (err) {
+      fs.closeSync(fs.openSync(targetPath, "w"));
+    }
+
     await runBridge(bridgeJobDef, serverArgs, true);
 
     IModelJsFs.purgeDirSync(KnownTestLocations.outputDir);

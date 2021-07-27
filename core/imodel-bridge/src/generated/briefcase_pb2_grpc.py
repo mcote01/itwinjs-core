@@ -23,7 +23,7 @@ class BriefcaseStub(object):
         self.TryGetElementProps = channel.unary_unary(
                 '/TwoProcessConnector.Briefcase/TryGetElementProps',
                 request_serializer=briefcase__pb2.TryGetElementPropsRequest.SerializeToString,
-                response_deserializer=briefcase__pb2.ElementProps.FromString,
+                response_deserializer=briefcase__pb2.TryGetElementPropsResult.FromString,
                 )
         self.GetExternalSourceAspectProps = channel.unary_unary(
                 '/TwoProcessConnector.Briefcase/GetExternalSourceAspectProps',
@@ -44,7 +44,7 @@ class BriefcaseServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def TryGetElementProps(self, request, context):
-        """Look up an element in the iModel 
+        """Look up an element in the iModel. If not found, all properties of the response will be undefined. 
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -68,7 +68,7 @@ def add_BriefcaseServicer_to_server(servicer, server):
             'TryGetElementProps': grpc.unary_unary_rpc_method_handler(
                     servicer.TryGetElementProps,
                     request_deserializer=briefcase__pb2.TryGetElementPropsRequest.FromString,
-                    response_serializer=briefcase__pb2.ElementProps.SerializeToString,
+                    response_serializer=briefcase__pb2.TryGetElementPropsResult.SerializeToString,
             ),
             'GetExternalSourceAspectProps': grpc.unary_unary_rpc_method_handler(
                     servicer.GetExternalSourceAspectProps,
@@ -116,7 +116,7 @@ class Briefcase(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Briefcase/TryGetElementProps',
             briefcase__pb2.TryGetElementPropsRequest.SerializeToString,
-            briefcase__pb2.ElementProps.FromString,
+            briefcase__pb2.TryGetElementPropsResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

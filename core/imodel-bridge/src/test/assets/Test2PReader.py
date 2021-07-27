@@ -21,51 +21,80 @@ import grpc
 from google.protobuf import empty_pb2
 import reader_pb2
 import reader_pb2_grpc
+import briefcase_pb2
+import briefcase_pb2_grpc
 import json
 from threading import Thread
 
+global briefcaseStub
+global briefcaseChannel
+
 def toTile(shape, obj):
-  obj['objType'] = 'Tile'
-  obj['tileType'] = shape
-  return reader_pb2.GetDataResponse(data=json.dumps(obj))
+    obj['objType'] = 'Tile'
+    obj['tileType'] = shape
+    return reader_pb2.GetDataResponse(data=json.dumps(obj))
+
 
 def toGroup(obj):
-  obj['objType'] = 'Group'
-  return reader_pb2.GetDataResponse(data=json.dumps(obj))
+    obj['objType'] = 'Group'
+    return reader_pb2.GetDataResponse(data=json.dumps(obj))
+
+
+def makeBriefcaseStub(addr):
+    global briefcaseChannel
+    briefcaseChannel = grpc.insecure_channel(addr)
+    global briefcaseStub
+    briefcaseStub = briefcase_pb2_grpc.BriefcaseStub(briefcaseChannel)
+
+def findElement(guid):
+    global briefcaseStub
+    if briefcaseStub == None:
+        return None
+    logging.getLogger('Test2PReader.py').debug('tryGetElementProps ' + guid)
+    req = briefcase_pb2.TryGetElementPropsRequest(federationGuid=guid)
+    response = briefcaseStub.TryGetElementProps(req)
+    if hasattr(response, 'id64'):
+      return response.id64
+    return None
 
 class Test2PReader(reader_pb2_grpc.ReaderServicer):
 
     def initialize(self, request, context):
-      logging.getLogger('Test2PReader.py').debug('initialize ' + request.filename)
-      global filename
-      filename=request.filename
-      return reader_pb2.InitializeResponse()
+        logging.getLogger('Test2PReader.py').debug(
+            'initialize ' + request.filename)
+        global filename
+        filename = request.filename
+        return reader_pb2.InitializeResponse()
 
     def onBriefcaseServerAvailable(self, request, context):
-      global briefcaseServerAddr;
-      briefcaseServerAddr = request.address;
-      # TODO: create a briefcase query client
-      return empty_pb2.Empty()
+        logging.getLogger('Test2PReader.py').debug(
+            'onBriefcaseServerAvailable ' + request.address)
+        makeBriefcaseStub(request.address)
+        return empty_pb2.Empty()
 
     def getData(self, request, context):
-      logging.getLogger('Test2PReader.py').debug('getData')
+        logging.getLogger('Test2PReader.py').debug('getData')
 
-      f = open(filename,)
-      data = json.load(f)
-      for shape in data['Tiles']:
-        if isinstance(data['Tiles'][shape], list):
-          for tile in data['Tiles'][shape]:
-            yield toTile(shape, tile)
-        else:
-          yield toTile(shape, data['Tiles'][shape])
+        f = open(filename,)
+        data = json.load(f)
+        for shape in data['Tiles']:
+            if isinstance(data['Tiles'][shape], list):
+                for tile in data['Tiles'][shape]:
+                    exist = findElement(tile['guid'])
+                    if exist != None:
+                      logging.getLogger('Test2PReader.py').debug('tile already converted: ' + tile['guid'])
+                    yield toTile(shape, tile)
+            else:
+                yield toTile(shape, data['Tiles'][shape])
 
-      for group in data['Groups']:
-        yield toGroup(group)
+        for group in data['Groups']:
+            yield toGroup(group)
 
     def shutdown(self, request, context):
-      logging.getLogger('Test2PReader.py').info('shutting down ...')
-      server.stop(5)
-      return empty_pb2.Empty()
+        logging.getLogger('Test2PReader.py').info('shutting down ...')
+        server.stop(5)
+        return empty_pb2.Empty()
+
 
 def serve(addr):
     global server
@@ -78,28 +107,31 @@ def serve(addr):
 # For testing purposes only.
 # Exercise the server calls.
 # This is easier to debug than having the client be in a separate executable.
+
+
 def test_clientCaller(arg):
     with grpc.insecure_channel(addr) as channel:
         stub = reader_pb2_grpc.ReaderStub(channel)
         response = stub.getData(reader_pb2.GetDataRequest(req='you'))
         for x in response:
-          print(x)
+            print(x)
         response = stub.shutdown(reader_pb2.ShutdownRequest(status=0))
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     # logging.basicConfig(filename='d:/tmp/Test2PReader.log', encoding='utf-8', level=logging.DEBUG)
 
     if len(sys.argv) < 2:
-      raise SyntaxError('syntax: Test2PReader.py URL [self-test-file]')
+        raise SyntaxError('syntax: Test2PReader.py URL [self-test-file]')
     global addr
     addr = sys.argv[1]
     logging.getLogger('Test2PReader.py').info('listening on ' + addr)
 
     if len(sys.argv) == 3:
-      # run standlone test using supplied input filename
-      filename = sys.argv[2]
-      thread = Thread(target = test_clientCaller, args = (10, ))
-      thread.start()
+        # run standlone test using supplied input filename
+        filename = sys.argv[2]
+        thread = Thread(target=test_clientCaller, args=(10, ))
+        thread.start()
 
     serve(addr)

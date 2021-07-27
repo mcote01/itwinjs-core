@@ -119,10 +119,14 @@ export abstract class Base2PConnector extends IModelBridge {
     this._sourceFilenameState = documentStatus.itemState;
     this._repositoryLink = documentStatus.element;
 
-    const rpcServerAddress = await getServerAddress();
-    await this.startServer(rpcServerAddress);
-    this._readerClient = await this.createClient(rpcServerAddress);
-    await this.callIntializeWithRetries(this._sourceFilename);
+    try {
+      const rpcServerAddress = await getServerAddress();
+      await this.startServer(rpcServerAddress);
+      this._readerClient = await this.createClient(rpcServerAddress);
+      await this.callIntializeWithRetries(this._sourceFilename);
+    } catch (err) {
+      Logger.logException(this.loggerCategory, err);
+    }
   }
 
   protected async fetchExternalData(onSourceData: any): Promise<void> {
@@ -154,7 +158,7 @@ export abstract class Base2PConnector extends IModelBridge {
   }
 
   private async startBriefcaseGrpcServer(): Promise<void> {
-    const myRpcServerAddress = await getServerAddress();
+    const myRpcServerAddress = await getServerAddress(true);
     this._briefcaseServer = await startBriefcaseGrpcServer(myRpcServerAddress, this);
     return this.callOnBriefcaseServerAvailable(myRpcServerAddress);
   }

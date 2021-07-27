@@ -90,6 +90,9 @@ export class BridgeTestUtils {
     Logger.setLevel(NativeLoggerCategory.DgnCore, reset ? LogLevel.Error : LogLevel.Warning);
     Logger.setLevel(NativeLoggerCategory.BeSQLite, reset ? LogLevel.Error : LogLevel.Warning);
     Logger.setLevel(NativeLoggerCategory.Licensing, reset ? LogLevel.Error : LogLevel.Warning);
+    Logger.setLevel("Test2PReader", LogLevel.Trace);
+    Logger.setLevel("TestBridge", LogLevel.Trace);
+    Logger.setLevel("Base2PConnector", LogLevel.Trace);
   }
 
   // Setup typical programmatic log level overrides here

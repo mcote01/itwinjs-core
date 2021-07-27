@@ -226,7 +226,10 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "test:standalone"],
       "outFiles": ["${workspaceFolder}/{core,clients}/*/lib/**/*.js"],
-      "env": {"test2pconnector_inline_typescript_reader": "1"}
+      "env": {
+        "//test2pconnector_inline_typescript_reader": "1",
+        "test2pconnector_server_address": "localhost:3000"
+      }
     },
     {
       "name": "Test2PReader.py",
@@ -237,7 +240,8 @@
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/core/imodel-bridge/src/test/assets/Test2pReader.py",
-      "args": ["localhost:3000", "${workspaceFolder}/core/imodel-bridge/src/test/assets/TestBridge.json"],
+      "args": ["localhost:3000"],
+      // , "${workspaceFolder}/core/imodel-bridge/src/test/assets/TestBridge.json"
       "env": {"PYTHONPATH": "${workspaceFolder}/core/imodel-bridge/src/generated"},
       "console": "integratedTerminal"
     },

@@ -62,35 +62,6 @@ export namespace CodeProps {
     }
 }
 
-export class ElementLoadOptions extends jspb.Message { 
-
-    hasWantgeometry(): boolean;
-    clearWantgeometry(): void;
-    getWantgeometry(): boolean | undefined;
-    setWantgeometry(value: boolean): ElementLoadOptions;
-
-    hasWantbrepdata(): boolean;
-    clearWantbrepdata(): void;
-    getWantbrepdata(): boolean | undefined;
-    setWantbrepdata(value: boolean): ElementLoadOptions;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): ElementLoadOptions.AsObject;
-    static toObject(includeInstance: boolean, msg: ElementLoadOptions): ElementLoadOptions.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: ElementLoadOptions, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): ElementLoadOptions;
-    static deserializeBinaryFromReader(message: ElementLoadOptions, reader: jspb.BinaryReader): ElementLoadOptions;
-}
-
-export namespace ElementLoadOptions {
-    export type AsObject = {
-        wantgeometry?: boolean,
-        wantbrepdata?: boolean,
-    }
-}
-
 export class TryGetElementPropsRequest extends jspb.Message { 
 
     hasId64(): boolean;
@@ -108,15 +79,10 @@ export class TryGetElementPropsRequest extends jspb.Message {
     getCode(): CodeProps | undefined;
     setCode(value?: CodeProps): TryGetElementPropsRequest;
 
-    hasExternalsourceaspect(): boolean;
-    clearExternalsourceaspect(): void;
-    getExternalsourceaspect(): ExternalSourceAspectIdentifier | undefined;
-    setExternalsourceaspect(value?: ExternalSourceAspectIdentifier): TryGetElementPropsRequest;
-
-    hasElementloadoptions(): boolean;
-    clearElementloadoptions(): void;
-    getElementloadoptions(): ElementLoadOptions | undefined;
-    setElementloadoptions(value?: ElementLoadOptions): TryGetElementPropsRequest;
+    hasExternalsourceaspectidentifier(): boolean;
+    clearExternalsourceaspectidentifier(): void;
+    getExternalsourceaspectidentifier(): ExternalSourceAspectIdentifier | undefined;
+    setExternalsourceaspectidentifier(value?: ExternalSourceAspectIdentifier): TryGetElementPropsRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): TryGetElementPropsRequest.AsObject;
@@ -133,8 +99,7 @@ export namespace TryGetElementPropsRequest {
         id64?: string,
         federationguid?: string,
         code?: CodeProps.AsObject,
-        externalsourceaspect?: ExternalSourceAspectIdentifier.AsObject,
-        elementloadoptions?: ElementLoadOptions.AsObject,
+        externalsourceaspectidentifier?: ExternalSourceAspectIdentifier.AsObject,
     }
 }
 
@@ -158,23 +123,55 @@ export namespace GetExternalSourceAspectPropsRequest {
     }
 }
 
+export class ExternalSourceState extends jspb.Message { 
+
+    hasVersion(): boolean;
+    clearVersion(): void;
+    getVersion(): string | undefined;
+    setVersion(value: string): ExternalSourceState;
+
+    hasChecksum(): boolean;
+    clearChecksum(): void;
+    getChecksum(): string | undefined;
+    setChecksum(value: string): ExternalSourceState;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ExternalSourceState.AsObject;
+    static toObject(includeInstance: boolean, msg: ExternalSourceState): ExternalSourceState.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ExternalSourceState, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ExternalSourceState;
+    static deserializeBinaryFromReader(message: ExternalSourceState, reader: jspb.BinaryReader): ExternalSourceState;
+}
+
+export namespace ExternalSourceState {
+    export type AsObject = {
+        version?: string,
+        checksum?: string,
+    }
+}
+
 export class ExternalSourceAspectProps extends jspb.Message { 
-    getScopeid(): string;
-    setScopeid(value: string): ExternalSourceAspectProps;
-    getIdentifier(): string;
-    setIdentifier(value: string): ExternalSourceAspectProps;
-    getKind(): string;
-    setKind(value: string): ExternalSourceAspectProps;
-    getVersion(): string;
-    setVersion(value: string): ExternalSourceAspectProps;
-    getChecksum(): string;
-    setChecksum(value: string): ExternalSourceAspectProps;
+    getElementid(): string;
+    setElementid(value: string): ExternalSourceAspectProps;
+
+    hasIdentifier(): boolean;
+    clearIdentifier(): void;
+    getIdentifier(): ExternalSourceAspectIdentifier | undefined;
+    setIdentifier(value?: ExternalSourceAspectIdentifier): ExternalSourceAspectProps;
+
+    hasState(): boolean;
+    clearState(): void;
+    getState(): ExternalSourceState | undefined;
+    setState(value?: ExternalSourceState): ExternalSourceAspectProps;
     getJsonproperties(): string;
     setJsonproperties(value: string): ExternalSourceAspectProps;
-    getSource(): string;
+
+    hasSource(): boolean;
+    clearSource(): void;
+    getSource(): string | undefined;
     setSource(value: string): ExternalSourceAspectProps;
-    getElement(): string;
-    setElement(value: string): ExternalSourceAspectProps;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ExternalSourceAspectProps.AsObject;
@@ -188,14 +185,75 @@ export class ExternalSourceAspectProps extends jspb.Message {
 
 export namespace ExternalSourceAspectProps {
     export type AsObject = {
-        scopeid: string,
-        identifier: string,
-        kind: string,
-        version: string,
-        checksum: string,
+        elementid: string,
+        identifier?: ExternalSourceAspectIdentifier.AsObject,
+        state?: ExternalSourceState.AsObject,
         jsonproperties: string,
-        source: string,
-        element: string,
+        source?: string,
+    }
+}
+
+export class DetectChangeRequest extends jspb.Message { 
+
+    hasIdentifier(): boolean;
+    clearIdentifier(): void;
+    getIdentifier(): ExternalSourceAspectIdentifier | undefined;
+    setIdentifier(value?: ExternalSourceAspectIdentifier): DetectChangeRequest;
+
+    hasState(): boolean;
+    clearState(): void;
+    getState(): ExternalSourceState | undefined;
+    setState(value?: ExternalSourceState): DetectChangeRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): DetectChangeRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: DetectChangeRequest): DetectChangeRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: DetectChangeRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): DetectChangeRequest;
+    static deserializeBinaryFromReader(message: DetectChangeRequest, reader: jspb.BinaryReader): DetectChangeRequest;
+}
+
+export namespace DetectChangeRequest {
+    export type AsObject = {
+        identifier?: ExternalSourceAspectIdentifier.AsObject,
+        state?: ExternalSourceState.AsObject,
+    }
+}
+
+export class DetectChangeResult extends jspb.Message { 
+
+    hasElementid(): boolean;
+    clearElementid(): void;
+    getElementid(): string | undefined;
+    setElementid(value: string): DetectChangeResult;
+
+    hasExternalsourceaspectid(): boolean;
+    clearExternalsourceaspectid(): void;
+    getExternalsourceaspectid(): string | undefined;
+    setExternalsourceaspectid(value: string): DetectChangeResult;
+
+    hasIschanged(): boolean;
+    clearIschanged(): void;
+    getIschanged(): boolean | undefined;
+    setIschanged(value: boolean): DetectChangeResult;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): DetectChangeResult.AsObject;
+    static toObject(includeInstance: boolean, msg: DetectChangeResult): DetectChangeResult.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: DetectChangeResult, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): DetectChangeResult;
+    static deserializeBinaryFromReader(message: DetectChangeResult, reader: jspb.BinaryReader): DetectChangeResult;
+}
+
+export namespace DetectChangeResult {
+    export type AsObject = {
+        elementid?: string,
+        externalsourceaspectid?: string,
+        ischanged?: boolean,
     }
 }
 

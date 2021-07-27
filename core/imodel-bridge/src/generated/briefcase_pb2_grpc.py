@@ -15,6 +15,11 @@ class BriefcaseStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.DetectChange = channel.unary_unary(
+                '/TwoProcessConnector.Briefcase/DetectChange',
+                request_serializer=briefcase__pb2.DetectChangeRequest.SerializeToString,
+                response_deserializer=briefcase__pb2.DetectChangeResult.FromString,
+                )
         self.TryGetElementProps = channel.unary_unary(
                 '/TwoProcessConnector.Briefcase/TryGetElementProps',
                 request_serializer=briefcase__pb2.TryGetElementPropsRequest.SerializeToString,
@@ -22,7 +27,7 @@ class BriefcaseStub(object):
                 )
         self.GetExternalSourceAspectProps = channel.unary_unary(
                 '/TwoProcessConnector.Briefcase/GetExternalSourceAspectProps',
-                request_serializer=briefcase__pb2.ExternalSourceAspectIdentifier.SerializeToString,
+                request_serializer=briefcase__pb2.GetExternalSourceAspectPropsRequest.SerializeToString,
                 response_deserializer=briefcase__pb2.ExternalSourceAspectProps.FromString,
                 )
 
@@ -30,6 +35,13 @@ class BriefcaseStub(object):
 class BriefcaseServicer(object):
     """Query an iModel Briefcase
     """
+
+    def DetectChange(self, request, context):
+        """Detect if the specified external data is mapped to an element and, if so, if the last-recorded state of the data is different from its current state. 
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def TryGetElementProps(self, request, context):
         """Look up an element in the iModel 
@@ -39,7 +51,7 @@ class BriefcaseServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetExternalSourceAspectProps(self, request, context):
-        """Get the properties of an ExernalSourceAspect 
+        """Get the properties of an ExernalSourceAspect. See DetectChange for how to get the input externalSourceAspectId. 
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -48,6 +60,11 @@ class BriefcaseServicer(object):
 
 def add_BriefcaseServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'DetectChange': grpc.unary_unary_rpc_method_handler(
+                    servicer.DetectChange,
+                    request_deserializer=briefcase__pb2.DetectChangeRequest.FromString,
+                    response_serializer=briefcase__pb2.DetectChangeResult.SerializeToString,
+            ),
             'TryGetElementProps': grpc.unary_unary_rpc_method_handler(
                     servicer.TryGetElementProps,
                     request_deserializer=briefcase__pb2.TryGetElementPropsRequest.FromString,
@@ -55,7 +72,7 @@ def add_BriefcaseServicer_to_server(servicer, server):
             ),
             'GetExternalSourceAspectProps': grpc.unary_unary_rpc_method_handler(
                     servicer.GetExternalSourceAspectProps,
-                    request_deserializer=briefcase__pb2.ExternalSourceAspectIdentifier.FromString,
+                    request_deserializer=briefcase__pb2.GetExternalSourceAspectPropsRequest.FromString,
                     response_serializer=briefcase__pb2.ExternalSourceAspectProps.SerializeToString,
             ),
     }
@@ -68,6 +85,23 @@ def add_BriefcaseServicer_to_server(servicer, server):
 class Briefcase(object):
     """Query an iModel Briefcase
     """
+
+    @staticmethod
+    def DetectChange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Briefcase/DetectChange',
+            briefcase__pb2.DetectChangeRequest.SerializeToString,
+            briefcase__pb2.DetectChangeResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def TryGetElementProps(request,
@@ -98,7 +132,7 @@ class Briefcase(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Briefcase/GetExternalSourceAspectProps',
-            briefcase__pb2.ExternalSourceAspectIdentifier.SerializeToString,
+            briefcase__pb2.GetExternalSourceAspectPropsRequest.SerializeToString,
             briefcase__pb2.ExternalSourceAspectProps.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

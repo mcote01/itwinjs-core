@@ -155,7 +155,7 @@ export abstract class Base2PConnector extends IModelBridge {
 
   private async startBriefcaseGrpcServer(): Promise<void> {
     const myRpcServerAddress = await getServerAddress();
-    this._briefcaseServer = await startBriefcaseGrpcServer(myRpcServerAddress, this.synchronizer.imodel);
+    this._briefcaseServer = await startBriefcaseGrpcServer(myRpcServerAddress, this);
     return this.callOnBriefcaseServerAvailable(myRpcServerAddress);
   }
 

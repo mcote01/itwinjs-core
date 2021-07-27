@@ -4,7 +4,7 @@ package TwoProcessConnector;
 
 /* Look up an ExternalSourceAspect in the iModel */
 message ExternalSourceAspectIdentifier {
-  /* An element that scopes the combination of `kind` and `identifier` to uniquely identify the object from the external source. */
+  /* An element that scopes the combination of `kind` and `identifier` to uniquely identify the object from the external source. Set this to '0' if there is not scope. */
   string scopeId = 1;
   /* The identifier of the object in the source repository. */
   string identifier = 2;
@@ -21,67 +21,61 @@ message CodeProps {
   string value = 3;
 }
 
-/* Options used to specify properties to include or exclude when querying ElementProps with functions like
- * TryGetElementProps
- * @public
- */
- message ElementLoadOptions {
-  /* If true, include the [[GeometryStreamProps]] for [[GeometricElementProps]] and [[GeometryPartProps]].
-   * Geometry streams can consist of many megabytes worth of JSON, so they are omitted by default.
-   */
-  optional bool wantGeometry = 1;
-  /* When including a geometry stream containing brep entries, whether to return the raw brep data or proxy geometry, false when undefined */
-  /* If true, include [[BRepEntity.DataProps.data]] in the [[GeometryStreamProps]] for [[GeometricElementProps]] and [[GeometryPartProps]].
-   * The data is a potentially large base-64-encoded opaque binary blob that cannot be directly inspected or manipulated on the frontend, so it is omitted by default.
-   */
-  optional bool wantBRepData = 2;
-  /* Options controlling which properties of [[DisplayStyleProps]] to include or exclude. */
-  // displayStyle?: DisplayStyleLoadProps;
-  /* Options controlling which properties of [[RenderTimelineProps]] to include or exclude. */
-  // renderTimeline?: RenderTimelineLoadProps;
-}
-
-/* Look up an element by its internal ID, its federation GUID, its Code, or its ExternalSourceAspect identifier */
+/* Look up an element in various ways: by internal Id64, by federation GUID, by Code, or via a mapping to external data */
 message TryGetElementPropsRequest {
-  /* The element's ID in the iModel. */
+  /* The Id64 of the element in the iModel. */
   optional string id64 = 1;
-  /* The element's federation GUID. */
+  /* The federation GUID. */
   optional string federationGuid = 2;
-  /* The element's code */
+  /* The code of the element in the iModel. */
   optional CodeProps code = 3;
-  /* The element's ExternalSourceAspect identifier */
-  optional ExternalSourceAspectIdentifier externalSourceAspect = 4;
-
-  /* Options controlling what element properties to return */
-  optional ElementLoadOptions elementLoadOptions = 5;
+  /* Identifies data in the external source that is mapped to the element of interest in the iModel */
+  optional ExternalSourceAspectIdentifier externalSourceAspectIdentifier = 4;
 }
 
 message GetExternalSourceAspectPropsRequest {
-  /* The ID of the ExternalSourceAspect in the iModel. */
+  /* The Id64 of the ExternalSourceAspect in the iModel. */
   string externalSourceAspectId = 1;
 }
 
-message ExternalSourceAspectProps {
-  /* The Id64 of the element in the iModel that scopes the combination of `kind` and `identifier` to uniquely identify the object from the external source. */
-  string scopeId = 1;
-  /* The identifier of the object in the source repository. */
-  string identifier = 2;
-  /* The kind of object within the source repository. */
-  string kind = 3;
-  /* An optional value that is typically a version number or a pseudo version number like last modified time.
-   * It will be used by the synchronization process to detect that a source object is unchanged so that computing a cryptographic hash can be avoided.
-   * If present, this value must be guaranteed to change when any of the source object's content changes.
-   */
-  string version = 4;
-  /* The optional cryptographic hash (any algorithm) of the source object's content. If defined, it must be guaranteed to change when the source object's content changes. */
-  string checksum = 5;
-  /* A place where additional JSON properties can be stored. For example, provenance information or properties relating to the synchronization process. */
-  string jsonProperties = 6;
-  /* The Id64 of the ExternalSource element that is the source of the imported/synchronized object. Should point to an instance of [ExternalSource]($backend). */
-  string source = 7;
+/* The state of an item in the external source. If version is provided, then change-detection is based on this value alone. If not, then checksum must be provided. */
+message ExternalSourceState {
+  /* The "version number" of the item content. */
+  optional string version = 1;
+  /* The cryptographic hash (any algorithm) of the item's content. */
+  optional string checksum = 2;
+}
 
-  /* The Id64 of the element that has this external source aspect */
-  string element = 8;
+/* The properties of an ExternalSourceAspect */
+message ExternalSourceAspectProps {
+  /* The Id64 of the element that owns this external source aspect */
+  string elementId = 1;
+  /* Identifies the data in the external source */
+  ExternalSourceAspectIdentifier identifier = 2;
+  /* The last-known state of the item that is stored in the iModel. */
+  ExternalSourceState state = 3;
+  /* Additional JSON properties of the aspect. */
+  string jsonProperties = 4;
+  /* The Id64 of the ExternalSource element that is the source of the imported/synchronized object. Should point to an instance of ExternalSource. */
+  optional string source = 5;
+}
+
+/* Input to the detectChange request */
+message DetectChangeRequest {
+  /* Identifies the data in the external source */
+  ExternalSourceAspectIdentifier identifier = 1;
+  /* The item's current state in the external state */
+  ExternalSourceState state = 2;
+}
+
+/* The result of detectChange. If `elementId` is undefined, then the external item is not mapped to the iModel. Otherwise, if `isChanged` is false, then the external item has not changed since that last synchronization. Otherwise, the external item has changed and should be synchronized. */
+message DetectChangeResult {
+  /* The Id64 of the element in the iModel that is mapped to the specified external data. If this is not defined, that means that detectChange did not find any element the iModel mapped to the external data. */
+  optional string elementId = 1;
+  /* The Id64 of the ExternalSourceAspect of the element in the iModel, if found. */
+  optional string externalSourceAspectId = 2;
+  /* This will be true if a) an element in the iModel is mapped to the external data, and b) the last-known source state is different from the specified current state. */
+  optional bool isChanged = 3;
 }
 
 message ElementProps {
@@ -92,8 +86,10 @@ message ElementProps {
 /* Query an iModel Briefcase
  */
 service Briefcase {
+  /* Detect if the specified external data is mapped to an element and, if so, if the last-recorded state of the data is different from its current state. */
+  rpc DetectChange(DetectChangeRequest) returns (DetectChangeResult) {}
   /* Look up an element in the iModel */
   rpc TryGetElementProps(TryGetElementPropsRequest) returns (ElementProps) {}
-  /* Get the properties of an ExernalSourceAspect */
-  rpc GetExternalSourceAspectProps(ExternalSourceAspectIdentifier) returns (ExternalSourceAspectProps) {}
+  /* Get the properties of an ExernalSourceAspect. See DetectChange for how to get the input externalSourceAspectId. */
+  rpc GetExternalSourceAspectProps(GetExternalSourceAspectPropsRequest) returns (ExternalSourceAspectProps) {}
 }

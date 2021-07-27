@@ -103,6 +103,35 @@ export namespace TryGetElementPropsRequest {
     }
 }
 
+export class TryGetElementPropsResult extends jspb.Message { 
+
+    hasId64(): boolean;
+    clearId64(): void;
+    getId64(): string | undefined;
+    setId64(value: string): TryGetElementPropsResult;
+
+    hasPropsjson(): boolean;
+    clearPropsjson(): void;
+    getPropsjson(): string | undefined;
+    setPropsjson(value: string): TryGetElementPropsResult;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): TryGetElementPropsResult.AsObject;
+    static toObject(includeInstance: boolean, msg: TryGetElementPropsResult): TryGetElementPropsResult.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: TryGetElementPropsResult, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): TryGetElementPropsResult;
+    static deserializeBinaryFromReader(message: TryGetElementPropsResult, reader: jspb.BinaryReader): TryGetElementPropsResult;
+}
+
+export namespace TryGetElementPropsResult {
+    export type AsObject = {
+        id64?: string,
+        propsjson?: string,
+    }
+}
+
 export class GetExternalSourceAspectPropsRequest extends jspb.Message { 
     getExternalsourceaspectid(): string;
     setExternalsourceaspectid(value: string): GetExternalSourceAspectPropsRequest;
@@ -254,25 +283,5 @@ export namespace DetectChangeResult {
         elementid?: string,
         externalsourceaspectid?: string,
         ischanged?: boolean,
-    }
-}
-
-export class ElementProps extends jspb.Message { 
-    getPropsjson(): string;
-    setPropsjson(value: string): ElementProps;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): ElementProps.AsObject;
-    static toObject(includeInstance: boolean, msg: ElementProps): ElementProps.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: ElementProps, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): ElementProps;
-    static deserializeBinaryFromReader(message: ElementProps, reader: jspb.BinaryReader): ElementProps;
-}
-
-export namespace ElementProps {
-    export type AsObject = {
-        propsjson: string,
     }
 }

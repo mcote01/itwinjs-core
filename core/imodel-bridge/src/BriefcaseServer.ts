@@ -14,7 +14,7 @@ import * as briefcase_pb from "./generated/briefcase_pb";
 let connector: IModelBridge; // NEEDS WORK - don't use global
 
 const _briefcaseServer: IBriefcaseServer = {
-  tryGetElementProps(call: grpc.ServerUnaryCall<briefcase_pb.TryGetElementPropsRequest, briefcase_pb.ElementProps>, callback: grpc.sendUnaryData<briefcase_pb.ElementProps>) {
+  tryGetElementProps(call: grpc.ServerUnaryCall<briefcase_pb.TryGetElementPropsRequest, briefcase_pb.TryGetElementPropsResult>, callback: grpc.sendUnaryData<briefcase_pb.TryGetElementPropsResult>) {
     let params: ElementLoadProps = {};
 
     if (call.request.hasFederationguid()) {
@@ -32,7 +32,7 @@ const _briefcaseServer: IBriefcaseServer = {
       const kind = call.request.getExternalsourceaspectidentifier()!.getKind();
       const { elementId, aspectId } = ExternalSourceAspect.findBySource(connector.synchronizer.imodel, scopeId, kind, identifier);
       if (elementId === undefined) {
-        callback(null, new briefcase_pb.ElementProps());
+        callback(null, new briefcase_pb.TryGetElementPropsResult());
         return;
       }
       params.id = elementId;
@@ -41,14 +41,14 @@ const _briefcaseServer: IBriefcaseServer = {
     params.wantBRepData = false;  // Never return binary data to an external reader. It cannot parse it.
     params.wantGeometry = false;  //            "                       "
 
-    const response = new briefcase_pb.ElementProps();
+    const response = new briefcase_pb.TryGetElementPropsResult();
 
     const props = connector.synchronizer.imodel.elements.tryGetElementProps(params);
-    if (props === undefined) {
+    if (props === undefined || props.id === undefined) {
       callback(null, response);
       return;
     }
-
+    response.setId64(props.id);
     response.setPropsjson(JSON.stringify(props));
   },
 

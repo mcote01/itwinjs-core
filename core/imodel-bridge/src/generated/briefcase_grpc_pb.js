@@ -30,17 +30,6 @@ function deserialize_TwoProcessConnector_DetectChangeResult(buffer_arg) {
   return briefcase_pb.DetectChangeResult.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_TwoProcessConnector_ElementProps(arg) {
-  if (!(arg instanceof briefcase_pb.ElementProps)) {
-    throw new Error('Expected argument of type TwoProcessConnector.ElementProps');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_TwoProcessConnector_ElementProps(buffer_arg) {
-  return briefcase_pb.ElementProps.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 function serialize_TwoProcessConnector_ExternalSourceAspectProps(arg) {
   if (!(arg instanceof briefcase_pb.ExternalSourceAspectProps)) {
     throw new Error('Expected argument of type TwoProcessConnector.ExternalSourceAspectProps');
@@ -74,6 +63,17 @@ function deserialize_TwoProcessConnector_TryGetElementPropsRequest(buffer_arg) {
   return briefcase_pb.TryGetElementPropsRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_TwoProcessConnector_TryGetElementPropsResult(arg) {
+  if (!(arg instanceof briefcase_pb.TryGetElementPropsResult)) {
+    throw new Error('Expected argument of type TwoProcessConnector.TryGetElementPropsResult');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_TwoProcessConnector_TryGetElementPropsResult(buffer_arg) {
+  return briefcase_pb.TryGetElementPropsResult.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 
 // Query an iModel Briefcase
 var BriefcaseService = exports.BriefcaseService = {
@@ -89,17 +89,17 @@ detectChange: {
     responseSerialize: serialize_TwoProcessConnector_DetectChangeResult,
     responseDeserialize: deserialize_TwoProcessConnector_DetectChangeResult,
   },
-  // Look up an element in the iModel 
+  // Look up an element in the iModel. If not found, all properties of the response will be undefined. 
 tryGetElementProps: {
     path: '/TwoProcessConnector.Briefcase/TryGetElementProps',
     requestStream: false,
     responseStream: false,
     requestType: briefcase_pb.TryGetElementPropsRequest,
-    responseType: briefcase_pb.ElementProps,
+    responseType: briefcase_pb.TryGetElementPropsResult,
     requestSerialize: serialize_TwoProcessConnector_TryGetElementPropsRequest,
     requestDeserialize: deserialize_TwoProcessConnector_TryGetElementPropsRequest,
-    responseSerialize: serialize_TwoProcessConnector_ElementProps,
-    responseDeserialize: deserialize_TwoProcessConnector_ElementProps,
+    responseSerialize: serialize_TwoProcessConnector_TryGetElementPropsResult,
+    responseDeserialize: deserialize_TwoProcessConnector_TryGetElementPropsResult,
   },
   // Get the properties of an ExernalSourceAspect. See DetectChange for how to get the input externalSourceAspectId. 
 getExternalSourceAspectProps: {

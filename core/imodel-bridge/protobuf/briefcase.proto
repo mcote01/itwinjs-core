@@ -33,6 +33,14 @@ message TryGetElementPropsRequest {
   optional ExternalSourceAspectIdentifier externalSourceAspectIdentifier = 4;
 }
 
+/* Result of tryGetElementProps. `id64` will be undefined if the element was not found. */
+message TryGetElementPropsResult {
+  /* The element's Id64 */
+  optional string id64 = 1;
+  /* The element's properties as a JSON string. */
+  optional string propsJson = 2;
+}
+
 message GetExternalSourceAspectPropsRequest {
   /* The Id64 of the ExternalSourceAspect in the iModel. */
   string externalSourceAspectId = 1;
@@ -78,18 +86,13 @@ message DetectChangeResult {
   optional bool isChanged = 3;
 }
 
-message ElementProps {
-  /* The element's properties as a JSON string - TODO map this out in detail */
-  string propsJson = 1;
-}
-
 /* Query an iModel Briefcase
  */
 service Briefcase {
   /* Detect if the specified external data is mapped to an element and, if so, if the last-recorded state of the data is different from its current state. */
   rpc DetectChange(DetectChangeRequest) returns (DetectChangeResult) {}
-  /* Look up an element in the iModel */
-  rpc TryGetElementProps(TryGetElementPropsRequest) returns (ElementProps) {}
+  /* Look up an element in the iModel. If not found, all properties of the response will be undefined. */
+  rpc TryGetElementProps(TryGetElementPropsRequest) returns (TryGetElementPropsResult) {}
   /* Get the properties of an ExernalSourceAspect. See DetectChange for how to get the input externalSourceAspectId. */
   rpc GetExternalSourceAspectProps(GetExternalSourceAspectPropsRequest) returns (ExternalSourceAspectProps) {}
 }

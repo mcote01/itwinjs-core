@@ -4,6 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 // GENERATED CODE -- DO NOT EDIT!
 
+// Original file comments:
+//
+// This interface is implemented by a non-iModel.js program and is called by an iModel.js program.
 'use strict';
 var grpc = require('@grpc/grpc-js');
 var reader_pb = require('./reader_pb.js');
@@ -87,7 +90,13 @@ function deserialize_google_protobuf_Empty(buffer_arg) {
 }
 
 
-// Service that must be implemented by an external source reader 
+// Query an external source.
+// The functions in this service are implemented by a non-iModel.js "reader" program. They are called by an iModel.js connector. They
+// give the iModel.js connector a way to fetch data from an external source that is not directly accessible to it. The "reader" program is the intermediary.
+// The main function is `getData`. The reader program should implement this by *streaming* all of the data in the external source back to the requesting connector.
+// The `onBriefcaseServerAvailable` function gives the reader the address of a service that is implemented by the iModel.js program. See briefcase.proto.
+// The reader program can use the briefcase service to send queries back to the connector. The reader can even send briefcase requests to the connector (and wait for answers)
+// while in the midst of handling a request from the connector.
 var ReaderService = exports.ReaderService = {
   // Tell the reader to initialize. The input file to the connector is passed as a parameter, in case the Reader wants to open that or use it in some way. 
 initialize: {
@@ -101,7 +110,7 @@ initialize: {
     responseSerialize: serialize_TwoProcessConnector_InitializeResponse,
     responseDeserialize: deserialize_TwoProcessConnector_InitializeResponse,
   },
-  // Inform the Reader that a server is now available to take requests to query the iModel 
+  // Inform the Reader that a server is now available to take requests to query the briefcase 
 onBriefcaseServerAvailable: {
     path: '/TwoProcessConnector.Reader/onBriefcaseServerAvailable',
     requestStream: false,

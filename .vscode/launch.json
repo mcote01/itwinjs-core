@@ -290,8 +290,8 @@
         "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
       ],
       "env": {
-        "//test2pconnector_inline_typescript_reader": "1",
-        "test2pconnector_server_address": "localhost:3000"
+        "test2pconnector_inline_typescript_reader": "1",
+        "//test2pconnector_server_address": "localhost:3000"
       }
     },
     {
@@ -328,7 +328,11 @@
       ],
       "outFiles": [
         "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
-      ]
+      ],
+      "env": {
+        "imodel_bridge_runner_test_use_2pc": "1",
+        "test2pconnector_inline_typescript_reader": "1"
+      }
     },
     {
       /* PARTIAL */ "name": "[NODE] Certa Test Runner for Markup Tests",

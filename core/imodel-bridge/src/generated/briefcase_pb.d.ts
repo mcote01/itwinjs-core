@@ -105,11 +105,6 @@ export namespace TryGetElementPropsRequest {
 
 export class TryGetElementPropsResult extends jspb.Message { 
 
-    hasId64(): boolean;
-    clearId64(): void;
-    getId64(): string | undefined;
-    setId64(value: string): TryGetElementPropsResult;
-
     hasPropsjson(): boolean;
     clearPropsjson(): void;
     getPropsjson(): string | undefined;
@@ -127,28 +122,7 @@ export class TryGetElementPropsResult extends jspb.Message {
 
 export namespace TryGetElementPropsResult {
     export type AsObject = {
-        id64?: string,
         propsjson?: string,
-    }
-}
-
-export class GetExternalSourceAspectPropsRequest extends jspb.Message { 
-    getExternalsourceaspectid(): string;
-    setExternalsourceaspectid(value: string): GetExternalSourceAspectPropsRequest;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): GetExternalSourceAspectPropsRequest.AsObject;
-    static toObject(includeInstance: boolean, msg: GetExternalSourceAspectPropsRequest): GetExternalSourceAspectPropsRequest.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: GetExternalSourceAspectPropsRequest, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): GetExternalSourceAspectPropsRequest;
-    static deserializeBinaryFromReader(message: GetExternalSourceAspectPropsRequest, reader: jspb.BinaryReader): GetExternalSourceAspectPropsRequest;
-}
-
-export namespace GetExternalSourceAspectPropsRequest {
-    export type AsObject = {
-        externalsourceaspectid: string,
     }
 }
 
@@ -222,6 +196,26 @@ export namespace ExternalSourceAspectProps {
     }
 }
 
+export class GetExternalSourceAspectPropsRequest extends jspb.Message { 
+    getExternalsourceaspectid(): string;
+    setExternalsourceaspectid(value: string): GetExternalSourceAspectPropsRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): GetExternalSourceAspectPropsRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: GetExternalSourceAspectPropsRequest): GetExternalSourceAspectPropsRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: GetExternalSourceAspectPropsRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): GetExternalSourceAspectPropsRequest;
+    static deserializeBinaryFromReader(message: GetExternalSourceAspectPropsRequest, reader: jspb.BinaryReader): GetExternalSourceAspectPropsRequest;
+}
+
+export namespace GetExternalSourceAspectPropsRequest {
+    export type AsObject = {
+        externalsourceaspectid: string,
+    }
+}
+
 export class DetectChangeRequest extends jspb.Message { 
 
     hasIdentifier(): boolean;
@@ -283,5 +277,57 @@ export namespace DetectChangeResult {
         elementid?: string,
         externalsourceaspectid?: string,
         ischanged?: boolean,
+    }
+}
+
+export class ExecuteECSqlRequest extends jspb.Message { 
+    getEcsqlstatement(): string;
+    setEcsqlstatement(value: string): ExecuteECSqlRequest;
+    getParams(): string;
+    setParams(value: string): ExecuteECSqlRequest;
+    getLimit(): number;
+    setLimit(value: number): ExecuteECSqlRequest;
+    getOffset(): number;
+    setOffset(value: number): ExecuteECSqlRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ExecuteECSqlRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: ExecuteECSqlRequest): ExecuteECSqlRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ExecuteECSqlRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ExecuteECSqlRequest;
+    static deserializeBinaryFromReader(message: ExecuteECSqlRequest, reader: jspb.BinaryReader): ExecuteECSqlRequest;
+}
+
+export namespace ExecuteECSqlRequest {
+    export type AsObject = {
+        ecsqlstatement: string,
+        params: string,
+        limit: number,
+        offset: number,
+    }
+}
+
+export class ExecuteECSqlResult extends jspb.Message { 
+    getStatus(): number;
+    setStatus(value: number): ExecuteECSqlResult;
+    getRowsjson(): string;
+    setRowsjson(value: string): ExecuteECSqlResult;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ExecuteECSqlResult.AsObject;
+    static toObject(includeInstance: boolean, msg: ExecuteECSqlResult): ExecuteECSqlResult.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ExecuteECSqlResult, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ExecuteECSqlResult;
+    static deserializeBinaryFromReader(message: ExecuteECSqlResult, reader: jspb.BinaryReader): ExecuteECSqlResult;
+}
+
+export namespace ExecuteECSqlResult {
+    export type AsObject = {
+        status: number,
+        rowsjson: string,
     }
 }

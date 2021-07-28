@@ -6,7 +6,12 @@ import briefcase_pb2 as briefcase__pb2
 
 
 class BriefcaseStub(object):
-    """Query an iModel Briefcase
+    """Query an iModel Briefcase.
+    The functions in this service allow a non-iModel.js server to get information from an open briefcase.
+    ExecuteECSql is the basic and most general method of querying the iModel.
+    TryGetElementProps is a simplified method to get the properties of an element.
+    GetExternalSourceAspectProps is specialized to getting the properties of an ExternalSourceAspect, and its results is strongly typed.
+    DetectChange is a short-cut query that looks up an ExternalSourceAspect by its external identity and checks its version or checksum.
     """
 
     def __init__(self, channel):
@@ -30,10 +35,20 @@ class BriefcaseStub(object):
                 request_serializer=briefcase__pb2.GetExternalSourceAspectPropsRequest.SerializeToString,
                 response_deserializer=briefcase__pb2.ExternalSourceAspectProps.FromString,
                 )
+        self.ExecuteECSql = channel.unary_unary(
+                '/TwoProcessConnector.Briefcase/ExecuteECSql',
+                request_serializer=briefcase__pb2.ExecuteECSqlRequest.SerializeToString,
+                response_deserializer=briefcase__pb2.ExecuteECSqlResult.FromString,
+                )
 
 
 class BriefcaseServicer(object):
-    """Query an iModel Briefcase
+    """Query an iModel Briefcase.
+    The functions in this service allow a non-iModel.js server to get information from an open briefcase.
+    ExecuteECSql is the basic and most general method of querying the iModel.
+    TryGetElementProps is a simplified method to get the properties of an element.
+    GetExternalSourceAspectProps is specialized to getting the properties of an ExternalSourceAspect, and its results is strongly typed.
+    DetectChange is a short-cut query that looks up an ExternalSourceAspect by its external identity and checks its version or checksum.
     """
 
     def DetectChange(self, request, context):
@@ -44,14 +59,21 @@ class BriefcaseServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def TryGetElementProps(self, request, context):
-        """Look up an element in the iModel. If not found, all properties of the response will be undefined. 
+        """Look up an element in the iModel. 
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetExternalSourceAspectProps(self, request, context):
-        """Get the properties of an ExernalSourceAspect. See DetectChange for how to get the input externalSourceAspectId. 
+        """Get the properties of an ExernalSourceAspect. If not found, all of the properties of the returned object will have default values (i.e., elementId will be empty). See DetectChange for how to get the input externalSourceAspectId. 
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ExecuteECSql(self, request, context):
+        """Execute an ECSql statement 
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -75,6 +97,11 @@ def add_BriefcaseServicer_to_server(servicer, server):
                     request_deserializer=briefcase__pb2.GetExternalSourceAspectPropsRequest.FromString,
                     response_serializer=briefcase__pb2.ExternalSourceAspectProps.SerializeToString,
             ),
+            'ExecuteECSql': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExecuteECSql,
+                    request_deserializer=briefcase__pb2.ExecuteECSqlRequest.FromString,
+                    response_serializer=briefcase__pb2.ExecuteECSqlResult.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'TwoProcessConnector.Briefcase', rpc_method_handlers)
@@ -83,7 +110,12 @@ def add_BriefcaseServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Briefcase(object):
-    """Query an iModel Briefcase
+    """Query an iModel Briefcase.
+    The functions in this service allow a non-iModel.js server to get information from an open briefcase.
+    ExecuteECSql is the basic and most general method of querying the iModel.
+    TryGetElementProps is a simplified method to get the properties of an element.
+    GetExternalSourceAspectProps is specialized to getting the properties of an ExternalSourceAspect, and its results is strongly typed.
+    DetectChange is a short-cut query that looks up an ExternalSourceAspect by its external identity and checks its version or checksum.
     """
 
     @staticmethod
@@ -134,5 +166,22 @@ class Briefcase(object):
         return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Briefcase/GetExternalSourceAspectProps',
             briefcase__pb2.GetExternalSourceAspectPropsRequest.SerializeToString,
             briefcase__pb2.ExternalSourceAspectProps.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ExecuteECSql(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/TwoProcessConnector.Briefcase/ExecuteECSql',
+            briefcase__pb2.ExecuteECSqlRequest.SerializeToString,
+            briefcase__pb2.ExecuteECSqlResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -15,6 +15,7 @@ interface IBriefcaseService extends grpc.ServiceDefinition<grpc.UntypedServiceIm
     detectChange: IBriefcaseService_IDetectChange;
     tryGetElementProps: IBriefcaseService_ITryGetElementProps;
     getExternalSourceAspectProps: IBriefcaseService_IGetExternalSourceAspectProps;
+    executeECSql: IBriefcaseService_IExecuteECSql;
 }
 
 interface IBriefcaseService_IDetectChange extends grpc.MethodDefinition<briefcase_pb.DetectChangeRequest, briefcase_pb.DetectChangeResult> {
@@ -44,6 +45,15 @@ interface IBriefcaseService_IGetExternalSourceAspectProps extends grpc.MethodDef
     responseSerialize: grpc.serialize<briefcase_pb.ExternalSourceAspectProps>;
     responseDeserialize: grpc.deserialize<briefcase_pb.ExternalSourceAspectProps>;
 }
+interface IBriefcaseService_IExecuteECSql extends grpc.MethodDefinition<briefcase_pb.ExecuteECSqlRequest, briefcase_pb.ExecuteECSqlResult> {
+    path: "/TwoProcessConnector.Briefcase/ExecuteECSql";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<briefcase_pb.ExecuteECSqlRequest>;
+    requestDeserialize: grpc.deserialize<briefcase_pb.ExecuteECSqlRequest>;
+    responseSerialize: grpc.serialize<briefcase_pb.ExecuteECSqlResult>;
+    responseDeserialize: grpc.deserialize<briefcase_pb.ExecuteECSqlResult>;
+}
 
 export const BriefcaseService: IBriefcaseService;
 
@@ -51,6 +61,7 @@ export interface IBriefcaseServer extends grpc.UntypedServiceImplementation {
     detectChange: grpc.handleUnaryCall<briefcase_pb.DetectChangeRequest, briefcase_pb.DetectChangeResult>;
     tryGetElementProps: grpc.handleUnaryCall<briefcase_pb.TryGetElementPropsRequest, briefcase_pb.TryGetElementPropsResult>;
     getExternalSourceAspectProps: grpc.handleUnaryCall<briefcase_pb.GetExternalSourceAspectPropsRequest, briefcase_pb.ExternalSourceAspectProps>;
+    executeECSql: grpc.handleUnaryCall<briefcase_pb.ExecuteECSqlRequest, briefcase_pb.ExecuteECSqlResult>;
 }
 
 export interface IBriefcaseClient {
@@ -63,6 +74,9 @@ export interface IBriefcaseClient {
     getExternalSourceAspectProps(request: briefcase_pb.GetExternalSourceAspectPropsRequest, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExternalSourceAspectProps) => void): grpc.ClientUnaryCall;
     getExternalSourceAspectProps(request: briefcase_pb.GetExternalSourceAspectPropsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExternalSourceAspectProps) => void): grpc.ClientUnaryCall;
     getExternalSourceAspectProps(request: briefcase_pb.GetExternalSourceAspectPropsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExternalSourceAspectProps) => void): grpc.ClientUnaryCall;
+    executeECSql(request: briefcase_pb.ExecuteECSqlRequest, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExecuteECSqlResult) => void): grpc.ClientUnaryCall;
+    executeECSql(request: briefcase_pb.ExecuteECSqlRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExecuteECSqlResult) => void): grpc.ClientUnaryCall;
+    executeECSql(request: briefcase_pb.ExecuteECSqlRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExecuteECSqlResult) => void): grpc.ClientUnaryCall;
 }
 
 export class BriefcaseClient extends grpc.Client implements IBriefcaseClient {
@@ -76,4 +90,7 @@ export class BriefcaseClient extends grpc.Client implements IBriefcaseClient {
     public getExternalSourceAspectProps(request: briefcase_pb.GetExternalSourceAspectPropsRequest, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExternalSourceAspectProps) => void): grpc.ClientUnaryCall;
     public getExternalSourceAspectProps(request: briefcase_pb.GetExternalSourceAspectPropsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExternalSourceAspectProps) => void): grpc.ClientUnaryCall;
     public getExternalSourceAspectProps(request: briefcase_pb.GetExternalSourceAspectPropsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExternalSourceAspectProps) => void): grpc.ClientUnaryCall;
+    public executeECSql(request: briefcase_pb.ExecuteECSqlRequest, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExecuteECSqlResult) => void): grpc.ClientUnaryCall;
+    public executeECSql(request: briefcase_pb.ExecuteECSqlRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExecuteECSqlResult) => void): grpc.ClientUnaryCall;
+    public executeECSql(request: briefcase_pb.ExecuteECSqlRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: briefcase_pb.ExecuteECSqlResult) => void): grpc.ClientUnaryCall;
 }

@@ -39,7 +39,10 @@ describe("IModelBridgeFwkStandAlone", () => {
     const bridgeJobDef = new BridgeJobDefArgs();
     const assetFile = path.join(KnownTestLocations.assetsDir, "TestBridge.json");
     bridgeJobDef.sourcePath = assetFile;
-    bridgeJobDef.bridgeModule = "./test/integration/TestiModelBridge.js";
+    if (process.env.imodel_bridge_runner_test_use_2pc)
+      bridgeJobDef.bridgeModule = "./test/integration/Test2PConnector.js";
+    else
+      bridgeJobDef.bridgeModule = "./test/integration/TestiModelBridge.js";
     bridgeJobDef.outputDir = KnownTestLocations.outputDir;
     bridgeJobDef.isSnapshot = true;
 
@@ -53,20 +56,4 @@ describe("IModelBridgeFwkStandAlone", () => {
     imodel.close();
   });
 
-  it.only("2PC - snapshot", async () => {
-    const bridgeJobDef = new BridgeJobDefArgs();
-    bridgeJobDef.sourcePath = path.join(KnownTestLocations.assetsDir, "TestBridge.json");
-    bridgeJobDef.bridgeModule = "./test/integration/Test2PConnector.js";
-    bridgeJobDef.outputDir = KnownTestLocations.outputDir;
-    bridgeJobDef.isSnapshot = true;
-
-    const runner = new BridgeRunner(bridgeJobDef);
-    const status = await runner.synchronize();
-    expect(status === BentleyStatus.SUCCESS);
-
-    const briefcaseFilePath = path.join(KnownTestLocations.outputDir, "TestBridge.bim");
-    const imodel = SnapshotDb.openFile(briefcaseFilePath);
-    BridgeTestUtils.verifyIModel(imodel, bridgeJobDef);
-    imodel.close();
-  });
 });

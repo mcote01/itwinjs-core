@@ -13,6 +13,7 @@ import { IReaderServer, ReaderService } from "../../generated/reader_grpc_pb";
 import { BriefcaseClient } from "../../generated/briefcase_grpc_pb";
 import * as briefcase_pb from "../../generated/briefcase_pb";
 import { Id64String } from "../../../../bentley/lib/Id";
+import { DbResult } from "../../../../bentley/lib/BeSQLite";
 
 let server: grpc.Server;
 let briefcaseClient: BriefcaseClient;
@@ -61,10 +62,39 @@ async function findElement(guid: string): Promise<Id64String | undefined> {
     });
   });
 
-  const json = existing.getPropsjson();
-  return existing.hasId64()? existing.getId64(): undefined;
+  if (!existing.hasPropsjson() || existing.getPropsjson() === "")
+    return undefined;
+
+  const json = JSON.parse(existing.getPropsjson()!);
+  return json?.id;
 }
 
+async function executeSomeECSql(): Promise<void> {
+  if (briefcaseClient === undefined)
+    return;
+
+  const results: briefcase_pb.ExecuteECSqlResult = await new Promise((resolve, reject) => {
+    const request = new briefcase_pb.ExecuteECSqlRequest();
+    request.setEcsqlstatement("SELECT origin from TestBridge.SmallSquareTile");
+    request.setLimit(1);
+    briefcaseClient.executeECSql(request, (err, response) => {
+      if (err)
+        reject(err);
+      resolve(response);
+    });
+  });
+
+  if (results.getStatus() !== DbResult.BE_SQLITE_DONE) {
+    console.log(`ExecuteECSql status is error ${results.getStatus()}`);
+  }
+
+  const rows = JSON.parse(results.getRowsjson());
+  if (!Array.isArray(rows)) {
+    console.log(`ExecuteECSql returned something other than array ${results.getRowsjson()}`);
+  }
+
+  console.log(`ExecuteECSql result is ${JSON.stringify(rows)}`);
+}
 
 function writeTile(call: grpc.ServerWritableStream<GetDataRequest, GetDataResponse>, shape: string, data: any): void {
   data.objType = "Tile";
@@ -105,10 +135,12 @@ async function getData(call: grpc.ServerWritableStream<GetDataRequest, GetDataRe
     call.end();
   }
 
+  await executeSomeECSql(); // demonstrate sending an ECSql query to the client
+
   for (const shape of Object.keys(data.Tiles)) {
     if (Array.isArray(data.Tiles[shape])) {
       for (const tile of data.Tiles[shape]) {
-        const exist = await findElement(tile.guid);
+        const exist = await findElement(tile.guid); // demonstrate another request to the client
         if (exist !== undefined) {
           console.log(`Tile already found in iModel. TODO - check to see if it is changed. To do that, I'd have to know how to compute its hash.`);
         }

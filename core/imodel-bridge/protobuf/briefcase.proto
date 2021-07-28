@@ -1,3 +1,6 @@
+/*
+ * This interface is implemented by the iModel.js program and is called by a non-iModel.js program.
+ */
 syntax = "proto3";
 
 package TwoProcessConnector;
@@ -21,7 +24,11 @@ message CodeProps {
   string value = 3;
 }
 
-/* Look up an element in various ways: by internal Id64, by federation GUID, by Code, or via a mapping to external data */
+/* Look up an element in various ways: by internal Id64, by federation GUID, by Code, or via a mapping to external data.
+ * This query returns the properties of the element (if found) in the form of a JSON-encoded string. That is because the
+ * set of properties that an element can have varies by subclass (polymorphism). This function returns all of the properties
+ * of the element according to its actual class. (It does not return only those properties that are common to all elements.)
+ */
 message TryGetElementPropsRequest {
   /* The Id64 of the element in the iModel. */
   optional string id64 = 1;
@@ -33,17 +40,10 @@ message TryGetElementPropsRequest {
   optional ExternalSourceAspectIdentifier externalSourceAspectIdentifier = 4;
 }
 
-/* Result of tryGetElementProps. `id64` will be undefined if the element was not found. */
+/* Result of tryGetElementProps. `propsJson` will be the empty string if the element was not found. */
 message TryGetElementPropsResult {
-  /* The element's Id64 */
-  optional string id64 = 1;
   /* The element's properties as a JSON string. */
   optional string propsJson = 2;
-}
-
-message GetExternalSourceAspectPropsRequest {
-  /* The Id64 of the ExternalSourceAspect in the iModel. */
-  string externalSourceAspectId = 1;
 }
 
 /* The state of an item in the external source. If version is provided, then change-detection is based on this value alone. If not, then checksum must be provided. */
@@ -54,7 +54,7 @@ message ExternalSourceState {
   optional string checksum = 2;
 }
 
-/* The properties of an ExternalSourceAspect */
+/* The properties of an ExternalSourceAspect. */
 message ExternalSourceAspectProps {
   /* The Id64 of the element that owns this external source aspect */
   string elementId = 1;
@@ -68,6 +68,12 @@ message ExternalSourceAspectProps {
   optional string source = 5;
 }
 
+/* The input to the GetExternalSourceAspectProps request */
+message GetExternalSourceAspectPropsRequest {
+  /* The Id64 of the ExternalSourceAspect in the iModel. */
+  string externalSourceAspectId = 1;
+}
+
 /* Input to the detectChange request */
 message DetectChangeRequest {
   /* Identifies the data in the external source */
@@ -76,7 +82,12 @@ message DetectChangeRequest {
   ExternalSourceState state = 2;
 }
 
-/* The result of detectChange. If `elementId` is undefined, then the external item is not mapped to the iModel. Otherwise, if `isChanged` is false, then the external item has not changed since that last synchronization. Otherwise, the external item has changed and should be synchronized. */
+/* The result of detectChange. Here is how to interpret the results:
+ * -- If `elementId` is empty, then the external item is not mapped to the iModel.
+ * -- Otherwise, the external item is mapped to the specified element.
+ *     -- If `isChanged` is false, then the external item has not changed since the last synchronization.
+ *     -- Otherwise, the external item has changed.
+ */
 message DetectChangeResult {
   /* The Id64 of the element in the iModel that is mapped to the specified external data. If this is not defined, that means that detectChange did not find any element the iModel mapped to the external data. */
   optional string elementId = 1;
@@ -86,13 +97,36 @@ message DetectChangeResult {
   optional bool isChanged = 3;
 }
 
-/* Query an iModel Briefcase
+/* Input to the ExecuteECSql request */
+message ExecuteECSqlRequest {
+  string ecSqlStatement = 2;
+  string params = 3;
+  int32 limit = 4;
+  int32 offset = 5;
+}
+
+/* The result of ExecuteECSql. */
+message ExecuteECSqlResult {
+  /* The SQLITE return status from the query. BE_SQLITE_ROW = 100, BE_SQLITE_DONE = 101. Other values indicate various errors, as documented for SQLite */
+  int32 status = 1;
+  /* the returned rows in JSON-encoded string format. Will be the empty string in case of no rows or error. */
+  string rowsJson = 2;
+}
+
+/* Query an iModel Briefcase.
+ * The functions in this service allow a non-iModel.js server to get information from an open briefcase.
+ * ExecuteECSql is the basic and most general method of querying the iModel.
+ * TryGetElementProps is a simplified method to get the properties of an element.
+ * GetExternalSourceAspectProps is specialized to getting the properties of an ExternalSourceAspect, and its results is strongly typed.
+ * DetectChange is a short-cut query that looks up an ExternalSourceAspect by its external identity and checks its version or checksum.
  */
 service Briefcase {
   /* Detect if the specified external data is mapped to an element and, if so, if the last-recorded state of the data is different from its current state. */
   rpc DetectChange(DetectChangeRequest) returns (DetectChangeResult) {}
-  /* Look up an element in the iModel. If not found, all properties of the response will be undefined. */
+  /* Look up an element in the iModel. */
   rpc TryGetElementProps(TryGetElementPropsRequest) returns (TryGetElementPropsResult) {}
-  /* Get the properties of an ExernalSourceAspect. See DetectChange for how to get the input externalSourceAspectId. */
+  /* Get the properties of an ExernalSourceAspect. If not found, all of the properties of the returned object will have default values (i.e., elementId will be empty). See DetectChange for how to get the input externalSourceAspectId. */
   rpc GetExternalSourceAspectProps(GetExternalSourceAspectPropsRequest) returns (ExternalSourceAspectProps) {}
+  /* Execute an ECSql statement */
+  rpc ExecuteECSql(ExecuteECSqlRequest) returns (ExecuteECSqlResult) {}
 }

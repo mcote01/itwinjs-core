@@ -4,6 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 // GENERATED CODE -- DO NOT EDIT!
 
+// Original file comments:
+//
+// This interface is implemented by the iModel.js program and is called by a non-iModel.js program.
 'use strict';
 var grpc = require('@grpc/grpc-js');
 var briefcase_pb = require('./briefcase_pb.js');
@@ -28,6 +31,28 @@ function serialize_TwoProcessConnector_DetectChangeResult(arg) {
 
 function deserialize_TwoProcessConnector_DetectChangeResult(buffer_arg) {
   return briefcase_pb.DetectChangeResult.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_TwoProcessConnector_ExecuteECSqlRequest(arg) {
+  if (!(arg instanceof briefcase_pb.ExecuteECSqlRequest)) {
+    throw new Error('Expected argument of type TwoProcessConnector.ExecuteECSqlRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_TwoProcessConnector_ExecuteECSqlRequest(buffer_arg) {
+  return briefcase_pb.ExecuteECSqlRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_TwoProcessConnector_ExecuteECSqlResult(arg) {
+  if (!(arg instanceof briefcase_pb.ExecuteECSqlResult)) {
+    throw new Error('Expected argument of type TwoProcessConnector.ExecuteECSqlResult');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_TwoProcessConnector_ExecuteECSqlResult(buffer_arg) {
+  return briefcase_pb.ExecuteECSqlResult.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_TwoProcessConnector_ExternalSourceAspectProps(arg) {
@@ -75,7 +100,12 @@ function deserialize_TwoProcessConnector_TryGetElementPropsResult(buffer_arg) {
 }
 
 
-// Query an iModel Briefcase
+// Query an iModel Briefcase.
+// The functions in this service allow a non-iModel.js server to get information from an open briefcase.
+// ExecuteECSql is the basic and most general method of querying the iModel.
+// TryGetElementProps is a simplified method to get the properties of an element.
+// GetExternalSourceAspectProps is specialized to getting the properties of an ExternalSourceAspect, and its results is strongly typed.
+// DetectChange is a short-cut query that looks up an ExternalSourceAspect by its external identity and checks its version or checksum.
 var BriefcaseService = exports.BriefcaseService = {
   // Detect if the specified external data is mapped to an element and, if so, if the last-recorded state of the data is different from its current state. 
 detectChange: {
@@ -89,7 +119,7 @@ detectChange: {
     responseSerialize: serialize_TwoProcessConnector_DetectChangeResult,
     responseDeserialize: deserialize_TwoProcessConnector_DetectChangeResult,
   },
-  // Look up an element in the iModel. If not found, all properties of the response will be undefined. 
+  // Look up an element in the iModel. 
 tryGetElementProps: {
     path: '/TwoProcessConnector.Briefcase/TryGetElementProps',
     requestStream: false,
@@ -101,7 +131,7 @@ tryGetElementProps: {
     responseSerialize: serialize_TwoProcessConnector_TryGetElementPropsResult,
     responseDeserialize: deserialize_TwoProcessConnector_TryGetElementPropsResult,
   },
-  // Get the properties of an ExernalSourceAspect. See DetectChange for how to get the input externalSourceAspectId. 
+  // Get the properties of an ExernalSourceAspect. If not found, all of the properties of the returned object will have default values (i.e., elementId will be empty). See DetectChange for how to get the input externalSourceAspectId. 
 getExternalSourceAspectProps: {
     path: '/TwoProcessConnector.Briefcase/GetExternalSourceAspectProps',
     requestStream: false,
@@ -112,6 +142,18 @@ getExternalSourceAspectProps: {
     requestDeserialize: deserialize_TwoProcessConnector_GetExternalSourceAspectPropsRequest,
     responseSerialize: serialize_TwoProcessConnector_ExternalSourceAspectProps,
     responseDeserialize: deserialize_TwoProcessConnector_ExternalSourceAspectProps,
+  },
+  // Execute an ECSql statement 
+executeECSql: {
+    path: '/TwoProcessConnector.Briefcase/ExecuteECSql',
+    requestStream: false,
+    responseStream: false,
+    requestType: briefcase_pb.ExecuteECSqlRequest,
+    responseType: briefcase_pb.ExecuteECSqlResult,
+    requestSerialize: serialize_TwoProcessConnector_ExecuteECSqlRequest,
+    requestDeserialize: deserialize_TwoProcessConnector_ExecuteECSqlRequest,
+    responseSerialize: serialize_TwoProcessConnector_ExecuteECSqlResult,
+    responseDeserialize: deserialize_TwoProcessConnector_ExecuteECSqlResult,
   },
 };
 

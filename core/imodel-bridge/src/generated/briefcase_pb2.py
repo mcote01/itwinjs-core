@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0f\x62riefcase.proto\x12\x13TwoProcessConnector\"S\n\x1e\x45xternalSourceAspectIdentifier\x12\x0f\n\x07scopeId\x18\x01 \x01(\t\x12\x12\n\nidentifier\x18\x02 \x01(\t\x12\x0c\n\x04kind\x18\x03 \x01(\t\"7\n\tCodeProps\x12\x0c\n\x04spec\x18\x01 \x01(\t\x12\r\n\x05scope\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\xa8\x02\n\x19TryGetElementPropsRequest\x12\x11\n\x04id64\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x1b\n\x0e\x66\x65\x64\x65rationGuid\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x31\n\x04\x63ode\x18\x03 \x01(\x0b\x32\x1e.TwoProcessConnector.CodePropsH\x02\x88\x01\x01\x12`\n\x1e\x65xternalSourceAspectIdentifier\x18\x04 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifierH\x03\x88\x01\x01\x42\x07\n\x05_id64B\x11\n\x0f_federationGuidB\x07\n\x05_codeB!\n\x1f_externalSourceAspectIdentifier\"\\\n\x18TryGetElementPropsResult\x12\x11\n\x04id64\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x16\n\tpropsJson\x18\x02 \x01(\tH\x01\x88\x01\x01\x42\x07\n\x05_id64B\x0c\n\n_propsJson\"E\n#GetExternalSourceAspectPropsRequest\x12\x1e\n\x16\x65xternalSourceAspectId\x18\x01 \x01(\t\"[\n\x13\x45xternalSourceState\x12\x14\n\x07version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x15\n\x08\x63hecksum\x18\x02 \x01(\tH\x01\x88\x01\x01\x42\n\n\x08_versionB\x0b\n\t_checksum\"\xe8\x01\n\x19\x45xternalSourceAspectProps\x12\x11\n\telementId\x18\x01 \x01(\t\x12G\n\nidentifier\x18\x02 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x03 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\x12\x16\n\x0ejsonProperties\x18\x04 \x01(\t\x12\x13\n\x06source\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\t\n\x07_source\"\x97\x01\n\x13\x44\x65tectChangeRequest\x12G\n\nidentifier\x18\x01 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x02 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\"\xa0\x01\n\x12\x44\x65tectChangeResult\x12\x16\n\telementId\x18\x01 \x01(\tH\x00\x88\x01\x01\x12#\n\x16\x65xternalSourceAspectId\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x16\n\tisChanged\x18\x03 \x01(\x08H\x02\x88\x01\x01\x42\x0c\n\n_elementIdB\x19\n\x17_externalSourceAspectIdB\x0c\n\n_isChanged2\xf4\x02\n\tBriefcase\x12\x63\n\x0c\x44\x65tectChange\x12(.TwoProcessConnector.DetectChangeRequest\x1a\'.TwoProcessConnector.DetectChangeResult\"\x00\x12u\n\x12TryGetElementProps\x12..TwoProcessConnector.TryGetElementPropsRequest\x1a-.TwoProcessConnector.TryGetElementPropsResult\"\x00\x12\x8a\x01\n\x1cGetExternalSourceAspectProps\x12\x38.TwoProcessConnector.GetExternalSourceAspectPropsRequest\x1a..TwoProcessConnector.ExternalSourceAspectProps\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0f\x62riefcase.proto\x12\x13TwoProcessConnector\"S\n\x1e\x45xternalSourceAspectIdentifier\x12\x0f\n\x07scopeId\x18\x01 \x01(\t\x12\x12\n\nidentifier\x18\x02 \x01(\t\x12\x0c\n\x04kind\x18\x03 \x01(\t\"7\n\tCodeProps\x12\x0c\n\x04spec\x18\x01 \x01(\t\x12\r\n\x05scope\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\t\"\xa8\x02\n\x19TryGetElementPropsRequest\x12\x11\n\x04id64\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x1b\n\x0e\x66\x65\x64\x65rationGuid\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x31\n\x04\x63ode\x18\x03 \x01(\x0b\x32\x1e.TwoProcessConnector.CodePropsH\x02\x88\x01\x01\x12`\n\x1e\x65xternalSourceAspectIdentifier\x18\x04 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifierH\x03\x88\x01\x01\x42\x07\n\x05_id64B\x11\n\x0f_federationGuidB\x07\n\x05_codeB!\n\x1f_externalSourceAspectIdentifier\"@\n\x18TryGetElementPropsResult\x12\x16\n\tpropsJson\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x0c\n\n_propsJson\"[\n\x13\x45xternalSourceState\x12\x14\n\x07version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x15\n\x08\x63hecksum\x18\x02 \x01(\tH\x01\x88\x01\x01\x42\n\n\x08_versionB\x0b\n\t_checksum\"\xe8\x01\n\x19\x45xternalSourceAspectProps\x12\x11\n\telementId\x18\x01 \x01(\t\x12G\n\nidentifier\x18\x02 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x03 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\x12\x16\n\x0ejsonProperties\x18\x04 \x01(\t\x12\x13\n\x06source\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\t\n\x07_source\"E\n#GetExternalSourceAspectPropsRequest\x12\x1e\n\x16\x65xternalSourceAspectId\x18\x01 \x01(\t\"\x97\x01\n\x13\x44\x65tectChangeRequest\x12G\n\nidentifier\x18\x01 \x01(\x0b\x32\x33.TwoProcessConnector.ExternalSourceAspectIdentifier\x12\x37\n\x05state\x18\x02 \x01(\x0b\x32(.TwoProcessConnector.ExternalSourceState\"\xa0\x01\n\x12\x44\x65tectChangeResult\x12\x16\n\telementId\x18\x01 \x01(\tH\x00\x88\x01\x01\x12#\n\x16\x65xternalSourceAspectId\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x16\n\tisChanged\x18\x03 \x01(\x08H\x02\x88\x01\x01\x42\x0c\n\n_elementIdB\x19\n\x17_externalSourceAspectIdB\x0c\n\n_isChanged\"\\\n\x13\x45xecuteECSqlRequest\x12\x16\n\x0e\x65\x63SqlStatement\x18\x02 \x01(\t\x12\x0e\n\x06params\x18\x03 \x01(\t\x12\r\n\x05limit\x18\x04 \x01(\x05\x12\x0e\n\x06offset\x18\x05 \x01(\x05\"6\n\x12\x45xecuteECSqlResult\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x10\n\x08rowsJson\x18\x02 \x01(\t2\xd9\x03\n\tBriefcase\x12\x63\n\x0c\x44\x65tectChange\x12(.TwoProcessConnector.DetectChangeRequest\x1a\'.TwoProcessConnector.DetectChangeResult\"\x00\x12u\n\x12TryGetElementProps\x12..TwoProcessConnector.TryGetElementPropsRequest\x1a-.TwoProcessConnector.TryGetElementPropsResult\"\x00\x12\x8a\x01\n\x1cGetExternalSourceAspectProps\x12\x38.TwoProcessConnector.GetExternalSourceAspectPropsRequest\x1a..TwoProcessConnector.ExternalSourceAspectProps\"\x00\x12\x63\n\x0c\x45xecuteECSql\x12(.TwoProcessConnector.ExecuteECSqlRequest\x1a\'.TwoProcessConnector.ExecuteECSqlResult\"\x00\x62\x06proto3'
 )
 
 
@@ -199,14 +199,7 @@ _TRYGETELEMENTPROPSRESULT = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id64', full_name='TwoProcessConnector.TryGetElementPropsResult.id64', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='propsJson', full_name='TwoProcessConnector.TryGetElementPropsResult.propsJson', index=1,
+      name='propsJson', full_name='TwoProcessConnector.TryGetElementPropsResult.propsJson', index=0,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -224,50 +217,13 @@ _TRYGETELEMENTPROPSRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='_id64', full_name='TwoProcessConnector.TryGetElementPropsResult._id64',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
-    _descriptor.OneofDescriptor(
       name='_propsJson', full_name='TwoProcessConnector.TryGetElementPropsResult._propsJson',
-      index=1, containing_type=None,
+      index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
   serialized_start=481,
-  serialized_end=573,
-)
-
-
-_GETEXTERNALSOURCEASPECTPROPSREQUEST = _descriptor.Descriptor(
-  name='GetExternalSourceAspectPropsRequest',
-  full_name='TwoProcessConnector.GetExternalSourceAspectPropsRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='externalSourceAspectId', full_name='TwoProcessConnector.GetExternalSourceAspectPropsRequest.externalSourceAspectId', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=575,
-  serialized_end=644,
+  serialized_end=545,
 )
 
 
@@ -315,8 +271,8 @@ _EXTERNALSOURCESTATE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=646,
-  serialized_end=737,
+  serialized_start=547,
+  serialized_end=638,
 )
 
 
@@ -380,8 +336,40 @@ _EXTERNALSOURCEASPECTPROPS = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=740,
-  serialized_end=972,
+  serialized_start=641,
+  serialized_end=873,
+)
+
+
+_GETEXTERNALSOURCEASPECTPROPSREQUEST = _descriptor.Descriptor(
+  name='GetExternalSourceAspectPropsRequest',
+  full_name='TwoProcessConnector.GetExternalSourceAspectPropsRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='externalSourceAspectId', full_name='TwoProcessConnector.GetExternalSourceAspectPropsRequest.externalSourceAspectId', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=875,
+  serialized_end=944,
 )
 
 
@@ -419,8 +407,8 @@ _DETECTCHANGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=975,
-  serialized_end=1126,
+  serialized_start=947,
+  serialized_end=1098,
 )
 
 
@@ -480,8 +468,100 @@ _DETECTCHANGERESULT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1129,
-  serialized_end=1289,
+  serialized_start=1101,
+  serialized_end=1261,
+)
+
+
+_EXECUTEECSQLREQUEST = _descriptor.Descriptor(
+  name='ExecuteECSqlRequest',
+  full_name='TwoProcessConnector.ExecuteECSqlRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ecSqlStatement', full_name='TwoProcessConnector.ExecuteECSqlRequest.ecSqlStatement', index=0,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='params', full_name='TwoProcessConnector.ExecuteECSqlRequest.params', index=1,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='limit', full_name='TwoProcessConnector.ExecuteECSqlRequest.limit', index=2,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='offset', full_name='TwoProcessConnector.ExecuteECSqlRequest.offset', index=3,
+      number=5, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1263,
+  serialized_end=1355,
+)
+
+
+_EXECUTEECSQLRESULT = _descriptor.Descriptor(
+  name='ExecuteECSqlResult',
+  full_name='TwoProcessConnector.ExecuteECSqlResult',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='TwoProcessConnector.ExecuteECSqlResult.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='rowsJson', full_name='TwoProcessConnector.ExecuteECSqlResult.rowsJson', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1357,
+  serialized_end=1411,
 )
 
 _TRYGETELEMENTPROPSREQUEST.fields_by_name['code'].message_type = _CODEPROPS
@@ -498,9 +578,6 @@ _TRYGETELEMENTPROPSREQUEST.fields_by_name['code'].containing_oneof = _TRYGETELEM
 _TRYGETELEMENTPROPSREQUEST.oneofs_by_name['_externalSourceAspectIdentifier'].fields.append(
   _TRYGETELEMENTPROPSREQUEST.fields_by_name['externalSourceAspectIdentifier'])
 _TRYGETELEMENTPROPSREQUEST.fields_by_name['externalSourceAspectIdentifier'].containing_oneof = _TRYGETELEMENTPROPSREQUEST.oneofs_by_name['_externalSourceAspectIdentifier']
-_TRYGETELEMENTPROPSRESULT.oneofs_by_name['_id64'].fields.append(
-  _TRYGETELEMENTPROPSRESULT.fields_by_name['id64'])
-_TRYGETELEMENTPROPSRESULT.fields_by_name['id64'].containing_oneof = _TRYGETELEMENTPROPSRESULT.oneofs_by_name['_id64']
 _TRYGETELEMENTPROPSRESULT.oneofs_by_name['_propsJson'].fields.append(
   _TRYGETELEMENTPROPSRESULT.fields_by_name['propsJson'])
 _TRYGETELEMENTPROPSRESULT.fields_by_name['propsJson'].containing_oneof = _TRYGETELEMENTPROPSRESULT.oneofs_by_name['_propsJson']
@@ -530,11 +607,13 @@ DESCRIPTOR.message_types_by_name['ExternalSourceAspectIdentifier'] = _EXTERNALSO
 DESCRIPTOR.message_types_by_name['CodeProps'] = _CODEPROPS
 DESCRIPTOR.message_types_by_name['TryGetElementPropsRequest'] = _TRYGETELEMENTPROPSREQUEST
 DESCRIPTOR.message_types_by_name['TryGetElementPropsResult'] = _TRYGETELEMENTPROPSRESULT
-DESCRIPTOR.message_types_by_name['GetExternalSourceAspectPropsRequest'] = _GETEXTERNALSOURCEASPECTPROPSREQUEST
 DESCRIPTOR.message_types_by_name['ExternalSourceState'] = _EXTERNALSOURCESTATE
 DESCRIPTOR.message_types_by_name['ExternalSourceAspectProps'] = _EXTERNALSOURCEASPECTPROPS
+DESCRIPTOR.message_types_by_name['GetExternalSourceAspectPropsRequest'] = _GETEXTERNALSOURCEASPECTPROPSREQUEST
 DESCRIPTOR.message_types_by_name['DetectChangeRequest'] = _DETECTCHANGEREQUEST
 DESCRIPTOR.message_types_by_name['DetectChangeResult'] = _DETECTCHANGERESULT
+DESCRIPTOR.message_types_by_name['ExecuteECSqlRequest'] = _EXECUTEECSQLREQUEST
+DESCRIPTOR.message_types_by_name['ExecuteECSqlResult'] = _EXECUTEECSQLRESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ExternalSourceAspectIdentifier = _reflection.GeneratedProtocolMessageType('ExternalSourceAspectIdentifier', (_message.Message,), {
@@ -565,13 +644,6 @@ TryGetElementPropsResult = _reflection.GeneratedProtocolMessageType('TryGetEleme
   })
 _sym_db.RegisterMessage(TryGetElementPropsResult)
 
-GetExternalSourceAspectPropsRequest = _reflection.GeneratedProtocolMessageType('GetExternalSourceAspectPropsRequest', (_message.Message,), {
-  'DESCRIPTOR' : _GETEXTERNALSOURCEASPECTPROPSREQUEST,
-  '__module__' : 'briefcase_pb2'
-  # @@protoc_insertion_point(class_scope:TwoProcessConnector.GetExternalSourceAspectPropsRequest)
-  })
-_sym_db.RegisterMessage(GetExternalSourceAspectPropsRequest)
-
 ExternalSourceState = _reflection.GeneratedProtocolMessageType('ExternalSourceState', (_message.Message,), {
   'DESCRIPTOR' : _EXTERNALSOURCESTATE,
   '__module__' : 'briefcase_pb2'
@@ -585,6 +657,13 @@ ExternalSourceAspectProps = _reflection.GeneratedProtocolMessageType('ExternalSo
   # @@protoc_insertion_point(class_scope:TwoProcessConnector.ExternalSourceAspectProps)
   })
 _sym_db.RegisterMessage(ExternalSourceAspectProps)
+
+GetExternalSourceAspectPropsRequest = _reflection.GeneratedProtocolMessageType('GetExternalSourceAspectPropsRequest', (_message.Message,), {
+  'DESCRIPTOR' : _GETEXTERNALSOURCEASPECTPROPSREQUEST,
+  '__module__' : 'briefcase_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.GetExternalSourceAspectPropsRequest)
+  })
+_sym_db.RegisterMessage(GetExternalSourceAspectPropsRequest)
 
 DetectChangeRequest = _reflection.GeneratedProtocolMessageType('DetectChangeRequest', (_message.Message,), {
   'DESCRIPTOR' : _DETECTCHANGEREQUEST,
@@ -600,6 +679,20 @@ DetectChangeResult = _reflection.GeneratedProtocolMessageType('DetectChangeResul
   })
 _sym_db.RegisterMessage(DetectChangeResult)
 
+ExecuteECSqlRequest = _reflection.GeneratedProtocolMessageType('ExecuteECSqlRequest', (_message.Message,), {
+  'DESCRIPTOR' : _EXECUTEECSQLREQUEST,
+  '__module__' : 'briefcase_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.ExecuteECSqlRequest)
+  })
+_sym_db.RegisterMessage(ExecuteECSqlRequest)
+
+ExecuteECSqlResult = _reflection.GeneratedProtocolMessageType('ExecuteECSqlResult', (_message.Message,), {
+  'DESCRIPTOR' : _EXECUTEECSQLRESULT,
+  '__module__' : 'briefcase_pb2'
+  # @@protoc_insertion_point(class_scope:TwoProcessConnector.ExecuteECSqlResult)
+  })
+_sym_db.RegisterMessage(ExecuteECSqlResult)
+
 
 
 _BRIEFCASE = _descriptor.ServiceDescriptor(
@@ -609,8 +702,8 @@ _BRIEFCASE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1292,
-  serialized_end=1664,
+  serialized_start=1414,
+  serialized_end=1887,
   methods=[
   _descriptor.MethodDescriptor(
     name='DetectChange',
@@ -639,6 +732,16 @@ _BRIEFCASE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_GETEXTERNALSOURCEASPECTPROPSREQUEST,
     output_type=_EXTERNALSOURCEASPECTPROPS,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='ExecuteECSql',
+    full_name='TwoProcessConnector.Briefcase.ExecuteECSql',
+    index=3,
+    containing_service=None,
+    input_type=_EXECUTEECSQLREQUEST,
+    output_type=_EXECUTEECSQLRESULT,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

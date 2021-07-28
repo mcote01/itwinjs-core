@@ -55,16 +55,33 @@ def findElement(guid):
         return None
     req = briefcase_pb2.TryGetElementPropsRequest(federationGuid=guid)
     response = briefcaseStub.TryGetElementProps(req)
-    if hasattr(response, 'id64') and response.id64 != '':
-        return response.id64
+    if hasattr(response, 'jsonProperties') and response.jsonProperties != '':
+        props = json.loads(response.jsonProperties)
+        return props.id
     return None
 
+def executeECSql():
+    global briefcaseStub
+    if briefcaseStub == None:
+        return None
+    req = briefcase_pb2.ExecuteECSqlRequest(ecSqlStatement='SELECT origin from TestBridge.SmallSquareTile', limit=1)
+    logging.getLogger('Test2PReader.py').debug('ExecuteECSql ' + req.ecSqlStatement)
+    response = briefcaseStub.ExecuteECSql(req)
+    if not hasattr(response, 'status'):
+        logging.getLogger('Test2PReader.py').debug('ExecuteECSql: no status??')
+    else:
+        if response.status != 101:
+            logging.getLogger('Test2PReader.py').debug('ExecuteECSql: status = ' + reponse.status)
+        else:
+            rows = json.loads(response.rowsJson)
+            logging.getLogger('Test2PReader.py').debug('ExecuteECSql: result = ' + repr(rows))
+
+    return None
 
 class Test2PReader(reader_pb2_grpc.ReaderServicer):
 
     def initialize(self, request, context):
-        logging.getLogger('Test2PReader.py').debug(
-            'initialize ' + request.filename)
+        logging.getLogger('Test2PReader.py').debug('initialize ' + request.filename)
         global filename
         filename = request.filename
         return reader_pb2.InitializeResponse()
@@ -83,13 +100,15 @@ class Test2PReader(reader_pb2_grpc.ReaderServicer):
         for shape in data['Tiles']:
             if isinstance(data['Tiles'][shape], list):
                 for tile in data['Tiles'][shape]:
-                    existingId = findElement(tile['guid'])
+                    existingId = findElement(tile['guid']) # demonstrate how reader.py can send a query back to the client even while handling a client request
                     if existingId != None:
                         logging.getLogger('Test2PReader.py').debug(
                             'tile ' + tile['guid'] + ' was already converted to ' + existingId)
                     yield toTile(shape, tile)
             else:
                 yield toTile(shape, data['Tiles'][shape])
+
+        executeECSql() # demonstrate how reader.py can send a query back to the client even while handling a client request
 
         for group in data['Groups']:
             yield toGroup(group)

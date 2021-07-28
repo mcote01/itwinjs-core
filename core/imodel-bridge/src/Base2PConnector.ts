@@ -4,13 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 import { assert, BentleyStatus, ClientRequestContext, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
-import {
-  IModelDb, IModelJsFs,
-  RepositoryLink,
-} from "@bentley/imodeljs-backend";
-import {
-  IModelError,
-} from "@bentley/imodeljs-common";
+import { IModelDb, RepositoryLink } from "@bentley/imodeljs-backend";
+import { IModelError } from "@bentley/imodeljs-common";
+import * as fs from "fs"
 
 import * as grpc from "@grpc/grpc-js";
 import { ReaderClient } from "./generated/reader_grpc_pb";
@@ -202,7 +198,7 @@ export abstract class Base2PConnector extends IModelBridge {
     let timeStamp = Date.now();
     assert(this._sourceFilename !== undefined, "we should not be in this method if the source file has not yet been opened");
     try {
-      const stat = IModelJsFs.lstatSync(this._sourceFilename); // will throw if this._sourceFilename names a file that does not exist. That would be a bug. Let it abort the job.
+      const stat = fs.lstatSync(this._sourceFilename); // will throw if this._sourceFilename names a file that does not exist. That would be a bug. Let it abort the job.
       if (undefined !== stat) {
         timeStamp = stat.mtimeMs;
       }

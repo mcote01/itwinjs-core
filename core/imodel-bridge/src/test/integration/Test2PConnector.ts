@@ -4,9 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import { assert, ClientRequestContext, Id64, Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
-import {
-  CategorySelector, DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements,
-} from "@bentley/imodeljs-backend";
+import { CategorySelector, DefinitionModel, DefinitionPartition, DisplayStyle3d, DisplayStyleCreationOptions, ElementGroupsMembers, GeometryPart, GroupInformationPartition, ModelSelector, OrthographicViewDefinition, PhysicalElement, PhysicalModel, PhysicalPartition, RelationshipProps, RenderMaterialElement, SpatialCategory, SubCategory, SubjectOwnsPartitionElements } from "@bentley/imodeljs-backend";
 import {
   CodeScopeSpec, CodeSpec, ColorByName, ColorDef, ColorDefProps, GeometryPartProps, GeometryStreamBuilder, IModel, IModelError, InformationPartitionElementProps,
   RenderMode, SubCategoryAppearance, ViewFlags,
@@ -360,7 +358,7 @@ export class Test2PConnector extends Base2PConnector {
     };
     if (results.id !== undefined) // in case this is an update
       sync.element.id = results.id;
-    const status = this.synchronizer.updateIModel(sync, groupModelId, sourceItem, "Group");
+    const status = this.synchronizer.updateIModel(sync, this.repositoryLink.id, sourceItem, "Group");
     if (status !== IModelStatus.Success) {
       Logger.logError(this.loggerCategory, `convertGroup ${group} failed with status=${status}`);
       return Id64.invalid;
@@ -414,7 +412,7 @@ export class Test2PConnector extends Base2PConnector {
       element,
       itemState: results.state,
     };
-    const status = this.synchronizer.updateIModel(sync, physicalModelId, sourceItem, "Tile");
+    const status = this.synchronizer.updateIModel(sync, this.repositoryLink.id, sourceItem, "Tile");
     if (status !== IModelStatus.Success) {
       Logger.logError(this.loggerCategory, `convertTile ${tile} failed with status=${status}`);
       return;

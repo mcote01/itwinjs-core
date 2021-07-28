@@ -1722,7 +1722,9 @@
       "id": "client-lib",
       "description": "Select client library to debug",
       "type": "pickString",
-      "options": ["product-settings", "projectshare", "rbac"]
+      "options": [
+        "product-settings"
+      ]
     }
   ]
 }

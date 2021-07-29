@@ -333,7 +333,7 @@ export class Test2PConnector extends Base2PConnector {
       id: group.name, // use name instead of GUID group.guid
       checksum: hash.MD5(str),
     };
-    const results = this.synchronizer.detectChanges(groupModelId, "Group", sourceItem);
+    const results = this.synchronizer.detectChanges(this.repositoryLink.id, "Group", sourceItem); // take care to use the correct scope and kind when looking up the ExternalSourceAspect!
     if (results.state === ItemState.Unchanged) {
       assert(results.id !== undefined);
       this.synchronizer.onElementSeen(results.id);
@@ -372,7 +372,7 @@ export class Test2PConnector extends Base2PConnector {
       id: tile.guid,
       checksum: hash.MD5(str),
     };
-    const results = this.synchronizer.detectChanges(physicalModelId, "Tile", sourceItem);
+    const results = this.synchronizer.detectChanges(this.repositoryLink.id, "Tile", sourceItem); // take care to use the correct scope and kind when looking up the ExternalSourceAspect!
     if (results.state === ItemState.Unchanged) {
       this.synchronizer.onElementSeen(results.id!);
       return;

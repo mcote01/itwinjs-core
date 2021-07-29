@@ -10,7 +10,7 @@ import { loadEnv } from "@bentley/config-loader";
 import { ChangeSet, IModelHubClientLoggerCategory } from "@bentley/imodelhub-client";
 import {
   BackendLoggerCategory, ECSqlStatement, ExternalSourceAspect, IModelDb, IModelHost, IModelHostConfiguration, IModelHubBackend, IModelJsFs, NativeLoggerCategory,
-  PhysicalPartition, Subject,
+  PhysicalPartition, RepositoryLink, Subject,
 } from "@bentley/imodeljs-backend";
 import { IModel } from "@bentley/imodeljs-common";
 import { AuthorizedClientRequestContext, ITwinClientLoggerCategory } from "@bentley/itwin-client";
@@ -152,23 +152,26 @@ export class BridgeTestUtils {
     assert.isTrue(physicalModelId !== undefined);
     assert.isTrue(Id64.isValidId64(physicalModelId!));
 
+    const rlinkid = imodel.elements.queryElementIdByCode(RepositoryLink.createCode(imodel, IModel.repositoryModelId, bridgeJobDef.sourcePath!));
+    assert.isTrue(rlinkid !== undefined);
+
     // Verify some elements
     if (!isUpdate) {
-      const ids = ExternalSourceAspect.findBySource(imodel, physicalModelId!, "Tile", "e1aa3ec3-0c2e-4328-89d0-08e1b4d446c8");
+      const ids = ExternalSourceAspect.findBySource(imodel, rlinkid!, "Tile", "e1aa3ec3-0c2e-4328-89d0-08e1b4d446c8");
       assert.isTrue(Id64.isValidId64(ids.aspectId!));
       assert.isTrue(Id64.isValidId64(ids.elementId!));
       const tile = imodel.elements.getElement<SmallSquareTile>(ids.elementId!);
       assert.equal(tile.condition, "New");
     } else {
       // Modified element
-      let ids = ExternalSourceAspect.findBySource(imodel, physicalModelId!, "Tile", "e1aa3ec3-0c2e-4328-89d0-08e1b4d446c8");
+      let ids = ExternalSourceAspect.findBySource(imodel, rlinkid!, "Tile", "e1aa3ec3-0c2e-4328-89d0-08e1b4d446c8");
       assert.isTrue(Id64.isValidId64(ids.aspectId!));
       assert.isTrue(Id64.isValidId64(ids.elementId!));
       let tile = imodel.elements.getElement<SmallSquareTile>(ids.elementId!);
       assert.equal(tile.condition, "Scratched");
 
       // New element
-      ids = ExternalSourceAspect.findBySource(imodel, physicalModelId!, "Tile", "5b51a06f-4026-4d0d-9674-d8428b118e9a");
+      ids = ExternalSourceAspect.findBySource(imodel, rlinkid!, "Tile", "5b51a06f-4026-4d0d-9674-d8428b118e9a");
       assert.isTrue(Id64.isValidId64(ids.aspectId!));
       assert.isTrue(Id64.isValidId64(ids.elementId!));
       tile = imodel.elements.getElement<RectangleTile>(ids.elementId!);

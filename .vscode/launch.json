@@ -267,7 +267,7 @@
       "runtimeArgs": ["run", "test:integration"],
       "outFiles": ["${workspaceFolder}/{core,clients}/*/lib/**/*.js"],
       "env": {
-        "imodel_bridge_runner_test_use_2pc": "1",
+        "//imodel_bridge_runner_test_use_2pc": "1",
         "//test2pconnector_inline_typescript_reader": "1"
       }
     },

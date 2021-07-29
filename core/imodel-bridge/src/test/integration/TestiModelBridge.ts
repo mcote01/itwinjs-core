@@ -354,7 +354,7 @@ class TestBridge extends IModelBridge {
         id: group.guid,
         checksum: hash.MD5(str),
       };
-      const results = this.synchronizer.detectChanges(groupModelId, "Group", sourceItem);
+      const results = this.synchronizer.detectChanges(this.repositoryLink.id, "Group", sourceItem);
       if (results.state === ItemState.Unchanged) {
         this.synchronizer.onElementSeen(results.id!);
         continue;
@@ -378,7 +378,7 @@ class TestBridge extends IModelBridge {
       };
       if (results.id !== undefined) // in case this is an update
         sync.element.id = results.id;
-      this.synchronizer.updateIModel(sync, groupModelId, sourceItem, "Group");
+      this.synchronizer.updateIModel(sync, this.repositoryLink.id, sourceItem, "Group");
     }
   }
 
@@ -400,7 +400,7 @@ class TestBridge extends IModelBridge {
       id: tile.guid,
       checksum: hash.MD5(str),
     };
-    const results = this.synchronizer.detectChanges(physicalModelId, "Tile", sourceItem);
+    const results = this.synchronizer.detectChanges(this.repositoryLink.id, "Tile", sourceItem);
     if (results.state === ItemState.Unchanged) {
       this.synchronizer.onElementSeen(results.id!);
       return;
@@ -439,7 +439,7 @@ class TestBridge extends IModelBridge {
       element,
       itemState: results.state,
     };
-    this.synchronizer.updateIModel(sync, physicalModelId, sourceItem, "Tile");
+    this.synchronizer.updateIModel(sync, this.repositoryLink.id, sourceItem, "Tile");
     if (!tile.hasOwnProperty("Group")) {
       return;
     }

@@ -97,7 +97,7 @@ describe("IModelBridgeFwk (#integration)", () => {
     // verify that a changed source changes the imodel
     IModelJsFs.copySync(path.join(KnownTestLocations.assetsDir, "TestBridge_v2.json"), targetPath, { overwrite: true });
 
-    try {
+    try { // must cause the updated source file to have a different modified time than the original, or the test bridge will this it's unchanged and ignore it.
       const time = new Date();
       fs.utimesSync(targetPath, time, time);
     } catch (err) {

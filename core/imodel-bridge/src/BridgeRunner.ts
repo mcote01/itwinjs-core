@@ -475,7 +475,7 @@ class BriefcaseDbBuilder extends IModelDbBuilder {
   private tryFindExistingBriefcase(): LocalBriefcaseProps | undefined {
     if (this._bridgeArgs.argsJson === undefined || this._bridgeArgs.argsJson.briefcaseId === undefined || this._serverArgs.iModelId === undefined)
       return undefined;
-    let briefcases = BriefcaseManager.getCachedBriefcases(this._serverArgs.iModelId);
+    const briefcases = BriefcaseManager.getCachedBriefcases(this._serverArgs.iModelId);
     for (const briefcase of briefcases) {
       assert(briefcase.iModelId === this._serverArgs.iModelId);
       if (briefcase.briefcaseId === this._bridgeArgs.argsJson.briefcaseId) {

@@ -9,11 +9,10 @@ import * as grpc from "@grpc/grpc-js";
 import * as google_protobuf_empty_pb from "google-protobuf/google/protobuf/empty_pb";
 import * as fs from "fs";
 import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse, OnBriefcaseServerAvailableParams, ShutdownRequest } from "../../generated/reader_pb";
-import { IReaderServer, ReaderService } from "../../generated/reader_grpc_pb";
+import { ReaderService } from "../../generated/reader_grpc_pb";
 import { BriefcaseClient } from "../../generated/briefcase_grpc_pb";
 import * as briefcase_pb from "../../generated/briefcase_pb";
-import { Id64String } from "../../../../bentley/lib/Id";
-import { DbResult } from "../../../../bentley/lib/BeSQLite";
+import { DbResult, Id64String } from "@bentley/bentleyjs-core";
 
 let server: grpc.Server;
 let briefcaseClient: BriefcaseClient;
@@ -45,14 +44,6 @@ async function findElement(guid: string): Promise<Id64String | undefined> {
     return undefined;
 
   const existing: briefcase_pb.TryGetElementPropsResult = await new Promise((resolve, reject) => {
-    // const request = new briefcase_pb.DetectChangeRequest();
-    // const identifier = new briefcase_pb.ExternalSourceAspectIdentifier();
-    // identifier.setKind("Element");
-    // identifier.setScopeid("0");
-    // identifier.setIdentifier(data.guid);
-    // request.setIdentifier(identifier);
-    // const state = new
-    // briefcaseClient.detectChange()
     const request = new briefcase_pb.TryGetElementPropsRequest();
     request.setFederationguid(guid);
     briefcaseClient.tryGetElementProps(request, (err, response) => {

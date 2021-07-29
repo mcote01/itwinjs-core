@@ -6,7 +6,7 @@ import { assert, BentleyStatus, ClientRequestContext, IModelStatus, Logger } fro
 import { AuthorizedClientRequestContext } from "@bentley/itwin-client";
 import { IModelDb, RepositoryLink } from "@bentley/imodeljs-backend";
 import { IModelError } from "@bentley/imodeljs-common";
-import * as fs from "fs"
+import * as fs from "fs";
 
 import * as grpc from "@grpc/grpc-js";
 import { ReaderClient } from "./generated/reader_grpc_pb";

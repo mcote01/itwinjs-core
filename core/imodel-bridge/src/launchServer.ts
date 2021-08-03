@@ -49,12 +49,10 @@ export async function launchServer(exePath: string, args: string[], childEnv?: N
   const spawnOptions: SpawnOptions = { stdio, env: childEnv || process.env };
   const childProcess = spawn(exePath, args, spawnOptions);
   childProcess.stdout.on("data", (data: any) => {
-    Logger.logInfo("Base2PConnector.Server", `${data}`);
-    process.stdout.write(data);
+    Logger.logInfo("Base2PConnector.Server", `${data.toString()}`);
   });
   childProcess.stderr.on("data", (data: any) => {
-    Logger.logInfo("Base2PConnector.Server", `!${data}`);
-    process.stderr.write(data);
+    Logger.logInfo("Base2PConnector.Server", `${data.toString()}`);
   });
   childProcess.on("close", (code, signal) => {
     Logger.logInfo("Base2PConnector", `server CLOSED with code=${code} signal=${signal}`);
@@ -66,7 +64,7 @@ export async function launchServer(exePath: string, args: string[], childEnv?: N
     Logger.logException("Base2PConnector", err);
   });
   childProcess.on("message", (message) => {
-    Logger.logInfo("Base2PConnector", `server MESSAGE with message=${message}`);
+    Logger.logInfo("Base2PConnector", `server MESSAGE with message=${message.toString()}`);
   });
   childProcess.on("disconnect", () => {
     Logger.logInfo("Base2PConnector", `server DISCONNECT`);

@@ -26,7 +26,7 @@ import * as path from "path";
 
 import { Base2PConnector } from "../../Base2PConnector";
 import { startMockTypescriptReader } from "./Test2PReader";
-import { launchPythonSever } from "../../launchServer";
+import { launchPythonSever, launchServer } from "../../launchServer";
 
 const loggerCategory: string = TestBridgeLoggerCategory.Bridge;
 
@@ -50,6 +50,11 @@ export class Test2PConnector extends Base2PConnector {
 
     if (process.env.test2pconnector_inline_typescript_reader !== undefined) {
       return startMockTypescriptReader(addr); // this is a TypeScript server impl that runs in the same process - it's easier to debug that way.
+    }
+
+    if (process.env.test2pconnector_reader_exe !== undefined) {
+      await launchServer(process.env.test2pconnector_reader_exe, [addr]);
+      return;
     }
 
     const readerPyFile = path.join(__dirname, "../assets/Test2PReader.py"); // this is the python server that runs in a separate process

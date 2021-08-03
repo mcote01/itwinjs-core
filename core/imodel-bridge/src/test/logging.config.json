@@ -12,6 +12,18 @@
     {
       "category": "imodel-bridge.Framework",
       "logLevel": "Error"
+    },
+    {
+      "category": "Test2PReader",
+      "logLevel": "Trace"
+    },
+    {
+      "category": "Base2PConnector",
+      "logLevel": "Trace"
+    },
+    {
+      "category": "TestBridge",
+      "logLevel": "Trace"
     }
   ]
 }

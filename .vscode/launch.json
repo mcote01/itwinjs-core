@@ -234,6 +234,7 @@
       "outFiles": ["${workspaceFolder}/{core,clients}/*/lib/**/*.js"],
       "env": {
         "imodel_bridge_runner_test_use_2pc": "1",
+        "test2pconnector_reader_exe": "${env:outroot}Winx64/Product/Test2PCReader/Test2PCReader.exe",
         "//test2pconnector_inline_typescript_reader": "1",
         "//test2pconnector_server_address": "localhost:3000"
       }

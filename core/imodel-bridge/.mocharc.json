@@ -1,0 +1,5 @@
+{
+  "checkLeaks": true,
+  "timeout": 60000,
+  "global": "proto"
+}

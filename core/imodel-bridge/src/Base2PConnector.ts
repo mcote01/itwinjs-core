@@ -15,6 +15,7 @@ import { getServerAddress } from "./launchServer";
 import { ItemState, SourceItem, SynchronizationResults } from "./Synchronizer";
 import { IModelBridge } from "./IModelBridge";
 import { startBriefcaseGrpcServer } from "./BriefcaseServer";
+import { ChildProcess } from "child_process";
 
 export abstract class Base2PConnector extends IModelBridge {
   protected _sourceFilenameState: ItemState = ItemState.New;
@@ -22,6 +23,7 @@ export abstract class Base2PConnector extends IModelBridge {
   protected _repositoryLink?: RepositoryLink;
   protected _readerClient?: ReaderClient;
   private _briefcaseServer?: grpc.Server;
+  private _readerServer: ChildProcess | undefined;
 
   // #region Reader gRPC
 
@@ -31,13 +33,14 @@ export abstract class Base2PConnector extends IModelBridge {
   protected async callShutdown(status: number): Promise<void> {
     const shutdownRequest = new ShutdownRequest();
     shutdownRequest.setStatus(status);
-    return new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       assert(this._readerClient !== undefined);
       this._readerClient.shutdown(shutdownRequest, (err, _response) => {
+        // "13 INTERNAL: Received RST_STREAM with code 0"
         // "Regarding the error itself, the message indicates that the server unexpectedly closed the stream before the client considered
         // it to be complete. The code 0 indicates that the server did consider the stream to be complete."
         // https://github.com/grpc/grpc-node/issues/1532#issuecomment-700599867
-        // We get this when the python server calls server.stop and then returns the "empty" response. The gRPC client, evidentally,
+        // We get this when the python server calls server.stop and then returns the "empty" response. The gRPC client, evidently,
         // tries to read the response (despite the fact that it's declared as empty!) and finds that the pipe has been closed.
         // Well, the server is gone, and that's what we want, so treat this as not an error.
         if (err && err.message !== "13 INTERNAL: Received RST_STREAM with code 0") {
@@ -47,6 +50,9 @@ export abstract class Base2PConnector extends IModelBridge {
         resolve();
       });
     });
+    if (this._readerServer !== undefined) {
+      this._readerServer.kill();
+    }
   }
 
   protected async callIntialize(filename: string): Promise<InitializeResponse> {
@@ -93,7 +99,7 @@ export abstract class Base2PConnector extends IModelBridge {
     });
   }
 
-  protected abstract startServer(addr: string): Promise<void>;
+  protected abstract startServer(addr: string): Promise<ChildProcess | undefined>;
 
   private async createClient(address: string): Promise<ReaderClient> {
 
@@ -117,7 +123,7 @@ export abstract class Base2PConnector extends IModelBridge {
 
     try {
       const rpcServerAddress = await getServerAddress();
-      await this.startServer(rpcServerAddress);
+      this._readerServer = await this.startServer(rpcServerAddress);
       this._readerClient = await this.createClient(rpcServerAddress);
       await this.callIntializeWithRetries(this._sourceFilename);
     } catch (err) {

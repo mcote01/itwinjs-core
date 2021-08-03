@@ -27,6 +27,7 @@ import * as path from "path";
 import { Base2PConnector } from "../../Base2PConnector";
 import { startMockTypescriptReader } from "./Test2PReader";
 import { launchPythonSever, launchServer } from "../../launchServer";
+import { ChildProcess } from "child_process";
 
 const loggerCategory: string = TestBridgeLoggerCategory.Bridge;
 
@@ -44,22 +45,21 @@ export class Test2PConnector extends Base2PConnector {
     }
   }
 
-  protected async startServer(addr: string): Promise<void> {
+  protected async startServer(addr: string): Promise<ChildProcess | undefined> {
     if (process.env.test2pconnector_server_address !== undefined)
-      return; // assume that the server is already running
+      return undefined; // assume that the server is already running
 
     if (process.env.test2pconnector_inline_typescript_reader !== undefined) {
-      return startMockTypescriptReader(addr); // this is a TypeScript server impl that runs in the same process - it's easier to debug that way.
+      await startMockTypescriptReader(addr); // this is a TypeScript server impl that runs in the same process. It is used only to simplify debugging.
+      return undefined;
     }
 
     if (process.env.test2pconnector_reader_exe !== undefined) {
-      await launchServer(process.env.test2pconnector_reader_exe, [addr]);
-      return;
+      return launchServer(process.env.test2pconnector_reader_exe, [addr]);
     }
 
     const readerPyFile = path.join(__dirname, "../assets/Test2PReader.py"); // this is the python server that runs in a separate process
-    await launchPythonSever(readerPyFile, addr);
-    return;
+    return launchPythonSever(readerPyFile, addr);
   }
 
   public async importDomainSchema(_requestContext: AuthorizedClientRequestContext | ClientRequestContext): Promise<any> {

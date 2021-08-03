@@ -78,6 +78,9 @@ def executeECSql():
 
     return None
 
+def stopServer():
+    server.stop(5)
+
 class Test2PReader(reader_pb2_grpc.ReaderServicer):
 
     def initialize(self, request, context):
@@ -115,7 +118,9 @@ class Test2PReader(reader_pb2_grpc.ReaderServicer):
 
     def shutdown(self, request, context):
         logging.getLogger('Test2PReader.py').info('shutting down ...')
-        server.stop(5)
+        stopThread = Thread(target=stopServer) # tricky: I must return my empty(!) result and allow it to be sent to the client before I stop my server. User a thread to (hopefully!) defer the call to stop until after I return.
+        stopThread.setDaemon(True)
+        stopThread.start()
         return empty_pb2.Empty()
 
 

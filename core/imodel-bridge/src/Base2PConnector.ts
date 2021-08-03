@@ -36,14 +36,7 @@ export abstract class Base2PConnector extends IModelBridge {
     await new Promise<void>((resolve, reject) => {
       assert(this._readerClient !== undefined);
       this._readerClient.shutdown(shutdownRequest, (err, _response) => {
-        // "13 INTERNAL: Received RST_STREAM with code 0"
-        // "Regarding the error itself, the message indicates that the server unexpectedly closed the stream before the client considered
-        // it to be complete. The code 0 indicates that the server did consider the stream to be complete."
-        // https://github.com/grpc/grpc-node/issues/1532#issuecomment-700599867
-        // We get this when the python server calls server.stop and then returns the "empty" response. The gRPC client, evidently,
-        // tries to read the response (despite the fact that it's declared as empty!) and finds that the pipe has been closed.
-        // Well, the server is gone, and that's what we want, so treat this as not an error.
-        if (err && err.message !== "13 INTERNAL: Received RST_STREAM with code 0") {
+        if (err) {
           Logger.logException(this.loggerCategory, err);
           reject(err);
         }

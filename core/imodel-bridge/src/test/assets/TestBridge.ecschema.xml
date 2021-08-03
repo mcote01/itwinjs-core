@@ -9,27 +9,27 @@
         </ECProperty>
     </ECEntityClass>
 
-    <ECEntityClass typeName="SmallSquareTile">
+    <ECEntityClass typeName="SmallSquareWidget">
         <BaseClass>TestBridgePhysicalElement</BaseClass>
     </ECEntityClass>
 
-    <ECEntityClass typeName="LargeSquareTile">
+    <ECEntityClass typeName="LargeSquareWidget">
         <BaseClass>TestBridgePhysicalElement</BaseClass>
     </ECEntityClass>
 
-    <ECEntityClass typeName="RectangleTile">
+    <ECEntityClass typeName="RectangleWidget">
         <BaseClass>TestBridgePhysicalElement</BaseClass>
     </ECEntityClass>
 
-    <ECEntityClass typeName="EquilateralTriangleTile">
+    <ECEntityClass typeName="EquilateralTriangleWidget">
         <BaseClass>TestBridgePhysicalElement</BaseClass>
     </ECEntityClass>
 
-    <ECEntityClass typeName="RightTriangleTile">
+    <ECEntityClass typeName="RightTriangleWidget">
         <BaseClass>TestBridgePhysicalElement</BaseClass>
     </ECEntityClass>
 
-    <ECEntityClass typeName="IsoscelesTriangleTile">
+    <ECEntityClass typeName="IsoscelesTriangleWidget">
         <BaseClass>TestBridgePhysicalElement</BaseClass>
     </ECEntityClass>
 

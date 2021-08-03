@@ -8,7 +8,7 @@ import { AxisAlignedBox3d, Code, CodeScopeProps, CodeSpec, ElementProps, IModelE
 import { Id64String, IModelStatus, Logger } from "@bentley/bentleyjs-core";
 import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
 import { Point3d, XYZProps, YawPitchRollAngles, YawPitchRollProps } from "@bentley/geometry-core";
-import { EquilateralTriangleTileBuilder, IsoscelesTriangleTileBuilder, LargeSquareTileBuilder, RectangleTileBuilder, RightTriangleTileBuilder, SmallSquareTileBuilder, TileBuilder } from "./TestBridgeGeometry";
+import { EquilateralTriangleWidgetBuilder, IsoscelesTriangleWidgetBuilder, LargeSquareWidgetBuilder, RectangleWidgetBuilder, RightTriangleWidgetBuilder, SmallSquareWidgetBuilder, WidgetBuilder } from "./TestBridgeGeometry";
 
 export enum CodeSpecs {
   Group = "TestBridge:Group",
@@ -65,32 +65,32 @@ export class TestBridgePhysicalElement extends PhysicalElement implements TestBr
     return val;
   }
 
-  protected static createElement(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any, tileBuilder: TileBuilder, classFullName: string): PhysicalElement {
-    const code = TestBridgeGroup.createCode(imodel, physicalModelId, tile.guid);
+  protected static createElement(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, widget: any, widgetBuilder: WidgetBuilder, classFullName: string): PhysicalElement {
+    const code = TestBridgeGroup.createCode(imodel, physicalModelId, widget.guid);
     const categoryId = SpatialCategory.queryCategoryIdByName(imodel, definitionModelId, Categories.Category);
     if (undefined === categoryId) {
       throw new IModelError(IModelStatus.BadElement, "Unable to find category id for TestBridge category");
     }
-    const stream = tileBuilder.createGeometry(categoryId, tile);
+    const stream = widgetBuilder.createGeometry(categoryId, widget);
     let origin: XYZProps;
     let angles: YawPitchRollProps;
 
-    if (tile.hasOwnProperty("Placement") && tile.Placement.hasOwnProperty("Origin")) {
+    if (widget.hasOwnProperty("Placement") && widget.Placement.hasOwnProperty("Origin")) {
       const xyz: XYZProps = {
-        x: toNumber(tile.Placement.Origin.x),
-        y: toNumber(tile.Placement.Origin.y),
-        z: toNumber(tile.Placement.Origin.z),
+        x: toNumber(widget.Placement.Origin.x),
+        y: toNumber(widget.Placement.Origin.y),
+        z: toNumber(widget.Placement.Origin.z),
       };
       origin = xyz;
     } else {
       origin = new Point3d();
     }
 
-    if (tile.hasOwnProperty("Placement") && tile.Placement.hasOwnProperty("Angles")) {
+    if (widget.hasOwnProperty("Placement") && widget.Placement.hasOwnProperty("Angles")) {
       const yawp: YawPitchRollProps = {
-        yaw: toNumber(tile.Placement.Angles.yaw),
-        pitch: toNumber(tile.Placement.Angles.pitch),
-        roll: toNumber(tile.Placement.Angles.roll),
+        yaw: toNumber(widget.Placement.Angles.yaw),
+        pitch: toNumber(widget.Placement.Angles.pitch),
+        roll: toNumber(widget.Placement.Angles.roll),
       };
       angles = yawp;
     } else {
@@ -119,7 +119,7 @@ export class TestBridgePhysicalElement extends PhysicalElement implements TestBr
       model: physicalModelId,
       classFullName,
       geom: stream,
-      condition: tile.condition,
+      condition: widget.condition,
       placement,
     };
     return imodel.elements.createElement(props);
@@ -139,51 +139,51 @@ export namespace TestBridgePhysicalElement { // eslint-disable-line no-redeclare
   }
 }
 
-export class SmallSquareTile extends TestBridgePhysicalElement {
-  public static override get className(): string { return "SmallSquareTile"; }
+export class SmallSquareWidget extends TestBridgePhysicalElement {
+  public static override get className(): string { return "SmallSquareWidget"; }
 
-  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
-    return this.createElement(imodel, physicalModelId, definitionModelId, tile, new SmallSquareTileBuilder(imodel, definitionModelId), this.classFullName);
+  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, widget: any): PhysicalElement {
+    return this.createElement(imodel, physicalModelId, definitionModelId, widget, new SmallSquareWidgetBuilder(imodel, definitionModelId), this.classFullName);
   }
 }
 
-export class LargeSquareTile extends TestBridgePhysicalElement {
-  public static override get className(): string { return "LargeSquareTile"; }
+export class LargeSquareWidget extends TestBridgePhysicalElement {
+  public static override get className(): string { return "LargeSquareWidget"; }
 
-  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
-    return this.createElement(imodel, physicalModelId, definitionModelId, tile, new LargeSquareTileBuilder(imodel, definitionModelId), this.classFullName);
+  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, widget: any): PhysicalElement {
+    return this.createElement(imodel, physicalModelId, definitionModelId, widget, new LargeSquareWidgetBuilder(imodel, definitionModelId), this.classFullName);
   }
 }
 
-export class RectangleTile extends TestBridgePhysicalElement {
-  public static override get className(): string { return "RectangleTile"; }
+export class RectangleWidget extends TestBridgePhysicalElement {
+  public static override get className(): string { return "RectangleWidget"; }
 
-  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
-    return this.createElement(imodel, physicalModelId, definitionModelId, tile, new RectangleTileBuilder(imodel, definitionModelId), this.classFullName);
+  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, widget: any): PhysicalElement {
+    return this.createElement(imodel, physicalModelId, definitionModelId, widget, new RectangleWidgetBuilder(imodel, definitionModelId), this.classFullName);
   }
 }
 
-export class EquilateralTriangleTile extends TestBridgePhysicalElement {
-  public static override get className(): string { return "EquilateralTriangleTile"; }
+export class EquilateralTriangleWidget extends TestBridgePhysicalElement {
+  public static override get className(): string { return "EquilateralTriangleWidget"; }
 
-  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
-    return this.createElement(imodel, physicalModelId, definitionModelId, tile, new EquilateralTriangleTileBuilder(imodel, definitionModelId), this.classFullName);
+  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, widget: any): PhysicalElement {
+    return this.createElement(imodel, physicalModelId, definitionModelId, widget, new EquilateralTriangleWidgetBuilder(imodel, definitionModelId), this.classFullName);
   }
 }
 
-export class RightTriangleTile extends TestBridgePhysicalElement {
-  public static override get className(): string { return "RightTriangleTile"; }
+export class RightTriangleWidget extends TestBridgePhysicalElement {
+  public static override get className(): string { return "RightTriangleWidget"; }
 
-  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
-    return this.createElement(imodel, physicalModelId, definitionModelId, tile, new RightTriangleTileBuilder(imodel, definitionModelId), this.classFullName);
+  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, widget: any): PhysicalElement {
+    return this.createElement(imodel, physicalModelId, definitionModelId, widget, new RightTriangleWidgetBuilder(imodel, definitionModelId), this.classFullName);
   }
 }
 
-export class IsoscelesTriangleTile extends TestBridgePhysicalElement {
-  public static override get className(): string { return "IsoscelesTriangleTile"; }
+export class IsoscelesTriangleWidget extends TestBridgePhysicalElement {
+  public static override get className(): string { return "IsoscelesTriangleWidget"; }
 
-  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, tile: any): PhysicalElement {
-    return this.createElement(imodel, physicalModelId, definitionModelId, tile, new IsoscelesTriangleTileBuilder(imodel, definitionModelId), this.classFullName);
+  public static create(imodel: IModelDb, physicalModelId: Id64String, definitionModelId: Id64String, widget: any): PhysicalElement {
+    return this.createElement(imodel, physicalModelId, definitionModelId, widget, new IsoscelesTriangleWidgetBuilder(imodel, definitionModelId), this.classFullName);
   }
 }
 

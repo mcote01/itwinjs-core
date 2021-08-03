@@ -21,7 +21,7 @@ import { TestBridgeLoggerCategory } from "./TestBridgeLoggerCategory";
 import { TestBridgeSchema } from "./TestBridgeSchema";
 import { TestBridgeGroupModel } from "./TestBridgeModels";
 import {
-  Categories, CodeSpecs, EquilateralTriangleTile, GeometryParts, IsoscelesTriangleTile, LargeSquareTile, Materials, RectangleTile, RightTriangleTile, SmallSquareTile,
+  Categories, CodeSpecs, EquilateralTriangleWidget, GeometryParts, IsoscelesTriangleWidget, LargeSquareWidget, Materials, RectangleWidget, RightTriangleWidget, SmallSquareWidget,
   TestBridgeGroup, TestBridgeGroupProps, TestBridgePhysicalElement,
 } from "./TestBridgeElements";
 import { Casings, EquilateralTriangleCasing, IsoscelesTriangleCasing, LargeSquareCasing, QuadCasing, RectangleCasing, RectangularMagnetCasing, RightTriangleCasing, SmallSquareCasing, TriangleCasing } from "./TestBridgeGeometry";
@@ -383,54 +383,54 @@ class TestBridge extends IModelBridge {
   }
 
   private convertPhysicalElements(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String) {
-    for (const shape of Object.keys(this._data.Tiles)) {
-      if (Array.isArray(this._data.Tiles[shape])) {
-        for (const tile of this._data.Tiles[shape]) {
-          this.convertTile(physicalModelId, definitionModelId, groupModelId, tile, shape);
+    for (const shape of Object.keys(this._data.Widgets)) {
+      if (Array.isArray(this._data.Widgets[shape])) {
+        for (const widget of this._data.Widgets[shape]) {
+          this.convertWidget(physicalModelId, definitionModelId, groupModelId, widget, shape);
         }
       } else {
-        this.convertTile(physicalModelId, definitionModelId, groupModelId, this._data.Tiles[shape], shape);
+        this.convertWidget(physicalModelId, definitionModelId, groupModelId, this._data.Widgets[shape], shape);
       }
     }
   }
 
-  private convertTile(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String, tile: any, shape: string) {
-    const str = JSON.stringify(tile);
+  private convertWidget(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String, widget: any, shape: string) {
+    const str = JSON.stringify(widget);
     const sourceItem: SourceItem = {
-      id: tile.guid,
+      id: widget.guid,
       checksum: hash.MD5(str),
     };
-    const results = this.synchronizer.detectChanges(this.repositoryLink.id, "Tile", sourceItem);
+    const results = this.synchronizer.detectChanges(this.repositoryLink.id, "Widget", sourceItem);
     if (results.state === ItemState.Unchanged) {
       this.synchronizer.onElementSeen(results.id!);
       return;
     }
-    if (tile.casingMaterial === undefined) {
-      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for TestBridge Tile ${tile.guid}`, Logger.logError, loggerCategory);
+    if (widget.casingMaterial === undefined) {
+      throw new IModelError(IModelStatus.BadArg, `casingMaterial undefined for TestBridge Widget ${widget.guid}`, Logger.logError, loggerCategory);
     }
 
     let element: PhysicalElement;
     switch (shape) {
-      case "SmallSquareTile":
-        element = SmallSquareTile.create(this.synchronizer.imodel, physicalModelId, definitionModelId, tile);
+      case "SmallSquareWidget":
+        element = SmallSquareWidget.create(this.synchronizer.imodel, physicalModelId, definitionModelId, widget);
         break;
-      case "LargeSquareTile":
-        element = LargeSquareTile.create(this.synchronizer.imodel, physicalModelId, definitionModelId, tile);
+      case "LargeSquareWidget":
+        element = LargeSquareWidget.create(this.synchronizer.imodel, physicalModelId, definitionModelId, widget);
         break;
-      case "IsoscelesTriangleTile":
-        element = IsoscelesTriangleTile.create(this.synchronizer.imodel, physicalModelId, definitionModelId, tile);
+      case "IsoscelesTriangleWidget":
+        element = IsoscelesTriangleWidget.create(this.synchronizer.imodel, physicalModelId, definitionModelId, widget);
         break;
-      case "EquilateralTriangleTile":
-        element = EquilateralTriangleTile.create(this.synchronizer.imodel, physicalModelId, definitionModelId, tile);
+      case "EquilateralTriangleWidget":
+        element = EquilateralTriangleWidget.create(this.synchronizer.imodel, physicalModelId, definitionModelId, widget);
         break;
-      case "RightTriangleTile":
-        element = RightTriangleTile.create(this.synchronizer.imodel, physicalModelId, definitionModelId, tile);
+      case "RightTriangleWidget":
+        element = RightTriangleWidget.create(this.synchronizer.imodel, physicalModelId, definitionModelId, widget);
         break;
-      case "RectangleTile":
-        element = RectangleTile.create(this.synchronizer.imodel, physicalModelId, definitionModelId, tile);
+      case "RectangleWidget":
+        element = RectangleWidget.create(this.synchronizer.imodel, physicalModelId, definitionModelId, widget);
         break;
       default:
-        throw new IModelError(IModelStatus.BadArg, `unknown tile shape ${shape}`, Logger.logError, loggerCategory);
+        throw new IModelError(IModelStatus.BadArg, `unknown widget shape ${shape}`, Logger.logError, loggerCategory);
     }
     if (undefined !== results.id) {
       element.id = results.id;
@@ -439,16 +439,16 @@ class TestBridge extends IModelBridge {
       element,
       itemState: results.state,
     };
-    this.synchronizer.updateIModel(sync, this.repositoryLink.id, sourceItem, "Tile");
-    if (!tile.hasOwnProperty("Group")) {
+    this.synchronizer.updateIModel(sync, this.repositoryLink.id, sourceItem, "Widget");
+    if (!widget.hasOwnProperty("Group")) {
       return;
     }
 
     // for testing purposes only: double check that what I calculated is what was saved in the briefcase
-    const persistentTile = this.synchronizer.imodel.elements.getElement<TestBridgePhysicalElement>(sync.element.id);
-    assert(persistentTile.placement.origin.isExactEqual((sync.element as TestBridgePhysicalElement).placement.origin));
+    const persistentWidget = this.synchronizer.imodel.elements.getElement<TestBridgePhysicalElement>(sync.element.id);
+    assert(persistentWidget.placement.origin.isExactEqual((sync.element as TestBridgePhysicalElement).placement.origin));
 
-    const groupCode = TestBridgeGroup.createCode(this.synchronizer.imodel, groupModelId, tile.Group);
+    const groupCode = TestBridgeGroup.createCode(this.synchronizer.imodel, groupModelId, widget.Group);
     const groupElement = this.synchronizer.imodel.elements.queryElementIdByCode(groupCode);
     assert(groupElement !== undefined);
     let doCreate = results.state === ItemState.New;

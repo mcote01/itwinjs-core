@@ -23,21 +23,21 @@ Converter/Connector-process -->|Elements| iModel;
 
 The Reader.x process accesses the external data. The 2PConnector.js process is the connector proper. It converts the external data and updates the iModel.
 
-Both Reader.x and 2PConnector.js are format-specific. The user must write them both, and they must work together. In particular, the Reader.x program must return data in a form that the connector subclass expects and in the order it expects it.
+Both Reader.x and 2PConnector.js are format-specific. The user must write them both, and they must work together. In particular, the Reader.x process must return data in a form that the connector subclass expects and in the order it expects it.
 
-The Reader.x program should be kept very simple and just follow the external format. Any complicated logic that may be needed to transform external concepts into BIS concepts should be in the 2PConnector.
+The Reader.x process should be kept very simple and just follow the external format. Any complicated logic that may be needed to transform external concepts into BIS concepts should be in the 2PConnector.
 
-The IPC mechanism between the reader and connector can be general-purpose. Bentley provides a general-purpose gRPC interface (Reader) that should be sufficient for most two-process connectors. Bentley also provides a general-purpose Base2PConnector base class that implements the client-side IPC mechanics for this general-purpose interface. A format-specific Reader.x program just has to implement this simple gRPC interface, and the corresponding format-specific connector sub-class just has to override a few methods to convert the data.
+The IPC mechanism between the reader and connector can be general-purpose. Bentley provides a general-purpose gRPC interface (Reader) that should be sufficient for most two-process connectors. Bentley also provides a general-purpose Base2PConnector base class that implements the client-side IPC mechanics for this general-purpose interface. A format-specific Reader.x process just has to implement this simple gRPC interface, and the corresponding format-specific connector sub-class just has to override a few methods to convert the data.
 
 The two processes communicate using gRPC (https://grpc.io/). The general-purpose gRPC interface is defined in `protobuf/Reader.proto`.
 
 ```protobuf
 /* Query an external source.
- * The functions in this service are implemented by a non-iModel.js "reader" program. They are called by an iModel.js connector. They
- * give the iModel.js connector a way to fetch data from an external source that is not directly accessible to it. The "reader" program is the intermediary.
- * The main function is `getData`. The reader program should implement this by *streaming* all of the data in the external source back to the requesting connector.
- * The `onBriefcaseServerAvailable` function gives the reader the address of a service that is implemented by the iModel.js program. See briefcase.proto.
- * The reader program can use the briefcase service to send queries back to the connector. The reader can even send briefcase requests to the connector (and wait for answers)
+ * The functions in this service are implemented by a non-iModel.js "reader" process. They are called by an iModel.js connector. They
+ * give the iModel.js connector a way to fetch data from an external source that is not directly accessible to it. The "reader" process is the intermediary.
+ * The main function is `getData`. The reader process should implement this by *streaming* all of the data in the external source back to the requesting connector.
+ * The `onBriefcaseServerAvailable` function gives the reader the address of a service that is implemented by the iModel.js process. See briefcase.proto.
+ * The reader process can use the briefcase service to send queries back to the connector. The reader can even send briefcase requests to the connector (and wait for answers)
  * while in the midst of handling a request from the connector.
  */
 service Reader {
@@ -52,7 +52,7 @@ service Reader {
 }
 ```
 
-Note that the interface requires the Reader.x program to return the external data as a _stream_.
+Note that the interface requires the Reader.x process to return the external data as a _stream_.
 
 Here are some highlights of the Bentley general-purpose Base2PConnector. Note how it handles client-side IPC mechanics. It collaborates with the format-specific subclass to start the right server and to process the returned data.
 
@@ -64,7 +64,7 @@ import { GetDataRequest, GetDataResponse, InitializeRequest, InitializeResponse,
 
 export abstract class Base2PConnector extends IModelBridge {
 
-  // The base class can implement the client-side stubs. They can communicate with any Reader.x program.
+  // The base class can implement the client-side stubs. They can communicate with any Reader.x process.
   protected _readerClient?: ReaderClient;
   ...
   private async createClient(address: string): Promise<void> {
@@ -72,7 +72,7 @@ export abstract class Base2PConnector extends IModelBridge {
     ...
   }
 
-  // COLLABORATE: The sub-class must start the Reader.x program
+  // COLLABORATE: The sub-class must start the Reader.x process
   protected abstract startServer(addr: string): Promise<void>;
 
   // handle the IModelBridge.openSourceData callback by starting the server and connecting to it.
@@ -108,12 +108,12 @@ export abstract class Base2PConnector extends IModelBridge {
 }
 ```
 
-The user can then write a format-specific subclass of Base2PConnector to implement the conversion logic for any given external format. Here are excerpts from an example connector subclass that handles and external database containing objects called "tiles". Tiles can be grouped. The corresponding Reader program returns tile and group data in JSON format in this example. (They could use any agreed format.) In this example, the reader is implemented as a Python program. Note how the connector subclass is not concerned with IPC mechanics; only with conversion logic.
+The user can then write a format-specific subclass of Base2PConnector to implement the conversion logic for any given external format. Here are excerpts from an example connector subclass that handles and external database containing objects called "widgets". Widgets can be grouped. The corresponding Reader process returns widget and group data in JSON format in this example. (They could use any agreed format.) In this example, the reader is implemented as a Python process. Note how the connector subclass is not concerned with IPC mechanics; only with conversion logic.
 
 ```ts
 export class Test2PConnector extends Base2PConnector {
   ...
-  // COLLABORATE: Only I know what reader program to start.
+  // COLLABORATE: Only I know what reader process to start.
   protected async startServer(addr: string): Promise<void> {
     const pyScript = path.join(__dirname, "Test2PReader.py");
     return launchPythonSever(pyScript, addr);
@@ -129,12 +129,12 @@ export class Test2PConnector extends Base2PConnector {
       if (obj.objType === "Group") {
         this.convertGroupElement(obj, groupModelId);
       } else {
-        const tileType = obj.tileType;
-        this.convertTile(physicalModelId, definitionModelId, groupModelId, obj, tileType);
+        const widgetType = obj.widgetType;
+        this.convertWidget(physicalModelId, definitionModelId, groupModelId, obj, widgetType);
       }
     });
 
-  private convertTile(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String, tile: any, shape: string) { ... }
+  private convertWidget(physicalModelId: Id64String, definitionModelId: Id64String, groupModelId: Id64String, data: any, dataType: string) { ... }
 
   private convertGroupElement(group: any, groupModelId: Id64String): Id64String { ... }
 
@@ -149,7 +149,7 @@ If the customer thinks the general-purpose streaming Reader interface is inadequ
 
 ## Reader.x -> 2PConnector.js Queries
 
-It is also possible for the Reader.x program to send queries to the 2PConnector.js. The reader may even query the connector while it is in the midst of handling a request from the connector. For example, the reader program may use these queries to get information about the state of the iModel to help it optimize the data that it returns in its getData function.
+It is also possible for the Reader.x process to send queries to the 2PConnector.js. The reader may even query the connector while it is in the midst of handling a request from the connector. For example, the reader process may use these queries to get information about the state of the iModel to help it optimize the data that it returns in its getData function.
 
 The Base2PConnector base class implements the following service, as defined in `protobuf/Briefcase.proto`. The connector passes the address of this service to the reader's onBriefcaseServerAvailable method.
 
@@ -172,7 +172,7 @@ service Briefcase {
   rpc ExecuteECSql(ExecuteECSqlRequest) returns (ExecuteECSqlResult) {}
 }
 ```
-## Implementing a Reader.x program
+## Implementing a Reader.x process
 
 ### Python
 
@@ -247,7 +247,7 @@ BridgeRunner --> iModelHub: unlock connector channel
 
 It should be understood that the Reader.x is writing and returning a *stream* of data. This caters to the case where the connector can process the items as they come in. That is the most scalable approach.
 
-One goal is the keep the Reader.x program as
+One goal is the keep the Reader.x process as
 The user may write the The reader may return items in *external source order*. The connector subclass should then must be ready to put them into iModel order. (See below on how to simplify a connector.)
 
 ## How to Simplify a Connector

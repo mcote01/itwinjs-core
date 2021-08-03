@@ -12,8 +12,8 @@
          "guid": "7CB86BCE-0186-458D-93D4-582197CED345"
       }
    ],
-   "Tiles": {
-      "SmallSquareTile": [
+   "Widgets": {
+      "SmallSquareWidget": [
          {
             "casingMaterial": "RedPlastic",
             "condition": "New",
@@ -113,7 +113,7 @@
             "guid": "7bfd6558-e7b3-4347-8128-3513f65ccb76"
          }
       ],
-      "LargeSquareTile": [
+      "LargeSquareWidget": [
          {
             "casingMaterial": "GreenPlastic",
             "condition": "New",
@@ -223,7 +223,7 @@
             "guid": "4669178e-e0a2-4b74-b7aa-075b09a107aa"
          }
       ],
-      "IsoscelesTriangleTile": [
+      "IsoscelesTriangleWidget": [
          {
             "casingMaterial": "BluePlastic",
             "condition": "New",
@@ -337,7 +337,7 @@
             "guid": "f6323719-6358-436a-a667-ddda99377a48"
          }
       ],
-      "EquilateralTriangleTile": [
+      "EquilateralTriangleWidget": [
          {
             "casingMaterial": "OrangePlastic",
             "condition": "New",
@@ -431,7 +431,7 @@
             "guid": "003ee4f3-14a1-48dc-b806-90ceb1fc23e5"
          }
       ],
-      "RightTriangleTile": [
+      "RightTriangleWidget": [
          {
             "casingMaterial": "PurplePlastic",
             "Placement": {
@@ -572,7 +572,7 @@
             "guid": "2a7450d6-8947-4517-8ff4-308ca93009f7"
          }
       ],
-      "RectangleTile": {
+      "RectangleWidget": {
          "casingMaterial": "YellowPlastic",
          "Placement": {
             "Origin": {

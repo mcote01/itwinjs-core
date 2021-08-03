@@ -31,9 +31,9 @@ briefcaseStub = None
 global briefcaseChannel
 
 
-def toTile(shape, obj):
-    obj['objType'] = 'Tile'
-    obj['tileType'] = shape
+def toWidget(shape, obj):
+    obj['objType'] = 'Widget'
+    obj['widgetType'] = shape
     return reader_pb2.GetDataResponse(data=json.dumps(obj))
 
 
@@ -64,7 +64,7 @@ def executeECSql():
     global briefcaseStub
     if briefcaseStub == None:
         return None
-    req = briefcase_pb2.ExecuteECSqlRequest(ecSqlStatement='SELECT origin from TestBridge.SmallSquareTile', limit=1)
+    req = briefcase_pb2.ExecuteECSqlRequest(ecSqlStatement='SELECT origin from TestBridge.SmallSquareWidget', limit=1)
     logging.getLogger('Test2PReader.py').debug('ExecuteECSql ' + req.ecSqlStatement)
     response = briefcaseStub.ExecuteECSql(req)
     if not hasattr(response, 'status'):
@@ -100,16 +100,16 @@ class Test2PReader(reader_pb2_grpc.ReaderServicer):
 
         f = open(filename,)
         data = json.load(f)
-        for shape in data['Tiles']:
-            if isinstance(data['Tiles'][shape], list):
-                for tile in data['Tiles'][shape]:
-                    existingId = findElement(tile['guid']) # demonstrate how reader.py can send a query back to the client even while handling a client request
+        for shape in data['Widgets']:
+            if isinstance(data['Widgets'][shape], list):
+                for widget in data['Widgets'][shape]:
+                    existingId = findElement(widget['guid']) # demonstrate how reader.py can send a query back to the client even while handling a client request
                     if existingId != None:
                         logging.getLogger('Test2PReader.py').debug(
-                            'tile ' + tile['guid'] + ' was already converted to ' + existingId)
-                    yield toTile(shape, tile)
+                            'widget ' + widget['guid'] + ' was already converted to ' + existingId)
+                    yield toWidget(shape, widget)
             else:
-                yield toTile(shape, data['Tiles'][shape])
+                yield toWidget(shape, data['Widgets'][shape])
 
         executeECSql() # demonstrate how reader.py can send a query back to the client even while handling a client request
 

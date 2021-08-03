@@ -67,7 +67,7 @@ async function executeSomeECSql(): Promise<void> {
 
   const results: briefcase_pb.ExecuteECSqlResult = await new Promise((resolve, reject) => {
     const request = new briefcase_pb.ExecuteECSqlRequest();
-    request.setEcsqlstatement("SELECT origin from TestBridge.SmallSquareTile");
+    request.setEcsqlstatement("SELECT origin from TestBridge.SmallSquareWidget");
     request.setLimit(1);
     briefcaseClient.executeECSql(request, (err, response) => {
       if (err)
@@ -88,9 +88,9 @@ async function executeSomeECSql(): Promise<void> {
   console.log(`ExecuteECSql result is ${JSON.stringify(rows)}`);
 }
 
-function writeTile(call: grpc.ServerWritableStream<GetDataRequest, GetDataResponse>, shape: string, data: any): void {
-  data.objType = "Tile";
-  data.tileType = shape;
+function writeWidget(call: grpc.ServerWritableStream<GetDataRequest, GetDataResponse>, shape: string, data: any): void {
+  data.objType = "Widget";
+  data.widgetType = shape;
   const response = new GetDataResponse();
   response.setData(JSON.stringify(data));
   call.write(response);
@@ -129,21 +129,21 @@ async function getData(call: grpc.ServerWritableStream<GetDataRequest, GetDataRe
 
   await executeSomeECSql(); // demonstrate sending an ECSql query to the client
 
-  for (const shape of Object.keys(data.Tiles)) {
-    if (Array.isArray(data.Tiles[shape])) {
-      for (const tile of data.Tiles[shape]) {
-        const exist = await findElement(tile.guid); // demonstrate another request to the client
+  for (const shape of Object.keys(data.Widgets)) {
+    if (Array.isArray(data.Widgets[shape])) {
+      for (const widget of data.Widgets[shape]) {
+        const exist = await findElement(widget.guid); // demonstrate another request to the client
         if (exist !== undefined) {
-          console.log(`Tile already found in iModel. TODO - check to see if it is changed. To do that, I'd have to know how to compute its hash.`);
+          console.log(`Widget already found in iModel. TODO - check to see if it is changed. To do that, I'd have to know how to compute its hash.`);
         }
-        writeTile(call, shape, tile);
+        writeWidget(call, shape, widget);
       }
     } else {
-      writeTile(call, shape, data.Tiles[shape]);
+      writeWidget(call, shape, data.Widgets[shape]);
     }
   }
 
-  // deliberately return groups after tiles (which reference groups) to show that the client subclass must be ready for this
+  // deliberately return groups after widgets (which reference groups) to show that the client subclass must be ready for this
 
   for (const i of Object.keys(data.Groups)) {
     writeGroup(call, data.Groups[i]);

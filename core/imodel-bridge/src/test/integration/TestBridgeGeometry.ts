@@ -28,11 +28,11 @@ export enum Magnet {
   Length = 0.04,
 }
 
-export abstract class TileCasing {
+export abstract class WidgetCasing {
   public abstract name(): string;
 }
 
-export abstract class QuadCasing extends TileCasing {
+export abstract class QuadCasing extends WidgetCasing {
   public readonly thickness: number = Casings.Thickness;
   public abstract center(): Point3d;
   public abstract size(): Point3d;
@@ -88,7 +88,7 @@ export class RectangularMagnetCasing extends QuadCasing {
   }
 }
 
-export abstract class TriangleCasing extends TileCasing {
+export abstract class TriangleCasing extends WidgetCasing {
   public vec() {
     return new Vector3d(0.0, 0.0, Casings.Thickness);
   }
@@ -144,7 +144,7 @@ export class RightTriangleCasing extends TriangleCasing {
   }
 }
 
-export abstract class TileBuilder {
+export abstract class WidgetBuilder {
   protected _builder: GeometryStreamBuilder;
   constructor(protected readonly _imodel: IModelDb, protected readonly _definitionModelId: Id64String) {
     this._builder = new GeometryStreamBuilder();
@@ -172,10 +172,10 @@ export abstract class TileBuilder {
     return casingId;
   }
 
-  protected createCasingParams(categoryId: Id64String, subCategoryId: Id64String, tile: any): GeometryParams {
+  protected createCasingParams(categoryId: Id64String, subCategoryId: Id64String, widget: any): GeometryParams {
     const params = new GeometryParams(categoryId, subCategoryId);
     params.materialId = this._imodel.elements.queryElementIdByCode(RenderMaterialElement.createCode(this._imodel, this._definitionModelId, Materials.ColoredPlastic));
-    switch (tile.casingMaterial) {
+    switch (widget.casingMaterial) {
       case "RedPlastic":
         params.fillColor = ColorDef.fromTbgr(ColorByName.red);
         params.lineColor = params.fillColor;
@@ -206,7 +206,7 @@ export abstract class TileBuilder {
     return params;
   }
 
-  protected abstract getCasing(): TileCasing;
+  protected abstract getCasing(): WidgetCasing;
   protected abstract get casingName(): string;
   protected partId(): Id64String {
     const geomPartId = this._imodel.elements.queryElementIdByCode(GeometryPart.createCode(this._imodel, this._definitionModelId, this.casingName));
@@ -219,7 +219,7 @@ export abstract class TileBuilder {
   protected abstract appendCircularMagnet(circularMagnetGeomPartId: Id64String): void;
   protected abstract appendRectangularMagnet(rectangularMagnetGeomPartId: Id64String, magnetOffset: number): void;
 
-  public createGeometry(categoryId: Id64String, tile: any): GeometryStreamProps {
+  public createGeometry(categoryId: Id64String, widget: any): GeometryStreamProps {
     this._builder = new GeometryStreamBuilder();
     const circularMagnetGeomPartId = this._imodel.elements.queryElementIdByCode(GeometryPart.createCode(this._imodel, this._definitionModelId, GeometryParts.CircularMagnet));
     if (undefined === circularMagnetGeomPartId) {
@@ -234,9 +234,9 @@ export abstract class TileBuilder {
     const casingId = this.getCasingSubCategoryId(categoryId);
     const magnetId = this.getMagnetSubCategoryId(categoryId);
 
-    // Append geometry/params for tile casing
+    // Append geometry/params for widget casing
     this._builder.appendSubCategoryChange(casingId);
-    this._builder.appendGeometryParamsChange(this.createCasingParams(categoryId, casingId, tile));
+    this._builder.appendGeometryParamsChange(this.createCasingParams(categoryId, casingId, widget));
     this._builder.appendGeometryPart3d(this.partId(), Point3d.createZero());
 
     // Append geometry/params for circular magnets
@@ -254,7 +254,7 @@ export abstract class TileBuilder {
   }
 }
 
-export abstract class QuadTileBuilder extends TileBuilder {
+export abstract class QuadWidgetBuilder extends WidgetBuilder {
   protected _casingSize: Point3d;
   protected _casingCenter: Point3d;
 
@@ -266,9 +266,9 @@ export abstract class QuadTileBuilder extends TileBuilder {
   }
 
 }
-export class SmallSquareTileBuilder extends QuadTileBuilder {
+export class SmallSquareWidgetBuilder extends QuadWidgetBuilder {
 
-  protected getCasing(): TileCasing {
+  protected getCasing(): WidgetCasing {
     return new SmallSquareCasing();
   }
 
@@ -288,8 +288,8 @@ export class SmallSquareTileBuilder extends QuadTileBuilder {
   }
 }
 
-export class LargeSquareTileBuilder extends QuadTileBuilder {
-  protected getCasing(): TileCasing {
+export class LargeSquareWidgetBuilder extends QuadWidgetBuilder {
+  protected getCasing(): WidgetCasing {
     return new LargeSquareCasing();
   }
 
@@ -312,8 +312,8 @@ export class LargeSquareTileBuilder extends QuadTileBuilder {
   }
 }
 
-export class RectangleTileBuilder extends QuadTileBuilder {
-  protected getCasing(): TileCasing {
+export class RectangleWidgetBuilder extends QuadWidgetBuilder {
+  protected getCasing(): WidgetCasing {
     return new RectangleCasing();
   }
 
@@ -336,7 +336,7 @@ export class RectangleTileBuilder extends QuadTileBuilder {
   }
 }
 
-export class EquilateralTriangleTileBuilder extends TileBuilder {
+export class EquilateralTriangleWidgetBuilder extends WidgetBuilder {
   private _centroid: Point3d;
   private _a: number;
 
@@ -348,7 +348,7 @@ export class EquilateralTriangleTileBuilder extends TileBuilder {
     this._centroid = new Point3d(0.0, b / 3, Casings.Thickness / 2);
   }
 
-  protected getCasing(): TileCasing {
+  protected getCasing(): WidgetCasing {
     return new EquilateralTriangleCasing();
   }
 
@@ -377,8 +377,8 @@ export class EquilateralTriangleTileBuilder extends TileBuilder {
   }
 }
 
-export class RightTriangleTileBuilder extends TileBuilder {
-  protected getCasing(): TileCasing {
+export class RightTriangleWidgetBuilder extends WidgetBuilder {
+  protected getCasing(): WidgetCasing {
     return new RightTriangleCasing();
   }
 
@@ -400,7 +400,7 @@ export class RightTriangleTileBuilder extends TileBuilder {
   }
 }
 
-export class IsoscelesTriangleTileBuilder extends TileBuilder {
+export class IsoscelesTriangleWidgetBuilder extends WidgetBuilder {
   private _centroid: Point3d;
   private _a: number;
   private _b: number;
@@ -414,7 +414,7 @@ export class IsoscelesTriangleTileBuilder extends TileBuilder {
     this._centroid = new Point3d(0.0, this._b / 3, Casings.Thickness / 2);
   }
 
-  protected getCasing(): TileCasing {
+  protected getCasing(): WidgetCasing {
     return new IsoscelesTriangleCasing();
   }
 
@@ -442,13 +442,13 @@ export class IsoscelesTriangleTileBuilder extends TileBuilder {
 
     let yawp = YawPitchRollAngles.tryFromTransform(Transform.createRefs(transPoints[0], rotation));
     if (yawp.angles === undefined) {
-      throw new IModelError(IModelStatus.BadArg, "Unable to create YawPitchRollAngles for IsocelesTriangleTile", Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, "Unable to create YawPitchRollAngles for IsocelesTriangleWidget", Logger.logError, loggerCategory);
     }
     this._builder.appendGeometryPart3d(rectangularMagnetGeomPartId, yawp.origin, yawp.angles);
 
     yawp = YawPitchRollAngles.tryFromTransform(Transform.createRefs(transPoints[1], rotation));
     if (yawp.angles === undefined) {
-      throw new IModelError(IModelStatus.BadArg, "Unable to create YawPitchRollAngles for IsocelesTriangleTile", Logger.logError, loggerCategory);
+      throw new IModelError(IModelStatus.BadArg, "Unable to create YawPitchRollAngles for IsocelesTriangleWidget", Logger.logError, loggerCategory);
     }
     this._builder.appendGeometryPart3d(rectangularMagnetGeomPartId, yawp.origin, yawp.angles);
   }

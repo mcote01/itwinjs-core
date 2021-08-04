@@ -60,6 +60,7 @@ export class AttributeMap {
 
   public constructor() {
     const posOnly = new AttributeMapEntry([["a_pos", 0, VariableType.Vec3]]);
+    const surface = new AttributeMapEntry([["a_pos", 0, VariableType.Vec4]]);
     const skySphere = new AttributeMapEntry([
       ["a_pos", 0, VariableType.Vec3],
       ["a_worldPos", 1, VariableType.Vec3],
@@ -108,6 +109,7 @@ export class AttributeMap {
       [TechniqueId.VolClassCopyZ, screenPoints],
       [TechniqueId.RealityMesh, realityMesh],
       [TechniqueId.PlanarGrid, planarGrid],
+      [TechniqueId.Surface, surface],
     ]);
   }
 

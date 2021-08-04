@@ -19,7 +19,7 @@ import { addInstanceOverrides } from "./Instancing";
 import { addLookupTable } from "./LookupTable";
 
 const initializeVertLUTCoords = `
-  g_vertexLUTIndex = decodeUInt24(a_pos);
+  g_vertexLUTIndex = decodeUInt24(a_pos.xyz);
   g_vertexBaseCoords = compute_vert_coords(g_vertexLUTIndex);
 `;
 
@@ -33,7 +33,7 @@ vec4 unquantizeVertexPosition(vec3 pos, vec3 origin, vec3 scale) { return unquan
 
 // Need to read 2 rgba values to obtain 6 16-bit integers for position
 const unquantizeVertexPositionFromLUT = `
-vec4 unquantizeVertexPosition(vec3 encodedIndex, vec3 origin, vec3 scale) {
+vec4 unquantizeVertexPosition(vec4 encodedIndex, vec3 origin, vec3 scale) {
   vec2 tc = g_vertexBaseCoords;
   vec4 enc1 = floor(TEXTURE(u_vertLUT, tc) * 255.0 + 0.5);
   tc.x += g_vert_stepX;

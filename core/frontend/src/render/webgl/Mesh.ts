@@ -623,7 +623,9 @@ export class SurfaceGeometry extends MeshGeometry {
     this._buffers = BuffersContainer.create();
     const attrPos = AttributeMap.findAttribute("a_pos", TechniqueId.Surface, false);
     assert(undefined !== attrPos);
-    this._buffers.addBuffer(indices, [BufferParameters.create(attrPos.location, 3, GL.DataType.UnsignedByte, false, 0, 0, false)]);
+    console.log(`Adding indices=${  numIndices}`);
+    this._buffers.addBuffer(indices, [BufferParameters.create(attrPos.location, 4, GL.DataType.UnsignedByte, false, 0, 0, false)]);
+    // this._buffers.addBuffer(indices, [BufferParameters.create(attrPos.location, 3, GL.DataType.UnsignedByte, false, 0, 0, false)]);
     this._indices = indices;
   }
 

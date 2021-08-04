@@ -29,12 +29,23 @@ export class VertexIndices {
    * The length of the array must be a multiple of 3. This object takes ownership of the array.
    */
   public constructor(data: Uint8Array) {
-    this.data = data;
-    assert(0 === this.data.length % 3);
+    const paddedDataArr = [];
+    let j = 0;
+    for (let i = 0; i < data.length; i += 3) {
+      paddedDataArr[j++] = data[i];
+      paddedDataArr[j++] = data[i + 1];
+      paddedDataArr[j++] = data[i + 2];
+      paddedDataArr[j++] = 0;
+    }
+    this.data = new Uint8Array(paddedDataArr);
+    // this.data = new Uint8Array(1000000000);
+    // this.data = data;
+    // assert(0 === this.data.length % 3);
   }
 
   /** Get the number of 24-bit indices. */
-  public get length(): number { return this.data.length / 3; }
+  // public get length(): number { return this.data.length / 3; }
+  public get length(): number { return this.data.length / 4; }
 
   /** Convert an array of 24-bit unsigned integer values into a VertexIndices object. */
   public static fromArray(indices: number[]): VertexIndices {

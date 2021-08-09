@@ -12,16 +12,18 @@ jobs:
     workspace:
       clean: all
     pool:
-      name: iModelTechCI
-      demands: Agent.OS -equals Windows_NT
+      vmImage: windows-latest
+    # pool:
+    #   name: iModelTechCI
+    #   demands: Agent.OS -equals Windows_NT
 
     steps:
       - checkout: self
         clean: true
       - task: NodeTool@0
-        displayName: Use Node 12.17.0
+        displayName: Use Node 14.17.0
         inputs:
-          versionSpec: 12.17.0
+          versionSpec: 14.17.0
           checkLatest: true
       - script: |
           git config --local user.email imodeljs-admin@users.noreply.github.com

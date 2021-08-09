@@ -39,6 +39,9 @@ steps:
 - script: npm install @bentley/bemetalsmith@4.x
   displayName: Install BeMetalsmith
   workingDirectory: $(Build.ArtifactStagingDirectory)
+  inputs:
+    customRegistry: useFeed
+    customFeed: 'cddcc498-6606-47b5-b068-e9fa20167bf8'
 
 - script: "./node_modules/.bin/bmsBuild --strictLinkChecking --topicsMustHaveDesc --source ${{ parameters.stagingDir }} --destination ${{ parameters.outputDir }} --siteTitle iTwin.js"
   displayName: Run bmsBuild

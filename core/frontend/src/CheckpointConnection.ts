@@ -43,15 +43,11 @@ export class CheckpointConnection extends IModelConnection {
    * Open a readonly IModelConnection to an iModel over RPC.
    */
   public static async openRemote(contextId: string, iModelId: string, version: IModelVersion = IModelVersion.latest()): Promise<CheckpointConnection> {
-    return this.open(contextId, iModelId, OpenMode.Readonly, version); // eslint-disable-line deprecation/deprecation
+    return this.open(contextId, iModelId, OpenMode.Readonly, version);
   }
 
-  /** Open a CheckpointConnection to a checkpoint of an iModel.
-   * @deprecated use openRemote
-   * @note this function will be removed in a future release to remove the openMode argument. All CheckpointConnections must be readonly.
-   * If you're using a writeable connection, your application must use IpcApp/IpcHost and BriefcaseConnection.
-   */
-  public static async open(contextId: string, iModelId: string, openMode: OpenMode = OpenMode.Readonly, version: IModelVersion = IModelVersion.latest()): Promise<CheckpointConnection> {
+  /**  NOTE: openMode argument to be removed when RemoteBriefcaseConnection is removed. */
+  protected static async open(contextId: string, iModelId: string, openMode: OpenMode = OpenMode.Readonly, version: IModelVersion = IModelVersion.latest()): Promise<CheckpointConnection> {
     const routingContext = IModelRoutingContext.current || IModelRoutingContext.default;
 
     const requestContext = await AuthorizedFrontendRequestContext.create();
@@ -89,7 +85,7 @@ export class CheckpointConnection extends IModelConnection {
         throw new IModelError(BentleyStatus.ERROR, "IModelReadRpcInterface.openForRead() is not available");
       openForReadOperation.policy.retryInterval = () => connectionRetryInterval;
     } else {
-      openForWriteOperation = RpcOperation.lookup(IModelWriteRpcInterface, "openForWrite");
+      openForWriteOperation = RpcOperation.lookup(IModelWriteRpcInterface, "openForWrite"); // eslint-disable-line deprecation/deprecation
       if (!openForWriteOperation)
         throw new IModelError(BentleyStatus.ERROR, "IModelWriteRpcInterface.openForWrite() is not available");
       openForWriteOperation.policy.retryInterval = () => connectionRetryInterval;
@@ -159,7 +155,7 @@ export class CheckpointConnection extends IModelConnection {
       const openResponse = await CheckpointConnection.callOpen(requestContext, iModelRpcProps, this.openMode, this.routingContext);
       // The new/reopened connection may have a new rpcKey and/or changeSetId, but the other IModelRpcTokenProps should be the same
       this._fileKey = openResponse.key;
-      this._changeSetId = openResponse.changeSetId;
+      this.changeset = { id: openResponse.changeSetId!, index: openResponse.changesetIndex };
 
     } catch (error) {
       reject(error.message);
@@ -225,7 +221,7 @@ export class RemoteBriefcaseConnection extends CheckpointConnection {
   public async pullAndMergeChanges(): Promise<void> {
     const rpc = IModelWriteRpcInterface.getClientForRouting(this.routingContext.token);
     const newProps: IModelConnectionProps = await rpc.pullAndMergeChanges(this.getRpcProps());
-    this._changeSetId = newProps.changeSetId;
+    this.changeset = { id: newProps.changeSetId!, index: newProps.changesetIndex };
     this.initialize(newProps.name!, newProps);
   }
 
@@ -235,7 +231,7 @@ export class RemoteBriefcaseConnection extends CheckpointConnection {
   public async pushChanges(description: string): Promise<void> {
     const rpc = IModelWriteRpcInterface.getClientForRouting(this.routingContext.token);
     const newProps: IModelConnectionProps = await rpc.pushChanges(this.getRpcProps(), description);
-    this._changeSetId = newProps.changeSetId;
+    this.changeset = { id: newProps.changeSetId!, index: newProps.changesetIndex };
     this.initialize(newProps.name!, newProps);
   }
   /** Update the project extents of this iModel.

@@ -5,12 +5,12 @@
 import * as React from "react";
 import {
   EditingFunctions,
-  IModelApp, MessageBoxIconType, MessageBoxType, NotifyMessageDetails, OutputMessagePriority, SpatialViewState,
+  IModelApp, MessageBoxIconType, MessageBoxType, NotifyMessageDetails, OutputMessagePriority, RemoteBriefcaseConnection, SpatialViewState,
 } from "@bentley/imodeljs-frontend";
-import { Button } from "@bentley/ui-core";
 import { ConfigurableCreateInfo, ConfigurableUiManager, UiFramework, WidgetControl } from "@bentley/ui-framework";
 import { ActiveSettingsManager } from "../../../api/ActiveSettingsManager";
 import { ErrorHandling } from "../../../api/ErrorHandling";
+import { Button } from "@itwin/itwinui-react";
 
 const modelNameId = "ui-test-app-modelcreation-modelname";
 
@@ -45,7 +45,7 @@ export class ModelCreationComponent extends React.Component<{}, ModelCreationCom
   /* eslint-disable deprecation/deprecation */
   private async createNewModel() {
     const iModel = UiFramework.getIModelConnection();
-    if (iModel === undefined || !iModel.isRemoteBriefcaseConnection())
+    if (iModel === undefined || !(iModel instanceof RemoteBriefcaseConnection))
       return;
     const modelName = this.modelName;
     if (modelName === "")
@@ -84,7 +84,7 @@ export class ModelCreationComponent extends React.Component<{}, ModelCreationCom
         <label htmlFor={modelNameId}>Name: </label>
         <input id={modelNameId} type="text" onChange={(ev) => this.onNameChange(ev)} />
         <p></p>
-        <Button onClick={async () => this.createNewModel()} disabled={!this.state.haveName}>
+        <Button styleType="cta" onClick={async () => this.createNewModel()} disabled={!this.state.haveName}>
           Create Model
         </Button>
       </div >

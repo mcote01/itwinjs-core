@@ -38,7 +38,7 @@ import { Id64String } from '@bentley/bentleyjs-core';
 import { IDisposable } from '@bentley/bentleyjs-core';
 import { immerable } from 'immer';
 import { IModelConnection } from '@bentley/imodeljs-frontend';
-import { InputProps } from '@bentley/ui-core';
+import { InputProps } from '@itwin/itwinui-react';
 import * as Inspire from 'inspire-tree';
 import { LinkElementsInfo } from '@bentley/ui-abstract';
 import { Matrix3d } from '@bentley/geometry-core';
@@ -67,6 +67,7 @@ import * as React from 'react';
 import ReactDataGrid = require('react-data-grid');
 import { RelativePosition } from '@bentley/ui-abstract';
 import { ScreenViewport } from '@bentley/imodeljs-frontend';
+import { SelectOption } from '@itwin/itwinui-react';
 import { SortDirection } from '@bentley/ui-core';
 import { StandardViewId } from '@bentley/imodeljs-frontend';
 import { TentativePoint } from '@bentley/imodeljs-frontend';
@@ -136,7 +137,7 @@ export interface ActiveMatchInfo {
     nodeId: string;
 }
 
-// @alpha
+// @public
 export function adjustDateToTimezone(inDateTime: Date, utcOffset: number): Date;
 
 // @beta
@@ -522,6 +523,8 @@ export class BooleanEditor extends React.PureComponent<PropertyEditorProps, Bool
 
 // @beta
 export class BooleanPropertyEditor extends PropertyEditorBase {
+    // (undocumented)
+    get containerHandlesBlur(): boolean;
     // (undocumented)
     get reactNode(): React.ReactNode;
 }
@@ -1229,6 +1232,9 @@ export class CustomNumberPropertyEditor extends PropertyEditorBase {
     get reactNode(): React.ReactNode;
 }
 
+// @internal
+export function CustomThumb(): JSX.Element;
+
 // @beta
 export interface CustomToolbarItem extends CustomButtonDefinition {
     // (undocumented)
@@ -1750,6 +1756,8 @@ export class EnumPropertyEditor extends PropertyEditorBase {
     // (undocumented)
     get containerHandlesEnter(): boolean;
     // (undocumented)
+    get containerStopsKeydownPropagation(): boolean;
+    // (undocumented)
     get reactNode(): React.ReactNode;
 }
 
@@ -2161,6 +2169,9 @@ export function getCSSColorFromDef(colorDef: ColorDef): string;
 export type GetCurrentlyEditedNode = () => BeInspireTreeNode<TreeNodeItem> | undefined;
 
 // @internal (undocumented)
+export function getPercentageOfRectangle(rect: DOMRect, pointer: number): number;
+
+// @internal (undocumented)
 export const getToolbarDirection: (expandsTo: Direction) => OrthogonalDirection;
 
 // @beta
@@ -2188,9 +2199,6 @@ export function handleLoadedNodeHierarchy(modelSource: TreeModelSource, loadedHi
 
 // @public
 export const hasChildren: (node: TreeNodeItem) => boolean;
-
-// @public @deprecated
-export const hasFlag: (selectionMode: SelectionMode, flag: SelectionModeFlags) => boolean;
 
 // @public
 export const hasSelectionModeFlag: (selectionMode: SelectionMode, flag: SelectionModeFlags) => boolean;
@@ -3531,6 +3539,8 @@ export abstract class PropertyEditorBase implements DataController {
     // (undocumented)
     get containerHandlesTab(): boolean;
     // (undocumented)
+    get containerStopsKeydownPropagation(): boolean;
+    // (undocumented)
     customDataController: DataController | undefined;
     // (undocumented)
     abstract get reactNode(): React.ReactNode;
@@ -3834,6 +3844,13 @@ export interface QuantityProps extends CommonProps {
     ref?: React.Ref<HTMLInputElement>;
 }
 
+// @internal (undocumented)
+export function RailToolTip({ showToolTip, percent, tooltipText }: {
+    showToolTip: boolean;
+    percent: number;
+    tooltipText: string;
+}): JSX.Element;
+
 // @public
 export interface ReactDataGridColumn extends ReactDataGrid.Column<any> {
     // (undocumented)
@@ -3909,10 +3926,7 @@ export interface SaturationPickerProps extends React.HTMLAttributes<HTMLDivEleme
 }
 
 // @internal
-export class Scrubber extends React.Component<ScrubberProps> {
-    // (undocumented)
-    render(): JSX.Element;
-}
+export function Scrubber(props: ScrubberProps): JSX.Element;
 
 // @internal
 export interface ScrubberProps extends CommonProps {
@@ -3927,13 +3941,13 @@ export interface ScrubberProps extends CommonProps {
     // (undocumented)
     onChange?: (values: ReadonlyArray<number>) => void;
     // (undocumented)
-    onSlideStart?: () => void;
-    // (undocumented)
     onUpdate?: (values: ReadonlyArray<number>) => void;
     // (undocumented)
     showTime?: boolean;
     // (undocumented)
     startDate?: Date;
+    // (undocumented)
+    timeZoneOffset?: number;
     // (undocumented)
     totalDuration: number;
 }
@@ -4203,7 +4217,7 @@ export class SliderEditor extends React.PureComponent<PropertyEditorProps, Slide
     render(): React.ReactNode;
     // @internal (undocumented)
     readonly state: Readonly<SliderEditorState>;
-}
+    }
 
 // @beta
 export class SliderPropertyEditor extends PropertyEditorBase {
@@ -4290,28 +4304,6 @@ export class SparseTree<T extends Node> {
     setNumChildren(parentId: string | undefined, numChildren: number): void;
 }
 
-// @beta @deprecated
-export enum StandardEditorNames {
-    // (undocumented)
-    ColorPicker = "color-picker",
-    // (undocumented)
-    EnumButtonGroup = "enum-buttongroup",
-    // (undocumented)
-    IconPicker = "icon-picker",
-    // (undocumented)
-    MultiLine = "multi-line",
-    // (undocumented)
-    NumberCustom = "number-custom",
-    // (undocumented)
-    NumericInput = "numeric-input",
-    // (undocumented)
-    Slider = "slider",
-    // (undocumented)
-    Toggle = "toggle",
-    // (undocumented)
-    WeightPicker = "weight-picker"
-}
-
 // @public
 export class StandardRotationChangeEvent extends UiEvent<StandardRotationChangeEventArgs> {
 }
@@ -4320,88 +4312,6 @@ export class StandardRotationChangeEvent extends UiEvent<StandardRotationChangeE
 export interface StandardRotationChangeEventArgs {
     // (undocumented)
     standardRotation: StandardViewId;
-}
-
-// @beta @deprecated
-export enum StandardTypeConverterTypeNames {
-    // (undocumented)
-    Bool = "bool",
-    // (undocumented)
-    Boolean = "boolean",
-    // (undocumented)
-    Composite = "composite",
-    // (undocumented)
-    DateTime = "dateTime",
-    // (undocumented)
-    Double = "double",
-    // (undocumented)
-    Enum = "enum",
-    // (undocumented)
-    Float = "float",
-    // (undocumented)
-    Hex = "hex",
-    // (undocumented)
-    Hexadecimal = "hexadecimal",
-    // (undocumented)
-    Int = "int",
-    // (undocumented)
-    Integer = "integer",
-    // (undocumented)
-    Navigation = "navigation",
-    // (undocumented)
-    Point2d = "point2d",
-    // (undocumented)
-    Point3d = "point3d",
-    // (undocumented)
-    ShortDate = "shortdate",
-    // (undocumented)
-    String = "string",
-    // (undocumented)
-    Text = "text"
-}
-
-// @beta @deprecated
-export enum StandardTypeNames {
-    // (undocumented)
-    Array = "array",
-    // (undocumented)
-    Bool = "bool",
-    // (undocumented)
-    Boolean = "boolean",
-    // (undocumented)
-    Composite = "composite",
-    // (undocumented)
-    DateTime = "dateTime",
-    // (undocumented)
-    Double = "double",
-    // (undocumented)
-    Enum = "enum",
-    // (undocumented)
-    Float = "float",
-    // (undocumented)
-    Hex = "hex",
-    // (undocumented)
-    Hexadecimal = "hexadecimal",
-    // (undocumented)
-    Int = "int",
-    // (undocumented)
-    Integer = "integer",
-    // (undocumented)
-    Navigation = "navigation",
-    // (undocumented)
-    Number = "number",
-    // (undocumented)
-    Point2d = "point2d",
-    // (undocumented)
-    Point3d = "point3d",
-    // (undocumented)
-    ShortDate = "shortdate",
-    // (undocumented)
-    String = "string",
-    // (undocumented)
-    Struct = "struct",
-    // (undocumented)
-    Text = "text"
 }
 
 // @beta
@@ -4790,13 +4700,6 @@ export class ThemedEnumPropertyEditor extends PropertyEditorBase {
     get reactNode(): React.ReactNode;
 }
 
-// @internal @deprecated
-export class Timeline extends React.Component<TimelineProps, TimelineState> {
-    constructor(props: TimelineProps);
-    // (undocumented)
-    render(): JSX.Element;
-}
-
 // @public
 export class TimelineComponent extends React.Component<TimelineComponentProps, TimelineComponentState> {
     constructor(props: TimelineComponentProps);
@@ -4842,6 +4745,8 @@ export interface TimelineComponentProps {
     showDuration?: boolean;
     // (undocumented)
     startDate?: Date;
+    // (undocumented)
+    timeZoneOffset?: number;
     // (undocumented)
     totalDuration: number;
 }
@@ -4897,26 +4802,6 @@ export interface TimelinePausePlayArgs extends GenericUiEventArgs {
     timelineAction: TimelinePausePlayAction;
 }
 
-// @internal @deprecated
-export interface TimelineProps extends CommonProps {
-    // (undocumented)
-    endDate: Date;
-    // (undocumented)
-    isPlaying: boolean;
-    // (undocumented)
-    milestones?: Milestone[];
-    // (undocumented)
-    onChange?: (values: ReadonlyArray<number>) => void;
-    // (undocumented)
-    onSlideStart?: () => void;
-    // (undocumented)
-    onUpdate?: (values: ReadonlyArray<number>) => void;
-    // (undocumented)
-    selectedDate: Date;
-    // (undocumented)
-    startDate: Date;
-}
-
 // @public
 export enum TimelineScale {
     Days = 3,
@@ -4925,6 +4810,9 @@ export enum TimelineScale {
     Quarters = 1,
     Years = 0
 }
+
+// @public
+export const toDateString: (date: Date, timeZoneOffset?: number | undefined) => string;
 
 // @beta
 export class ToggleEditor extends React.PureComponent<PropertyEditorProps, ToggleEditorState> implements TypeEditor {
@@ -4948,6 +4836,8 @@ export class ToggleEditor extends React.PureComponent<PropertyEditorProps, Toggl
 
 // @beta
 export class TogglePropertyEditor extends PropertyEditorBase {
+    // (undocumented)
+    get containerHandlesBlur(): boolean;
     // (undocumented)
     get reactNode(): React.ReactNode;
 }
@@ -5091,6 +4981,9 @@ export interface ToolbarWithOverflowProps extends CommonProps, NoChildrenProps {
 
 // @internal (undocumented)
 export function toRxjsObservable<T>(observable: Observable<T>): Observable_2<T>;
+
+// @public
+export const toTimeString: (date: Date, timeZoneOffset?: number | undefined) => string;
 
 // @internal (undocumented)
 export function toToolbarPopupRelativePosition(expandsTo: Direction, alignment: ToolbarPanelAlignment): RelativePosition;
@@ -5663,6 +5556,9 @@ export function useDebouncedAsyncValue<TReturn>(valueToBeResolved: undefined | (
     value: TReturn | undefined;
     inProgress: boolean;
 };
+
+// @internal (undocumented)
+export function useFocusedThumb(sliderContainer: HTMLDivElement | undefined): boolean;
 
 // @beta
 export function usePagedTreeNodeLoader<TDataProvider extends TreeDataProvider>(dataProvider: TDataProvider, pageSize: number, modelSource: TreeModelSource): PagedTreeNodeLoader<TDataProvider>;

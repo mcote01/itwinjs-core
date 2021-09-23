@@ -1,4 +1,4 @@
-# display-test-app Application
+# display-test-app
 
 ## About this Application
 

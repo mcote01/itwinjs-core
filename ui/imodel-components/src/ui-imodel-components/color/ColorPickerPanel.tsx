@@ -37,16 +37,23 @@ export interface ColorPickerPanelProps {
 // istanbul ignore next
 export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType }: ColorPickerPanelProps) {
   const [currentHsv, setCurrentHsv] = React.useState(() => activeColor.toHSV());
+  const activeColorPropRef = React.useRef(activeColor.tbgr);
+  const activeColorValue = activeColor.tbgr;
 
   // The following code is used to preserve the Hue after initial mount. If the current HSV value produces the same rgb value
   // as the activeColor prop then leave the HSV color unchanged. This prevents the jumping of HUE as the s/v values are changed
   // by user moving the pointer.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
-    const hsvColorValue = currentHsv.toColorDef().tbgr;
-    const newColorValue = activeColor.tbgr;
-    if (newColorValue !== hsvColorValue)
-      setCurrentHsv(activeColor.toHSV());
-  }, [activeColor, currentHsv]);
+    // see if incoming color is different than original color
+    if (activeColorPropRef.current !== activeColorValue) {
+      activeColorPropRef.current = activeColorValue;
+      const hsvColorValue = currentHsv.toColorDef().tbgr;
+      if (activeColorValue !== hsvColorValue) {
+        setCurrentHsv(activeColor.toHSV());
+      }
+    }
+  }, [activeColor, activeColorValue, currentHsv]);
 
   const handlePresetColorPick = React.useCallback((newColor: ColorDef, e: React.MouseEvent<Element, MouseEvent>) => {
     e.preventDefault();
@@ -92,17 +99,19 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
   }, [currentHsl, onColorChange]);
 
   const handleSaturationValueChange = React.useCallback((value: number | undefined, _stringValue: string) => {
-    const newHsl = currentHsl.clone(undefined, (value ?? 0) / 100, undefined);
-
-    if (onColorChange) {
-      const newColorDef = newHsl.toColorDef();
-      onColorChange(newColorDef);
+    if (undefined !== value) {
+      const newHsl = currentHsl.clone(undefined, value / 100, undefined);
+      if (onColorChange) {
+        const newColorDef = newHsl.toColorDef();
+        onColorChange(newColorDef);
+      }
     }
   }, [currentHsl, onColorChange]);
 
   const handleRedChange = React.useCallback((value: number | undefined, _stringValue: string) => {
     if (undefined !== value) {
       const newColorDef = ColorDef.from(value, color.g, color.b);
+      setCurrentHsv(newColorDef.toHSV());
       if (onColorChange) {
         onColorChange(newColorDef);
       }
@@ -112,6 +121,7 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
   const handleGreenChange = React.useCallback((value: number | undefined, _stringValue: string) => {
     if (undefined !== value) {
       const newColorDef = ColorDef.from(color.r, value, color.b);
+      setCurrentHsv(newColorDef.toHSV());
       if (onColorChange) {
         onColorChange(newColorDef);
       }
@@ -121,6 +131,7 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
   const handleBlueChange = React.useCallback((value: number | undefined, _stringValue: string) => {
     if (undefined !== value) {
       const newColorDef = ColorDef.from(color.r, color.g, value);
+      setCurrentHsv(newColorDef.toHSV());
       if (onColorChange) {
         onColorChange(newColorDef);
       }

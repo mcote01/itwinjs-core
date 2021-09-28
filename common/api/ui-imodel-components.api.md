@@ -191,12 +191,9 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
 
 // @public
 export interface ColorPickerPanelProps {
-    // (undocumented)
     activeColor: ColorDef;
     colorInputType?: "HSL" | "RGB";
-    // (undocumented)
     colorPresets?: ColorDef[];
-    // (undocumented)
     onColorChange: (selectedColor: ColorDef) => void;
 }
 

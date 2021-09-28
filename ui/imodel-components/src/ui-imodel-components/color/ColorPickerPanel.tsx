@@ -20,19 +20,33 @@ import { NumberInput } from "@bentley/ui-core";
  * @public
  */
 export interface ColorPickerPanelProps {
+  /** Active color value */
   activeColor: ColorDef;
+  /** call back function to call when the active color changes */
   onColorChange: (selectedColor: ColorDef) => void;
+  /** If defined then an array of color swatches are displayed */
   colorPresets?: ColorDef[];
   /** If set show either HSL or RGB input values. If undefined no input value is shown */
   colorInputType?: "HSL" | "RGB";
 }
 
 /**
- * Color Picker Dialog to use as modal dialog.
+ * Color Picker Panel that can be used in dialogs or popups.
  * @public
  */
 // istanbul ignore next
 export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType }: ColorPickerPanelProps) {
+  const [currentHsv, setCurrentHsv] = React.useState(() => activeColor.toHSV());
+
+  // The following code is used to preserve the Hue after initial mount. If the current HSV value produces the same rgb value
+  // as the activeColor prop then leave the HSV color unchanged. This prevents the jumping of HUE as the s/v values are changed
+  // by user moving the pointer.
+  React.useEffect(() => {
+    const hsvColorValue = currentHsv.toColorDef().tbgr;
+    const newColorValue = activeColor.tbgr;
+    if (newColorValue !== hsvColorValue)
+      setCurrentHsv(activeColor.toHSV());
+  }, [activeColor, currentHsv]);
 
   const handlePresetColorPick = React.useCallback((newColor: ColorDef, e: React.MouseEvent<Element, MouseEvent>) => {
     e.preventDefault();
@@ -42,11 +56,7 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
   }, [onColorChange]);
 
   const handleHueChange = React.useCallback((newHsvColor: HSVColor) => {
-    // for a ColorDef to be created from hsv s can't be 0
-    if (newHsvColor.s === 0) {
-      newHsvColor = newHsvColor.clone(undefined, 0.5);
-    }
-
+    setCurrentHsv(newHsvColor);
     const newColorDef = newHsvColor.toColorDef();
     if (onColorChange) {
       onColorChange(newColorDef);
@@ -55,18 +65,17 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
 
   const handleSaturationChange = React.useCallback((newHsvColor: HSVColor) => {
     const newColorDef = newHsvColor.toColorDef();
+    setCurrentHsv(newHsvColor);
     if (onColorChange) {
       onColorChange(newColorDef);
     }
   }, [onColorChange]);
 
   const currentHsl = React.useMemo(() => activeColor.toHSL(), [activeColor]);
-  const currentHsv = React.useMemo(() => activeColor.toHSV(), [activeColor]);
   const color = React.useMemo(() => activeColor.colors, [activeColor]);
 
   const handleLightnessValueChange = React.useCallback((value: number | undefined, _stringValue: string) => {
     const newHsl = currentHsl.clone(undefined, undefined, (value ?? 0) / 100);
-
     if (onColorChange) {
       const newColorDef = newHsl.toColorDef();
       onColorChange(newColorDef);

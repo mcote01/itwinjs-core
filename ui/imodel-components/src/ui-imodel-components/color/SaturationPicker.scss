@@ -19,12 +19,12 @@
 
     .components-saturation-pointer {
       position: absolute;
-      width: 2em;
-      height: 2em;
+      width: 1.3em;
+      height: 1.3em;
       border-radius: 50%;
       box-shadow: rgba(0, 0, 0, 0.37) 0px 4px 4px 0px;
       border: 2px solid #fff;
-      transform: translate(-1em, -1em);
+      transform: translate(-50%, -50%);
 
       &:focus {
         outline: none;

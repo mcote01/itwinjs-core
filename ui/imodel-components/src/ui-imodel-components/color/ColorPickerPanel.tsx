@@ -37,17 +37,16 @@ export interface ColorPickerPanelProps {
 // istanbul ignore next
 export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType }: ColorPickerPanelProps) {
   const [currentHsv, setCurrentHsv] = React.useState(() => activeColor.toHSV());
-  const activeColorPropRef = React.useRef(activeColor.tbgr);
+  const activeColorValueRef = React.useRef(activeColor.tbgr);
   const activeColorValue = activeColor.tbgr;
 
   // The following code is used to preserve the Hue after initial mount. If the current HSV value produces the same rgb value
   // as the activeColor prop then leave the HSV color unchanged. This prevents the jumping of HUE as the s/v values are changed
   // by user moving the pointer.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     // see if incoming color is different than original color
-    if (activeColorPropRef.current !== activeColorValue) {
-      activeColorPropRef.current = activeColorValue;
+    if (activeColorValueRef.current !== activeColorValue) {
+      activeColorValueRef.current = activeColorValue;
       const hsvColorValue = currentHsv.toColorDef().tbgr;
       if (activeColorValue !== hsvColorValue) {
         setCurrentHsv(activeColor.toHSV());

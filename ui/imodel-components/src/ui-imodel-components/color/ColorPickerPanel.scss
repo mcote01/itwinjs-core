@@ -10,23 +10,32 @@ $saturation-hue-height: 150px;
 .components-colorpicker-panel {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+
+  .components-colorpicker-alpha-swatch-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 1em;
+    gap: 10px;
+  }
 
   .components-colorpicker-panel-color {
     display: flex;
     flex-direction: row;
+    align-items: center;
     height: 100%;
     gap: 10px;
 
     .components-colorpicker-saturation {
-      margin: 1em;
+      margin: 1em 1em 0 .75em;
       display: block;
       width: calc(100% - 40px);
       height: $saturation-hue-height;
     }
 
     .components-hue-container-vertical {
-      height: $saturation-hue-height;
-      margin-top: 1em;
+      height: calc($saturation-hue-height - 1em);
       margin-right: .5em;
       }
   }
@@ -90,5 +99,10 @@ $saturation-hue-height: 150px;
       width: 54px;
     }
   }
+}
+
+.components-colorpicker-alpha-preview {
+  background-image: url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill-opacity=".15"><rect x="200" width="200" height="200" /> <rect y="200" width="200" height="200" /></svg>');
+  background-size: 0.85rem 0.5rem, cover;
 }
 

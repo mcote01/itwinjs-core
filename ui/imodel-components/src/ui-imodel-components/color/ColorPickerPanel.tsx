@@ -15,6 +15,7 @@ import { HueSlider } from "./HueSlider";
 import { SaturationPicker } from "./SaturationPicker";
 import "./ColorPickerPanel.scss";
 import { NumberInput } from "@bentley/ui-core";
+import { AlphaSlider } from "./AlphaSlider";
 
 /** Properties for the [[ColorPickerPanel]] React component
  * @public
@@ -28,6 +29,8 @@ export interface ColorPickerPanelProps {
   colorPresets?: ColorDef[];
   /** If set show either HSL or RGB input values. If undefined no input value is shown */
   colorInputType?: "HSL" | "RGB";
+  /** If true then alpha value is also shown so it can be set. */
+  showAlpha?: boolean;
 }
 
 /**
@@ -35,8 +38,9 @@ export interface ColorPickerPanelProps {
  * @public
  */
 // istanbul ignore next
-export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType }: ColorPickerPanelProps) {
+export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType, showAlpha }: ColorPickerPanelProps) {
   const [currentHsv, setCurrentHsv] = React.useState(() => activeColor.toHSV());
+  const [currentAlpha, setCurrentAlpha] = React.useState(() => activeColor.getAlpha() / 255); // 0-1
   const activeColorValueRef = React.useRef(activeColor.tbgr);
   const activeColorValue = activeColor.tbgr;
 
@@ -137,6 +141,18 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
     }
   }, [color, onColorChange]);
 
+  const handleAlphaValueChange = React.useCallback((value: number | undefined, _stringValue: string) => {
+    if (undefined !== value) {
+      setCurrentAlpha(value);
+    }
+  }, []);
+
+  const handleAlphaChange = React.useCallback((alpha) => {
+    setCurrentAlpha(alpha);
+  }, []);
+
+  const resultingColorDef = currentHsv.toColorDef().withAlpha(currentAlpha * 255);
+
   return (
     <div data-testid="components-colorpicker-panel" className="components-colorpicker-panel">
       <div className="components-colorpicker-panel-color">
@@ -147,6 +163,12 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
           <HueSlider hsv={currentHsv} onHueChange={handleHueChange} isHorizontal={false} />
         </div>
       </div>
+      {showAlpha &&
+        <div className="components-colorpicker-alpha-swatch-container">
+          <AlphaSlider isHorizontal alpha={currentAlpha} onAlphaChange={handleAlphaChange} />
+          <ColorSwatch className="components-colorpicker-alpha-preview" colorDef={resultingColorDef} />
+        </div>
+      }
       {(colorInputType === "RGB") &&
         <div data-testid="components-colorpicker-input-panel" className="components-colorpicker-input-panel">
           <div className="components-colorpicker-input-value-wrapper">
@@ -161,6 +183,12 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
             <span className="uicore-inputs-labeled-input">B</span>
             <NumberInput data-testid="components-colorpicker-input-value-blue" value={color.b} onChange={handleBlueChange} min={0} max={255} />
           </div>
+          {showAlpha &&
+            <div className="components-colorpicker-input-value-wrapper">
+              <span className="uicore-inputs-labeled-input">A</span>
+              <NumberInput data-testid="components-colorpicker-input-value-alpha" precision={2} value={currentAlpha} onChange={handleAlphaValueChange} min={0} max={1} step={0.05} />
+            </div>
+          }
         </div>}
       {(colorInputType === "HSL") &&
         <div data-testid="components-colorpicker-input-panel" className="components-colorpicker-input-panel">

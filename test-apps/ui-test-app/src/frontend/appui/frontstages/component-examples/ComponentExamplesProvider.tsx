@@ -55,7 +55,7 @@ function DualColorPickers() {
 
   return (
     <div style={{ display: "flex", gap: "4px" }}>
-      <ColorPickerPopup initialColor={colorDef} onClose={onPopupClose} colorInputType="RGB" />
+      <ColorPickerPopup initialColor={colorDef} onClose={onPopupClose} colorInputType="RGB" showAlpha />
       <ColorPickerPopup initialColor={colorDef} onClose={onPopupClose} colorInputType="HSL" showCaret />
     </div>
   );

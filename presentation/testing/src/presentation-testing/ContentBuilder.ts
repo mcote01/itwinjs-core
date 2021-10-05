@@ -3,7 +3,6 @@
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
 
-import { PropertyRecord } from "@itwin/appui-abstract";
 /** @packageDocumentation
  * @module Content
  */
@@ -15,6 +14,7 @@ import {
 } from "@itwin/presentation-common";
 import { ContentDataProvider, FieldHierarchyRecord, PropertyRecordsBuilder } from "@itwin/presentation-components";
 import { Presentation } from "@itwin/presentation-frontend";
+import { PropertyRecord } from "@itwin/appui-abstract";
 
 /**
  * Interface for a data provider, which is used by ContentBuilder.

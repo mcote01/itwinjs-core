@@ -16,6 +16,7 @@ import { SaturationPicker } from "./SaturationPicker";
 import "./ColorPickerPanel.scss";
 import { NumberInput } from "@bentley/ui-core";
 import { AlphaSlider } from "./AlphaSlider";
+import { getCSSColorFromDef } from "./getCSSColorFromDef";
 
 /** Properties for the [[ColorPickerPanel]] React component
  * @public
@@ -153,6 +154,9 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
 
   const resultingColorDef = currentHsv.toColorDef().withAlpha(currentAlpha * 255);
 
+  const rgbaString = getCSSColorFromDef(resultingColorDef);
+  const colorStyle: React.CSSProperties = { backgroundColor: rgbaString };
+
   return (
     <div data-testid="components-colorpicker-panel" className="components-colorpicker-panel">
       <div className="components-colorpicker-panel-color">
@@ -166,7 +170,9 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
       {showAlpha &&
         <div className="components-colorpicker-alpha-swatch-container">
           <AlphaSlider isHorizontal alpha={currentAlpha} onAlphaChange={handleAlphaChange} />
-          <ColorSwatch className="components-colorpicker-alpha-preview" colorDef={resultingColorDef} />
+          <div className="components-colorpicker-alpha-preview-container">
+            <div className="components-color-swatch components-colorpicker-alpha-preview" style={colorStyle}></div>
+          </div>
         </div>
       }
       {(colorInputType === "RGB") &&

@@ -6,9 +6,9 @@
 
 .components-alpha-pointer {
   position: absolute;
-  width: 0.75em;
-  height: 0.75em;
-  border-radius: 1em;
+  width: 8px;
+  height: 8px;
+  border-radius: 16px;
   border: 2px solid var(--buic-inputs-border);
   box-shadow: rgba(0, 0, 0, 0.37) 0px 1px 4px 0px;
 
@@ -26,7 +26,7 @@
 
   .components-alpha-slider {
     position: relative;
-    width: calc(100% - 1.2rem);
+    width: calc(100% - 10px);
     height: 100%;
     background-color: linear-gradient(to right, rgba(47, 37, 72, 0) 0%, rgb(47, 37, 72) 100%);
     background-image: url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill-opacity=".15"><rect x="200" width="200" height="200" /> <rect y="200" width="200" height="200" /></svg>'),
@@ -59,7 +59,7 @@
     background-repeat: repeat, no-repeat;
 
     .components-alpha-pointer {
-      transform: translate(-.1rem, -.6rem);
+      transform: translateX(-8px);
     }
   }
 }

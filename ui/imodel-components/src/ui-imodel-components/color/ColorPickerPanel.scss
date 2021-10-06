@@ -101,8 +101,33 @@ $saturation-hue-height: 150px;
   }
 }
 
-.components-colorpicker-alpha-preview {
+.components-colorpicker-alpha-preview-container {
   background-image: url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" fill-opacity=".15"><rect x="200" width="200" height="200" /> <rect y="200" width="200" height="200" /></svg>');
   background-size: 0.85rem 0.5rem, cover;
+
+  height: 100%;
+  border-width: 1px;
+  border-radius: 3px;
+  border-style: solid;
+  border-color: $buic-inputs-border;
+    &.round {
+    border-radius: 50%;
+  }
+
+  .components-color-swatch {
+    font-size: $iui-font-size;
+    height: 24px;
+    width: 24px;
+    border-width: 1px;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: transparent;
+
+    &.round {
+      border-radius: 50%;
+    }
+  }
+
+
 }
 

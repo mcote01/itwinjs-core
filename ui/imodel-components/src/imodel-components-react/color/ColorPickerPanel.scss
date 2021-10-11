@@ -37,7 +37,7 @@ $saturation-hue-height: 150px;
     .components-hue-container-vertical {
       height: calc($saturation-hue-height - 1em);
       margin-right: .5em;
-      }
+    }
   }
 
   .components-color-swatch {
@@ -70,7 +70,7 @@ $saturation-hue-height: 150px;
 .components-colorpicker-popup-panel-padding {
   display: flex;
   flex-direction: column;
-  
+
   button.core-dialog-close {
     margin-left: auto;
     background: transparent;
@@ -111,7 +111,7 @@ $saturation-hue-height: 150px;
   border-radius: 3px;
   border-style: solid;
   border-color: $buic-inputs-border;
-    &.round {
+  &.round {
     border-radius: 50%;
   }
 

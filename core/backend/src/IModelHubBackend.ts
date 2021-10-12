@@ -232,15 +232,28 @@ export class IModelHubBackend {
     return this.toChangeSetProps(changeSets[0]);
   }
 
+  // return the parent changesetId for a changesetIndex, or undefined if it's the last one
+  private static async getParentChangesetId(arg: IModelIdArg, index: ChangesetIndex): Promise<ChangesetId | undefined> {
+    if (index === 0)
+      return "";
+    try {
+      return (await this.queryChangeset({ ...arg, changeset: { index } })).parentId;
+    } catch (e) {
+      return undefined;
+    }
+  }
+
   private static async getQueryFromRange(arg: ChangesetRangeArg): Promise<ChangeSetQuery | undefined> {
     const query = new ChangeSetQuery();
     if (!arg.range)
       return query; // returns all changesets
 
     const range = arg.range;
-    const after = range.first === 0 ? "" : (await this.queryChangeset({ ...arg, changeset: { index: range.first } })).parentId;
+    const after = await this.getParentChangesetId(arg, range.first);
+    if (after === undefined)
+      return undefined; // this means that first is the last available changeset.
 
-    if (!range.end)
+    if (range.end === undefined)
       query.fromId(after); //
     else {
       const last = (await this.queryChangeset({ ...arg, changeset: { index: range.end } })).id;

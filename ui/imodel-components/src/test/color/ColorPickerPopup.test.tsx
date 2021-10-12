@@ -228,7 +228,7 @@ describe("<ColorPickerPopup/>", () => {
 
     /* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */
     const renderedComponent = render(<div>
-      <ColorPickerPopup initialColor={colorDef} popupPosition={RelativePosition.BottomRight} colorInputType="RGB"
+      <ColorPickerPopup initialColor={colorDef} popupPosition={RelativePosition.BottomRight} defaultColorInputType="RGB"
         colorDefs={[ColorDef.green, ColorDef.black, ColorDef.red]} captureClicks={true} onClick={spyOnClick} onColorChange={spyOnChange} />
     </div>);
     const pickerButton = renderedComponent.getByTestId("components-colorpicker-popup-button");
@@ -264,7 +264,7 @@ describe("<ColorPickerPopup/>", () => {
 
     /* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */
     const renderedComponent = render(<div>
-      <ColorPickerPopup initialColor={colorDef} popupPosition={RelativePosition.BottomRight} colorInputType="HSL"
+      <ColorPickerPopup initialColor={colorDef} popupPosition={RelativePosition.BottomRight} defaultColorInputType="HSL"
         colorDefs={[ColorDef.green, ColorDef.black, ColorDef.red]} captureClicks={true} onClick={spyOnClick} onColorChange={spyOnChange} />
     </div>);
     const pickerButton = renderedComponent.getByTestId("components-colorpicker-popup-button");

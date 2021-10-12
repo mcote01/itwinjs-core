@@ -169,15 +169,15 @@ export class ColorEditor extends React.PureComponent<PropertyEditorProps, ColorE
 export const ColorPickerButton: (props: ColorPickerProps) => JSX.Element | null;
 
 // @beta
-export function ColorPickerDialog({ dialogTitle, color, onOkResult, onCancelResult, colorPresets, colorInputType, showAlpha }: ColorPickerDialogProps): JSX.Element;
+export function ColorPickerDialog({ dialogTitle, color, onOkResult, onCancelResult, colorPresets, defaultColorInputType, showAlpha }: ColorPickerDialogProps): JSX.Element;
 
 // @beta
 export interface ColorPickerDialogProps {
     // (undocumented)
     color: ColorDef;
-    colorInputType?: "HSL" | "RGB";
     // (undocumented)
     colorPresets?: ColorDef[];
+    defaultColorInputType?: "HSL" | "RGB";
     // (undocumented)
     dialogTitle: string;
     // (undocumented)
@@ -188,13 +188,13 @@ export interface ColorPickerDialogProps {
 }
 
 // @public
-export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType, showAlpha }: ColorPickerPanelProps): JSX.Element;
+export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, defaultColorInputType, showAlpha }: ColorPickerPanelProps): JSX.Element;
 
 // @public
 export interface ColorPickerPanelProps {
     activeColor: ColorDef;
-    colorInputType?: "HSL" | "RGB";
     colorPresets?: ColorDef[];
+    defaultColorInputType?: "HSL" | "RGB";
     onColorChange: (selectedColor: ColorDef) => void;
     showAlpha?: boolean;
 }
@@ -206,7 +206,7 @@ export const ColorPickerPopup: (props: ColorPickerPopupProps) => JSX.Element | n
 export interface ColorPickerPopupProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, CommonProps {
     captureClicks?: boolean;
     colorDefs?: ColorDef[];
-    colorInputType?: "HSL" | "RGB";
+    defaultColorInputType?: "HSL" | "RGB";
     disabled?: boolean;
     hideCloseButton?: boolean;
     initialColor: ColorDef;

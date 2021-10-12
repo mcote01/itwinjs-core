@@ -7,9 +7,9 @@ alpha;BaseSolarDataProvider
 alpha;BaseTimelineDataProvider 
 beta;ColorEditor 
 beta;ColorPickerButton: (props: ColorPickerProps) => JSX.Element | null
-beta;ColorPickerDialog({ dialogTitle, color, onOkResult, onCancelResult, colorPresets, colorInputType, showAlpha }: ColorPickerDialogProps): JSX.Element
+beta;ColorPickerDialog({ dialogTitle, color, onOkResult, onCancelResult, colorPresets, defaultColorInputType, showAlpha }: ColorPickerDialogProps): JSX.Element
 beta;ColorPickerDialogProps
-public;ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType, showAlpha }: ColorPickerPanelProps): JSX.Element
+public;ColorPickerPanel({ activeColor, onColorChange, colorPresets, defaultColorInputType, showAlpha }: ColorPickerPanelProps): JSX.Element
 public;ColorPickerPanelProps
 public;ColorPickerPopup: (props: ColorPickerPopupProps) => JSX.Element | null
 public;ColorPickerPopupProps 

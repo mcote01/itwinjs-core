@@ -55,8 +55,8 @@ function DualColorPickers() {
 
   return (
     <div style={{ display: "flex", gap: "4px" }}>
-      <ColorPickerPopup initialColor={colorDef} onClose={onPopupClose} colorInputType="RGB" showAlpha />
-      <ColorPickerPopup initialColor={colorDef} onClose={onPopupClose} colorInputType="HSL" showCaret />
+      <ColorPickerPopup initialColor={colorDef} onClose={onPopupClose} defaultColorInputType="RGB" showAlpha />
+      <ColorPickerPopup initialColor={colorDef} onClose={onPopupClose} defaultColorInputType="HSL" showCaret />
     </div>
   );
 }
@@ -427,7 +427,7 @@ export function ColorPickerToggle() {
     e.preventDefault();
     ModalDialogManager.openDialog(<ColorPickerDialog dialogTitle={colorDialogTitle} color={newColor} colorPresets={presetColors.current}
       onOkResult={handleBackgroundColorDialogOk} onCancelResult={handleBackgroundColorDialogCancel}
-      colorInputType="RGB" />);
+      defaultColorInputType="RGB" />);
   }, [presetColors, handleBackgroundColorDialogOk, colorDialogTitle, handleBackgroundColorDialogCancel]);
 
   return (

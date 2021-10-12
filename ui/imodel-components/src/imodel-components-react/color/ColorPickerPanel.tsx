@@ -14,9 +14,10 @@ import { ColorSwatch } from "./Swatch";
 import { HueSlider } from "./HueSlider";
 import { SaturationPicker } from "./SaturationPicker";
 import "./ColorPickerPanel.scss";
-import { NumberInput } from "@itwin/core-react";
 import { AlphaSlider } from "./AlphaSlider";
 import { getCSSColorFromDef } from "./getCSSColorFromDef";
+import { RgbaColorInputPanel } from "./RgbaColorInputPanel";
+import { HslaColorInputPanel } from "./HslaColorInputPanel";
 
 /** Properties for the [[ColorPickerPanel]] React component
  * @public
@@ -29,7 +30,7 @@ export interface ColorPickerPanelProps {
   /** If defined then an array of color swatches are displayed */
   colorPresets?: ColorDef[];
   /** If set show either HSL or RGB input values. If undefined no input value is shown */
-  colorInputType?: "HSL" | "RGB";
+  defaultColorInputType?: "HSL" | "RGB";
   /** If true then alpha value is also shown so it can be set. */
   showAlpha?: boolean;
 }
@@ -39,8 +40,9 @@ export interface ColorPickerPanelProps {
  * @public
  */
 // istanbul ignore next
-export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, colorInputType, showAlpha }: ColorPickerPanelProps) {
+export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, defaultColorInputType, showAlpha }: ColorPickerPanelProps) {
   const [currentHsv, setCurrentHsv] = React.useState(() => activeColor.toHSV());
+  const [currentMode, setCurrentMode] = React.useState(() => defaultColorInputType);
   const [currentAlpha, setCurrentAlpha] = React.useState(() => activeColor.getAlpha() / 255); // 0-1
   const activeColorValueRef = React.useRef(activeColor.tbgr);
   const activeColorValue = activeColor.tbgr;
@@ -58,6 +60,10 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
       }
     }
   }, [activeColor, activeColorValue, currentHsv]);
+
+  const handleToggleMode = React.useCallback(() => {
+    setCurrentMode(currentMode === "HSL" ? "RGB" : "HSL");
+  }, [currentMode]);
 
   const handlePresetColorPick = React.useCallback((newColor: ColorDef, e: React.MouseEvent<Element, MouseEvent>) => {
     e.preventDefault();
@@ -175,49 +181,20 @@ export function ColorPickerPanel({ activeColor, onColorChange, colorPresets, col
           </div>
         </div>
       }
-      {(colorInputType === "RGB") &&
-        <div data-testid="components-colorpicker-input-panel" className="components-colorpicker-input-panel">
-          <div className="components-colorpicker-input-value-wrapper">
-            <span className="uicore-inputs-labeled-input">R</span>
-            <NumberInput data-testid="components-colorpicker-input-value-red" value={color.r} onChange={handleRedChange} min={0} max={255} />
-          </div>
-          <div className="components-colorpicker-input-value-wrapper">
-            <span className="uicore-inputs-labeled-input">G</span>
-            <NumberInput data-testid="components-colorpicker-input-value-green" value={color.g} onChange={handleGreenChange} min={0} max={255} />
-          </div>
-          <div className="components-colorpicker-input-value-wrapper">
-            <span className="uicore-inputs-labeled-input">B</span>
-            <NumberInput data-testid="components-colorpicker-input-value-blue" value={color.b} onChange={handleBlueChange} min={0} max={255} />
-          </div>
-          {showAlpha &&
-            <div className="components-colorpicker-input-value-wrapper">
-              <span className="uicore-inputs-labeled-input">A</span>
-              <NumberInput data-testid="components-colorpicker-input-value-alpha" precision={2} value={currentAlpha} onChange={handleAlphaValueChange} min={0} max={1} step={0.05} />
-            </div>
-          }
-        </div>}
-      {(colorInputType === "HSL") &&
-        <div data-testid="components-colorpicker-input-panel" className="components-colorpicker-input-panel">
-          <div className="components-colorpicker-input-value-wrapper">
-            <span className="uicore-inputs-labeled-input">H</span>
-            <NumberInput data-testid="components-colorpicker-input-value-hue" value={Math.round(currentHsl.h * 360)} onChange={handleHueValueChange} min={0} max={360} />
-          </div>
-          <div className="components-colorpicker-input-value-wrapper">
-            <span className="uicore-inputs-labeled-input">S</span>
-            <NumberInput data-testid="components-colorpicker-input-value-saturation" value={Math.round(currentHsl.s * 100)} onChange={handleSaturationValueChange} min={0} max={100} />
-          </div>
-          <div className="components-colorpicker-input-value-wrapper">
-            <span className="uicore-inputs-labeled-input">L</span>
-            <NumberInput data-testid="components-colorpicker-input-value-lightness" value={Math.round(currentHsl.l * 100)} onChange={handleLightnessValueChange} min={0} max={100} />
-          </div>
-        </div>}
-
+      {(currentMode === "RGB") &&
+        <RgbaColorInputPanel color={color} onRedChange={handleRedChange} onGreenChange={handleGreenChange} onToggleMode={handleToggleMode}
+          onBlueChange={handleBlueChange} onAlphaChange={handleAlphaValueChange} currentAlpha={showAlpha ? currentAlpha : undefined} />
+      }
+      {(currentMode === "HSL") &&
+        <HslaColorInputPanel hslColor={currentHsl} onHueChange={handleHueValueChange} onSaturationChange={handleSaturationValueChange} onToggleMode={handleToggleMode}
+          onLightnessChange={handleLightnessValueChange} onAlphaChange={handleAlphaValueChange} currentAlpha={showAlpha ? currentAlpha : undefined} />
+      }
       {
         colorPresets && colorPresets.length &&
         <div className="components-colorpicker-panel-presets">
           {colorPresets.map((preset, index) => <ColorSwatch className="components-colorpicker-panel-swatch" key={index} colorDef={preset} round={false} onColorPick={handlePresetColorPick} />)}
         </div>
       }
-    </div>
+    </div >
   );
 }

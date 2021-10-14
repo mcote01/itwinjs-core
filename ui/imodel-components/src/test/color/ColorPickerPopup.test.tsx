@@ -237,25 +237,65 @@ describe("<ColorPickerPopup/>", () => {
     const popupDiv = renderedComponent.getByTestId("components-colorpicker-panel");
     expect(popupDiv).not.to.be.undefined;
 
-    const redInput = renderedComponent.getByTestId("components-colorpicker-input-value-red");
+    const redInput = renderedComponent.getByTestId("components-colorpicker-input-value-R");
     fireEvent.change(redInput, { target: { value: "100" } });
     expect((redInput as HTMLInputElement).value).to.eq("100");
     fireEvent.keyDown(redInput, { key: SpecialKey.Enter });
     spyOnChange.calledOnce.should.be.true;
 
     spyOnChange.resetHistory();
-    const greenInput = renderedComponent.getByTestId("components-colorpicker-input-value-green");
+    const greenInput = renderedComponent.getByTestId("components-colorpicker-input-value-G");
     fireEvent.change(greenInput, { target: { value: "100" } });
     expect((greenInput as HTMLInputElement).value).to.eq("100");
     fireEvent.keyDown(greenInput, { key: SpecialKey.Enter });
     spyOnChange.calledOnce.should.be.true;
 
     spyOnChange.resetHistory();
-    const blueInput = renderedComponent.getByTestId("components-colorpicker-input-value-blue");
+    const blueInput = renderedComponent.getByTestId("components-colorpicker-input-value-B");
     fireEvent.change(blueInput, { target: { value: "100" } });
     expect((blueInput as HTMLInputElement).value).to.eq("100");
     fireEvent.keyDown(blueInput, { key: SpecialKey.Enter });
     spyOnChange.calledOnce.should.be.true;
+  });
+
+  it("ensure rgba values are shown", async () => {
+    const spyOnClick = sinon.spy();
+    const spyOnChange = sinon.spy();
+
+    /* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */
+    const renderedComponent = render(<div>
+      <ColorPickerPopup initialColor={colorDef} popupPosition={RelativePosition.BottomRight} showAlpha defaultColorInputType="RGB"
+        colorDefs={[ColorDef.green, ColorDef.black, ColorDef.red]} captureClicks={true} onClick={spyOnClick} onColorChange={spyOnChange} />
+    </div>);
+    const pickerButton = renderedComponent.getByTestId("components-colorpicker-popup-button");
+    fireEvent.click(pickerButton);
+
+    const popupDiv = renderedComponent.getByTestId("components-colorpicker-panel");
+    expect(popupDiv).not.to.be.undefined;
+
+    const redInput = renderedComponent.getByTestId("components-colorpicker-input-value-R");
+    fireEvent.change(redInput, { target: { value: "100" } });
+    expect((redInput as HTMLInputElement).value).to.eq("100");
+    fireEvent.keyDown(redInput, { key: SpecialKey.Enter });
+    spyOnChange.calledOnce.should.be.true;
+
+    spyOnChange.resetHistory();
+    const greenInput = renderedComponent.getByTestId("components-colorpicker-input-value-G");
+    fireEvent.change(greenInput, { target: { value: "100" } });
+    expect((greenInput as HTMLInputElement).value).to.eq("100");
+    fireEvent.keyDown(greenInput, { key: SpecialKey.Enter });
+    spyOnChange.calledOnce.should.be.true;
+
+    spyOnChange.resetHistory();
+    const blueInput = renderedComponent.getByTestId("components-colorpicker-input-value-B");
+    fireEvent.change(blueInput, { target: { value: "100" } });
+    expect((blueInput as HTMLInputElement).value).to.eq("100");
+    fireEvent.keyDown(blueInput, { key: SpecialKey.Enter });
+    spyOnChange.calledOnce.should.be.true;
+
+    // make sure alpha input and slider exist
+    renderedComponent.getByTestId("alpha-container");
+    renderedComponent.getByTestId("components-colorpicker-input-value-alpha");
   });
 
   it("ensure hsl values are shown", async () => {
@@ -273,25 +313,65 @@ describe("<ColorPickerPopup/>", () => {
     const popupDiv = renderedComponent.getByTestId("components-colorpicker-panel");
     expect(popupDiv).not.to.be.undefined;
 
-    const hueInput = renderedComponent.getByTestId("components-colorpicker-input-value-hue");
+    const hueInput = renderedComponent.getByTestId("components-colorpicker-input-value-H");
     fireEvent.change(hueInput, { target: { value: "100" } });
     expect((hueInput as HTMLInputElement).value).to.eq("100");
     fireEvent.keyDown(hueInput, { key: SpecialKey.Enter });
     spyOnChange.calledOnce.should.be.true;
 
     spyOnChange.resetHistory();
-    const saturationInput = renderedComponent.getByTestId("components-colorpicker-input-value-saturation");
+    const saturationInput = renderedComponent.getByTestId("components-colorpicker-input-value-S");
     fireEvent.change(saturationInput, { target: { value: "50" } });
     expect((saturationInput as HTMLInputElement).value).to.eq("50");
     fireEvent.keyDown(saturationInput, { key: SpecialKey.Enter });
     spyOnChange.calledOnce.should.be.true;
 
     spyOnChange.resetHistory();
-    const lightnessInput = renderedComponent.getByTestId("components-colorpicker-input-value-lightness");
+    const lightnessInput = renderedComponent.getByTestId("components-colorpicker-input-value-L");
     fireEvent.change(lightnessInput, { target: { value: "40" } });
     expect((lightnessInput as HTMLInputElement).value).to.eq("40");
     fireEvent.keyDown(lightnessInput, { key: SpecialKey.Enter });
     spyOnChange.calledOnce.should.be.true;
+  });
+
+  it("ensure alpha slider is shown", async () => {
+    const spyOnClick = sinon.spy();
+    const spyOnChange = sinon.spy();
+
+    /* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */
+    const renderedComponent = render(<div>
+      <ColorPickerPopup initialColor={colorDef} popupPosition={RelativePosition.BottomRight} showAlpha defaultColorInputType="HSL"
+        colorDefs={[ColorDef.green, ColorDef.black, ColorDef.red]} captureClicks={true} onClick={spyOnClick} onColorChange={spyOnChange} />
+    </div>);
+    const pickerButton = renderedComponent.getByTestId("components-colorpicker-popup-button");
+    fireEvent.click(pickerButton);
+
+    const popupDiv = renderedComponent.getByTestId("components-colorpicker-panel");
+    expect(popupDiv).not.to.be.undefined;
+
+    const hueInput = renderedComponent.getByTestId("components-colorpicker-input-value-H");
+    fireEvent.change(hueInput, { target: { value: "100" } });
+    expect((hueInput as HTMLInputElement).value).to.eq("100");
+    fireEvent.keyDown(hueInput, { key: SpecialKey.Enter });
+    spyOnChange.calledOnce.should.be.true;
+
+    spyOnChange.resetHistory();
+    const saturationInput = renderedComponent.getByTestId("components-colorpicker-input-value-S");
+    fireEvent.change(saturationInput, { target: { value: "50" } });
+    expect((saturationInput as HTMLInputElement).value).to.eq("50");
+    fireEvent.keyDown(saturationInput, { key: SpecialKey.Enter });
+    spyOnChange.calledOnce.should.be.true;
+
+    spyOnChange.resetHistory();
+    const lightnessInput = renderedComponent.getByTestId("components-colorpicker-input-value-L");
+    fireEvent.change(lightnessInput, { target: { value: "40" } });
+    expect((lightnessInput as HTMLInputElement).value).to.eq("40");
+    fireEvent.keyDown(lightnessInput, { key: SpecialKey.Enter });
+    spyOnChange.calledOnce.should.be.true;
+
+    // make sure alpha input and slider exist
+    renderedComponent.getByTestId("alpha-container");
+    renderedComponent.getByTestId("components-colorpicker-input-value-alpha");
   });
 
 });

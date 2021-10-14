@@ -29,7 +29,7 @@ export interface ColorPickerPanelProps {
   onColorChange: (selectedColor: ColorDef) => void;
   /** If defined then an array of color swatches are displayed */
   colorPresets?: ColorDef[];
-  /** If set show either HSL or RGB input values. If undefined no input value is shown */
+  /** If set show either HSL or RGB input values. If undefined no input values are shown */
   defaultColorInputType?: "HSL" | "RGB";
   /** If true then alpha value is also shown so it can be set. */
   showAlpha?: boolean;

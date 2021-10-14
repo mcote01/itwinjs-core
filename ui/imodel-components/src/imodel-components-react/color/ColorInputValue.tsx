@@ -34,7 +34,7 @@ export interface ColorInputValueProps {
  */
 export function ColorInputValue(props: ColorInputValueProps) {
   const { value, min, max, label, labelLocation, onValueChange, onToggleMode } = props;
-  const className = (labelLocation === "top") ? "components-colorpicker-input-value-wrapper" :
+  const className = (labelLocation === "top") ? /* istanbul ignore next */ "components-colorpicker-input-value-wrapper" :
     "components-colorpicker-input-value-wrapper  reversed";
 
   const labelElement = React.useMemo(() => {

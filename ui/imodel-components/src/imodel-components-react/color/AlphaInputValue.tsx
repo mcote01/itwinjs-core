@@ -29,7 +29,7 @@ export interface AlphaInputValueProps {
  */
 export function AlphaInputValue(props: AlphaInputValueProps) {
   const { value, label, labelLocation, onValueChange } = props;
-  const className = (labelLocation === "top") ? "components-colorpicker-input-value-wrapper" :
+  const className = (labelLocation === "top") ? /* istanbul ignore next */ "components-colorpicker-input-value-wrapper" :
     "components-colorpicker-input-value-wrapper  reversed";
 
   return (

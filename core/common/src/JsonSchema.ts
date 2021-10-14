@@ -10,26 +10,26 @@
 
 export type JSONSchemaType = "string" | "number" | "integer" | "boolean" | "null" | "array" | "object";
 
-export interface IJSONSchema {
+export interface JSONSchema {
   id?: string;
   $id?: string;
   $schema?: string;
   type?: JSONSchemaType | JSONSchemaType[];
   title?: string;
   default?: any;
-  definitions?: IJSONSchemaMap;
+  definitions?: JSONSchemaMap;
   description?: string;
-  properties?: IJSONSchemaMap;
-  patternProperties?: IJSONSchemaMap;
-  additionalProperties?: boolean | IJSONSchema;
+  properties?: JSONSchemaMap;
+  patternProperties?: JSONSchemaMap;
+  additionalProperties?: boolean | JSONSchema;
   minProperties?: number;
   maxProperties?: number;
-  dependencies?: IJSONSchemaMap | { [prop: string]: string[] };
-  items?: IJSONSchema | IJSONSchema[];
+  dependencies?: JSONSchemaMap | { [prop: string]: string[] };
+  items?: JSONSchema | JSONSchema[];
   minItems?: number;
   maxItems?: number;
   uniqueItems?: boolean;
-  additionalItems?: boolean | IJSONSchema;
+  additionalItems?: boolean | JSONSchema;
   pattern?: string;
   minLength?: number;
   maxLength?: number;
@@ -40,26 +40,26 @@ export interface IJSONSchema {
   multipleOf?: number;
   required?: string[];
   $ref?: string;
-  anyOf?: IJSONSchema[];
-  allOf?: IJSONSchema[];
-  oneOf?: IJSONSchema[];
-  not?: IJSONSchema;
+  anyOf?: JSONSchema[];
+  allOf?: JSONSchema[];
+  oneOf?: JSONSchema[];
+  not?: JSONSchema;
   enum?: any[];
   format?: string;
 
   // schema draft 06
   const?: any;
-  contains?: IJSONSchema;
-  propertyNames?: IJSONSchema;
+  contains?: JSONSchema;
+  propertyNames?: JSONSchema;
 
   // schema draft 07
   $comment?: string;
-  if?: IJSONSchema;
-  then?: IJSONSchema;
-  else?: IJSONSchema;
+  if?: JSONSchema;
+  then?: JSONSchema;
+  else?: JSONSchema;
 
   // VS Code extensions
-  defaultSnippets?: IJSONSchemaSnippet[];
+  defaultSnippets?: JSONSchemaSnippet[];
   errorMessage?: string;
   patternErrorMessage?: string;
   deprecationMessage?: string;
@@ -73,11 +73,11 @@ export interface IJSONSchema {
   allowTrailingCommas?: boolean;
 }
 
-export interface IJSONSchemaMap {
-  [name: string]: IJSONSchema;
+export interface JSONSchemaMap {
+  [name: string]: JSONSchema;
 }
 
-export interface IJSONSchemaSnippet {
+export interface JSONSchemaSnippet {
   label?: string;
   description?: string;
   body?: any; // a object that will be JSON stringified

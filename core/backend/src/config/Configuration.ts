@@ -6,116 +6,55 @@
  * @module Json
  */
 
-import { BeEvent, IJSONSchema } from "@itwin/core-bentley";
+import { BeEvent, JSONSchema } from "@itwin/core-bentley";
 
-/**
- * A JavaScript object that acts a dictionary. The keys are strings.
- */
-export type IStringDictionary<V> = Record<string, V>;
+/**  A JavaScript object that acts a dictionary. The keys are strings. */
+export type StringDictionary<V> = Record<string, V>;
 
-export interface IConfigurationRegistry {
-  /**
-   * Register a configuration to the registry.
-   */
-  registerConfiguration(configuration: IConfigurationNode): void;
+export interface ConfigurationRegistry {
+  /** Register one or more configurations */
+  registerConfiguration(configurations: ConfigurationNode | ConfigurationNode[], validate?: boolean): void;
 
-  /**
-   * Register multiple configurations to the registry.
-   */
-  registerConfigurations(configurations: IConfigurationNode[], validate?: boolean): void;
-
-  /**
-   * Deregister multiple configurations from the registry.
-   */
-  deregisterConfigurations(configurations: IConfigurationNode[]): void;
-
-  /**
-   * update the configuration registry by
-   * 	- registering the configurations to add
-   * 	- dereigstering the configurations to remove
-   */
-  updateConfigurations(configurations: { add: IConfigurationNode[], remove: IConfigurationNode[] }): void;
-
-  /**
-   * Register multiple default configurations to the registry.
-   */
-  registerDefaultConfigurations(defaultConfigurations: IStringDictionary<any>[]): void;
-
-  /**
-   * Deregister multiple default configurations from the registry.
-   */
-  deregisterDefaultConfigurations(defaultConfigurations: IStringDictionary<any>[]): void;
-
-  /**
-   * Signal that the schema of a configuration setting has changes. It is currently only supported to change enumeration values.
-   * Property or default value changes are not allowed.
-   */
-  notifyConfigurationSchemaUpdated(...configurations: IConfigurationNode[]): void;
+  /**  Deregister multiple configurations from the registry. */
+  removeConfiguration(configurations: ConfigurationNode | ConfigurationNode[]): void;
 
   /** Event that fires whenever a configuration schema changes */
-  onDidSchemaChange: BeEvent<() => void>;
+  onSchemaChanged: BeEvent<() => void>;
 
-  onDidUpdateConfiguration: BeEvent<() => string[]>;
+  onConfigurationUpdated: BeEvent<() => string[]>;
 
-  /**
-   * Returns all configuration nodes contributed to this registry.
-   */
-  getConfigurations(): IConfigurationNode[];
+  /** Returns all configuration nodes contributed to this registry. */
+  getConfigurations(): ConfigurationNode[];
 
-  /**
-   * Returns all configurations settings of all configuration nodes contributed to this registry.
-   */
-  getConfigurationProperties(): { [qualifiedKey: string]: IConfigurationPropertySchema };
-
-  /**
-   * Returns all excluded configurations settings of all configuration nodes contributed to this registry.
-   */
-  getExcludedConfigurationProperties(): { [qualifiedKey: string]: IConfigurationPropertySchema };
-
-  /**
-   * Register the identifiers for editor configurations
-   */
-  registerOverrideIdentifiers(identifiers: string[]): void;
+  /** Returns all configurations settings of all configuration nodes contributed to this registry.  */
+  getConfigurationProperties(): { [qualifiedKey: string]: ConfigurationPropertySchema };
 }
 
-export interface IConfigurationPropertySchema extends IJSONSchema {
-  included?: boolean;
-
-  tags?: string[];
+export interface ConfigurationPropertySchema extends JSONSchema {
+  /** if false, then ignore this property in the current session */
+  included?: false;
 
   enumItemLabels?: string[];
 
-  /**
-   * When specified, controls the presentation format of string settings.
-   * Otherwise, the presentation format defaults to `singleline`.
-   */
-  editPresentation?: EditPresentationTypes;
+  /**  When specified,edit with multiline editor */
+  multilineEdit?: true;
 }
 
-export interface IConfigurationExtensionInfo {
-  id: string;
-  restrictedConfigurations?: string[];
-}
-
-export interface IConfigurationNode {
+export interface ConfigurationNode {
   id?: string;
   order?: number;
   type?: string | string[];
   title?: string;
   description?: string;
-  properties?: { [path: string]: IConfigurationPropertySchema };
-  allOf?: IConfigurationNode[];
-  extensionInfo?: IConfigurationExtensionInfo;
+  properties?: { [path: string]: ConfigurationPropertySchema };
+  extensionId?: string;
 }
 
-class ConfigurationRegistry implements IConfigurationRegistry {
+class ConfigurationRegistryImpl implements ConfigurationRegistry {
 
-  private readonly _defaultValues: IStringDictionary<any>;
-  private readonly _configurationContributors: IConfigurationNode[];
+  private readonly _defaultValues: StringDictionary<any>;
+  private readonly _configurationContributors: ConfigurationNode[];
   private readonly _configurationProperties: { [qualifiedKey: string]: IJSONSchema };
-  private readonly _excludedConfigurationProperties: { [qualifiedKey: string]: IJSONSchema };
-  private readonly _resourceLanguageSettingsSchema: IJSONSchema;
-  private readonly _overrideIdentifiers = new Set<string>();
 
   private readonly _onDidSchemaChange = new Emitter<void>();
   readonly onDidSchemaChange: Event<void> = this._onDidSchemaChange.event;
@@ -138,11 +77,11 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     contributionRegistry.registerSchema(resourceLanguageSettingsSchemaId, this.resourceLanguageSettingsSchema);
   }
 
-  public registerConfiguration(configuration: IConfigurationNode, validate: boolean = true): void {
+  public registerConfiguration(configuration: ConfigurationNode, validate: boolean = true): void {
     this.registerConfigurations([configuration], validate);
   }
 
-  public registerConfigurations(configurations: IConfigurationNode[], validate: boolean = true): void {
+  public registerConfigurations(configurations: ConfigurationNode[], validate: boolean = true): void {
     const properties = this.doRegisterConfigurations(configurations, validate);
 
     contributionRegistry.registerSchema(resourceLanguageSettingsSchemaId, this.resourceLanguageSettingsSchema);
@@ -150,7 +89,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     this._onDidUpdateConfiguration.fire(properties);
   }
 
-  public deregisterConfigurations(configurations: IConfigurationNode[]): void {
+  public deregisterConfigurations(configurations: ConfigurationNode[]): void {
     const properties = this.doDeregisterConfigurations(configurations);
 
     contributionRegistry.registerSchema(resourceLanguageSettingsSchemaId, this.resourceLanguageSettingsSchema);
@@ -158,7 +97,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     this._onDidUpdateConfiguration.fire(properties);
   }
 
-  public updateConfigurations({ add, remove }: { add: IConfigurationNode[], remove: IConfigurationNode[] }): void {
+  public updateConfigurations({ add, remove }: { add: ConfigurationNode[], remove: ConfigurationNode[] }): void {
     const properties = [];
     properties.push(...this.doDeregisterConfigurations(remove));
     properties.push(...this.doRegisterConfigurations(add, false));
@@ -168,7 +107,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     this._onDidUpdateConfiguration.fire(distinct(properties));
   }
 
-  public registerDefaultConfigurations(defaultConfigurations: IStringDictionary<any>[]): void {
+  public registerDefaultConfigurations(defaultConfigurations: StringDictionary<any>[]): void {
     const properties: string[] = [];
     const overrideIdentifiers: string[] = [];
 
@@ -178,7 +117,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
 
         if (OVERRIDE_PROPERTY_PATTERN.test(key)) {
           this.defaultValues[key] = { ...(this.defaultValues[key] || {}), ...defaultConfiguration[key] };
-          const property: IConfigurationPropertySchema = {
+          const property: ConfigurationPropertySchema = {
             type: "object",
             default: this.defaultValues[key],
             description: nls.localize("defaultLanguageConfiguration.description", "Configure settings to be overridden for {0} language.", key),
@@ -203,7 +142,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     this._onDidUpdateConfiguration.fire(properties);
   }
 
-  public deregisterDefaultConfigurations(defaultConfigurations: IStringDictionary<any>[]): void {
+  public deregisterDefaultConfigurations(defaultConfigurations: StringDictionary<any>[]): void {
     const properties: string[] = [];
     for (const defaultConfiguration of defaultConfigurations) {
       for (const key in defaultConfiguration) {
@@ -227,7 +166,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     this._onDidUpdateConfiguration.fire(properties);
   }
 
-  public notifyConfigurationSchemaUpdated(...configurations: IConfigurationNode[]) {
+  public notifyConfigurationSchemaUpdated(...configurations: ConfigurationNode[]) {
     this._onDidSchemaChange.fire();
   }
 
@@ -238,7 +177,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     this.updateOverridePropertyPatternKey();
   }
 
-  private doRegisterConfigurations(configurations: IConfigurationNode[], validate: boolean): string[] {
+  private doRegisterConfigurations(configurations: ConfigurationNode[], validate: boolean): string[] {
     const properties: string[] = [];
     configurations.forEach((configuration) => {
       properties.push(...this.validateAndRegisterProperties(configuration, validate, configuration.extensionInfo)); // fills in defaults
@@ -248,9 +187,9 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     return properties;
   }
 
-  private doDeregisterConfigurations(configurations: IConfigurationNode[]): string[] {
+  private doDeregisterConfigurations(configurations: ConfigurationNode[]): string[] {
     const properties: string[] = [];
-    const deregisterConfiguration = (configuration: IConfigurationNode) => {
+    const deregisterConfiguration = (configuration: ConfigurationNode) => {
       if (configuration.properties) {
         for (const key in configuration.properties) {
           properties.push(key);
@@ -272,7 +211,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     return properties;
   }
 
-  private validateAndRegisterProperties(configuration: IConfigurationNode, validate: boolean = true, extensionInfo?: IConfigurationExtensionInfo, scope: ConfigurationScope = ConfigurationScope.WINDOW): string[] {
+  private validateAndRegisterProperties(configuration: ConfigurationNode, validate: boolean = true, extensionInfo?: IConfigurationExtensionInfo, scope: ConfigurationScope = ConfigurationScope.WINDOW): string[] {
     scope = types.isUndefinedOrNull(configuration.scope) ? scope : configuration.scope;
     const propertyKeys: string[] = [];
     const properties = configuration.properties;
@@ -323,20 +262,20 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     return propertyKeys;
   }
 
-  getConfigurations(): IConfigurationNode[] {
+  getConfigurations(): ConfigurationNode[] {
     return this.configurationContributors;
   }
 
-  getConfigurationProperties(): { [qualifiedKey: string]: IConfigurationPropertySchema } {
+  getConfigurationProperties(): { [qualifiedKey: string]: ConfigurationPropertySchema } {
     return this.configurationProperties;
   }
 
-  getExcludedConfigurationProperties(): { [qualifiedKey: string]: IConfigurationPropertySchema } {
+  getExcludedConfigurationProperties(): { [qualifiedKey: string]: ConfigurationPropertySchema } {
     return this.excludedConfigurationProperties;
   }
 
-  private registerJSONConfiguration(configuration: IConfigurationNode) {
-    const register = (configuration: IConfigurationNode) => {
+  private registerJSONConfiguration(configuration: ConfigurationNode) {
+    const register = (configuration: ConfigurationNode) => {
       const properties = configuration.properties;
       if (properties) {
         for (const key in properties) {
@@ -351,7 +290,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     register(configuration);
   }
 
-  private updateSchema(key: string, property: IConfigurationPropertySchema): void {
+  private updateSchema(key: string, property: ConfigurationPropertySchema): void {
     allSettings.properties[key] = property;
     switch (property.scope) {
       case ConfigurationScope.APPLICATION:
@@ -376,7 +315,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     }
   }
 
-  private removeFromSchema(key: string, property: IConfigurationPropertySchema): void {
+  private removeFromSchema(key: string, property: ConfigurationPropertySchema): void {
     delete allSettings.properties[key];
     switch (property.scope) {
       case ConfigurationScope.APPLICATION:
@@ -418,7 +357,7 @@ class ConfigurationRegistry implements IConfigurationRegistry {
     this._onDidSchemaChange.fire();
   }
 
-  private updatePropertyDefaultValue(key: string, property: IConfigurationPropertySchema): void {
+  private updatePropertyDefaultValue(key: string, property: ConfigurationPropertySchema): void {
     let defaultValue = this.defaultValues[key];
     if (types.isUndefined(defaultValue)) {
       defaultValue = property.default;

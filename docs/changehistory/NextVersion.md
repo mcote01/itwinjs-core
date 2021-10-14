@@ -804,6 +804,7 @@ SAML support has officially been dropped as a supported workflow. All related AP
 | Removed                       | Replacement  |
 | ----------------------------- | ------------ |
 | `ContentLayoutProps.priority` | *eliminated* |
+| `UiItemsArbiter`              | *eliminated* |
 
 ### @itwin/core-react
 
@@ -1237,7 +1238,7 @@ Some have replacements within the @itwin/core-react package.
 
 A new @itwin/imodel-components-react package has been added, and some items were moved from @itwin/core-react and @itwin/components-react into this new package.
 The ui-imodel-components package contains React components that depend on the imodeljs-frontend, imodeljs-common or imodeljs-quantity packages.
-Dependencies on these other iTwin.js packages have been removed from ui-core and ui-components.
+Dependencies on these other iTwin.js packages have been removed from core-react and components-react.
 The items moved to ui-imodel-components are related to Color, Cube, LineWeight, Navigation Aids, Quantity Inputs, Timeline and Viewport.
 
 The following items were moved into the ui-imodel-components package. For a complete list, see [iTwin.js Documentation](https://www.itwinjs.org/reference/ui-imodel-components/all).
@@ -1372,6 +1373,7 @@ The `ninezone-test-app` was used to test and demonstrate the now deprecated "nin
 In previous versions, localization was provided via the I18N class. iTwin.js has been updated to instead use the [Localization]($common) interface. The initialization of [IModelApp]($frontend) now takes an optional object that implements [Localization]($common). The [ITwinLocalization]($i18n) class supplies the default implementation, and may be customized with [LocalizationOptions]($i18n) in the constructor and supplied via [IModelAppOptions.localization]($frontend).
 
 The previous way to provide localization options:
+
 ```ts
 const i18nOptions: I18NOptions = {
   urlTemplate: `${window.location.origin}/locales/{{lng}}/{{ns}}.json`
@@ -1379,7 +1381,9 @@ const i18nOptions: I18NOptions = {
 
 await IModelApp.startup({ i18n: i18nOptions });
 ```
+
 Now becomes:
+
 ```ts
 const localizationOptions: LocalizationOptions = {
   urlTemplate: `${window.location.origin}/locales/{{lng}}/{{ns}}.json`

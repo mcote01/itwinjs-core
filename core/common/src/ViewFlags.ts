@@ -8,6 +8,7 @@
 
 // cspell:ignore ovrs
 
+import { assert } from "@itwin/core-bentley";
 import { JsonUtils, Mutable, NonFunctionPropertiesOf } from "@itwin/core-bentley";
 
 /** Enumerates the available basic rendering modes, as part of a [DisplayStyle]($backend)'s [[ViewFlags]].
@@ -39,6 +40,68 @@ export enum RenderMode {
    *  - Edges are drawn using their surface's colors; this can be overridden using [[HiddenLine.Settings]].
    */
   HiddenLine = 3,
+}
+
+const renderModeDefaults: Array<ViewFlagOverrides> = [];
+
+renderModeDefaults[RenderMode.Wireframe] = {
+  backgroundSurfaceColor: false,
+  contrastEdges: false,
+  edgeOverrides: false,
+  fill: true,
+  lighting: false,
+  materials: false,
+  monochromeEdges: true,
+  textures: false,
+  transparencyThreshold: false,
+  visibleEdges: true,
+  visibleSurfaces: false,
+};
+
+renderModeDefaults[RenderMode.SolidFill] = {
+  backgroundSurfaceColor: false,
+  contrastEdges: true,
+  edgeOverrides: true,
+  fill: false,
+  lighting: false,
+  materials: false,
+  monochromeEdges: false,
+  textures: false,
+  transparency: false,
+  transparencyThreshold: true,
+  visibleEdges: true,
+  visibleSurfaces: true,
+};
+
+renderModeDefaults[RenderMode.HiddenLine] = {
+  backgroundSurfaceColor: true,
+  contrastEdges: false,
+  edgeOverrides: true,
+  fill: false,
+  lighting: false,
+  materials: false,
+  monochromeEdges: false,
+  textures: false,
+  transparency: false,
+  transparencyThreshold: true,
+  visibleEdges: true,
+  visibleSurfaces: true,
+};
+
+renderModeDefaults[RenderMode.SmoothShade] = {
+  backgroundSurfaceColor: false,
+  contrastEdges: false,
+  edgeOverrides: true,
+  fill: false,
+  monochromeEdges: false,
+  transparencyThreshold: false,
+  visibleSurfaces: true,
+};
+
+function getRenderModeDefaults(mode: RenderMode): ViewFlagOverrides {
+  const flags = renderModeDefaults[mode];
+  assert(undefined !== flags);
+  return flags ?? { };
 }
 
 /** JSON representation of [[ViewFlags]].
@@ -325,7 +388,7 @@ export class ViewFlags {
    * @see [[copy]] and [[override]] to change multiple properties.
    */
   public withRenderMode(renderMode: RenderMode): ViewFlags {
-    return renderMode === this.renderMode ? this : this.copy({ renderMode });
+    return this.copy(getRenderModeDefaults(renderMode));
   }
 
   /** Adjust view flags for renderer.
@@ -466,7 +529,7 @@ export class ViewFlags {
   }
 
   /** A ViewFlags object with all properties initialized to their default values. */
-  public static readonly defaults = new ViewFlags();
+  public static readonly defaults = ViewFlags.fromRenderMode(RenderMode.Wireframe).with("lighting", true);
 
   /** Create a ViewFlags.
    * @param flags The properties to initialize. Any properties not specified are initialized to their default values.
@@ -487,14 +550,18 @@ export class ViewFlags {
     if (!json)
       return this.defaults;
 
-    let renderMode: RenderMode;
-    const renderModeValue = JsonUtils.asInt(json.renderMode);
-    if (renderModeValue < RenderMode.HiddenLine)
-      renderMode = RenderMode.Wireframe;
-    else if (renderModeValue > RenderMode.SolidFill)
-      renderMode = RenderMode.SmoothShade;
-    else
-      renderMode = renderModeValue;
+    let renderMode: RenderMode | undefined;
+    if (!json.ignoreRenderMode) {
+      const renderModeValue = JsonUtils.asInt(json.renderMode);
+      if (renderModeValue < RenderMode.HiddenLine)
+        renderMode = RenderMode.Wireframe;
+      else if (renderModeValue > RenderMode.SolidFill)
+        renderMode = RenderMode.SmoothShade;
+      else
+        renderMode = renderModeValue;
+    }
+
+    const defaults = undefined !== renderMode ? getRenderModeDefaults(renderMode) : { };
 
     const lighting = !JsonUtils.asBool(json.noCameraLights) || !JsonUtils.asBool(json.noSourceLights) || !JsonUtils.asBool(json.noSolarLight);
     return new ViewFlags({
@@ -521,7 +588,13 @@ export class ViewFlags {
       thematicDisplay: JsonUtils.asBool(json.thematicDisplay),
       forceSurfaceDiscard: JsonUtils.asBool(json.forceSurfaceDiscard),
       whiteOnWhiteReversal: !JsonUtils.asBool(json.noWhiteOnWhiteReversal),
+
+      ...defaults,
     });
+  }
+
+  public static fromRenderMode(renderMode: RenderMode): ViewFlags {
+    return this.create(getRenderModeDefaults(renderMode));
   }
 
   /** Returns true if `this` and `other` are equivalent. */

@@ -73,6 +73,14 @@ describe("ViewFlags", () => {
         forceSurfaceDiscard: on,
         noWhiteOnWhiteReversal: on,
         renderMode: RenderMode.SolidFill,
+
+        ignoreRenderMode: true,
+        contrastEdges: true,
+        noEdgeOverrides: false,
+        monochromeEdges: false,
+        noSurfaces: false,
+        backgroundSurfaceColor: false,
+        transparencyThreshold: true,
       };
 
       return vfProps;

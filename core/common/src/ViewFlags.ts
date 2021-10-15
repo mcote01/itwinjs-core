@@ -108,6 +108,15 @@ export interface ViewFlagProps {
    * @see [[ViewFlags.whiteOnWhiteReversal]].
    */
   noWhiteOnWhiteReversal?: boolean;
+
+  ignoreRenderMode?: boolean;
+  contrastEdges?: boolean;
+  noEdgeOverrides?: boolean;
+  edgeTransparency?: boolean;
+  monochromeEdges?: boolean;
+  noSurfaces?: boolean;
+  backgroundSurfaceColor?: boolean;
+  transparencyThreshold?: boolean;
 }
 
 function edgesRequired(renderMode: RenderMode, visibleEdges: boolean): boolean {
@@ -220,6 +229,20 @@ export class ViewFlags {
    */
   public readonly lighting: boolean;
 
+  public readonly contrastEdges: boolean;
+
+  public readonly edgeOverrides: boolean;
+
+  public readonly edgeTransparency: boolean;
+
+  public readonly monochromeEdges: boolean;
+
+  public readonly visibleSurfaces: boolean;
+
+  public readonly backgroundSurfaceColor: boolean;
+
+  public readonly transparencyThreshold: boolean;
+
   /** Create a new ViewFlags.
    * @param flags The properties to initialize. Any properties not specified are initialized to their default values.
    */
@@ -247,6 +270,13 @@ export class ViewFlags {
     this.forceSurfaceDiscard = flags?.forceSurfaceDiscard ?? false;
     this.whiteOnWhiteReversal = flags?.whiteOnWhiteReversal ?? true;
     this.lighting = flags?.lighting ?? false;
+    this.contrastEdges = flags?.contrastEdges ?? false;
+    this.edgeOverrides = flags?.edgeOverrides ?? true;
+    this.edgeTransparency = flags?.edgeTransparency ?? false;
+    this.monochromeEdges = flags?.monochromeEdges ?? false;
+    this.visibleSurfaces = flags?.visibleSurfaces ?? true;
+    this.backgroundSurfaceColor = flags?.backgroundSurfaceColor ?? false;
+    this.transparencyThreshold = flags?.transparencyThreshold ?? false;
   }
 
   /** Produce a copy of these ViewFlags with some modified properties. Any properties not explicitly specified by `changedFlags` will retain their current values.
@@ -345,6 +375,7 @@ export class ViewFlags {
   /** Convert to JSON representation. */
   public toJSON(): ViewFlagProps {
     const out: ViewFlagProps = {};
+
     if (!this.constructions) out.noConstruct = true;
     if (!this.dimensions) out.noDim = true;
     if (!this.patterns) out.noPattern = true;
@@ -368,8 +399,33 @@ export class ViewFlags {
     if (this.forceSurfaceDiscard) out.forceSurfaceDiscard = true;
     if (!this.whiteOnWhiteReversal) out.noWhiteOnWhiteReversal = true;
 
-    out.renderMode = this.renderMode;
+    if (this.contrastEdges) out.contrastEdges = true;
+    if (!this.edgeOverrides) out.noEdgeOverrides = true;
+    if (this.edgeTransparency) out.edgeTransparency = true;
+    if (this.monochromeEdges) out.monochromeEdges = true;
+    if (!this.visibleSurfaces) out.noSurfaces = true;
+    if (this.backgroundSurfaceColor) out.backgroundSurfaceColor = true;
+    if (this.transparencyThreshold) out.transparencyThreshold = true;
+
+    // For backwards compatibility, determine a closest match for RenderMode.
+    // Also set a flag indicating we should ignore this RenderMode when reinstantiating from JSON.
+    out.renderMode = this.computeRenderMode();
+    out.ignoreRenderMode = true;
+
     return out;
+  }
+
+  private computeRenderMode(): RenderMode {
+    if (this.visibleEdges) {
+      if (!this.visibleSurfaces)
+        return RenderMode.Wireframe;
+      else if (this.backgroundSurfaceColor)
+        return RenderMode.HiddenLine;
+      else if (this.contrastEdges && !this.lighting && !this.materials && !this.textures)
+        return RenderMode.SolidFill;
+    }
+
+    return RenderMode.SmoothShade;
   }
 
   /** Like [[toJSON]], but no properties are omitted.
@@ -377,7 +433,9 @@ export class ViewFlags {
    */
   public toFullyDefinedJSON(): Required<ViewFlagProps> {
     return {
-      renderMode: this.renderMode,
+      renderMode: this.computeRenderMode(),
+      ignoreRenderMode: true,
+
       noConstruct: !this.constructions,
       noDim: !this.dimensions,
       noPattern: !this.patterns,
@@ -402,6 +460,14 @@ export class ViewFlags {
       thematicDisplay: this.thematicDisplay,
       forceSurfaceDiscard: this.forceSurfaceDiscard,
       noWhiteOnWhiteReversal: !this.whiteOnWhiteReversal,
+
+      contrastEdges: this.contrastEdges,
+      noEdgeOverrides: !this.edgeOverrides,
+      edgeTransparency: this.edgeTransparency,
+      monochromeEdges: this.monochromeEdges,
+      noSurfaces: !this.visibleSurfaces,
+      backgroundSurfaceColor: this.backgroundSurfaceColor,
+      transparencyThreshold: this.transparencyThreshold,
     };
   }
 

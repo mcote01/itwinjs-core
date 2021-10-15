@@ -112,7 +112,6 @@ export interface ViewFlagProps {
   ignoreRenderMode?: boolean;
   contrastEdges?: boolean;
   noEdgeOverrides?: boolean;
-  edgeTransparency?: boolean;
   monochromeEdges?: boolean;
   noSurfaces?: boolean;
   backgroundSurfaceColor?: boolean;
@@ -233,8 +232,6 @@ export class ViewFlags {
 
   public readonly edgeOverrides: boolean;
 
-  public readonly edgeTransparency: boolean;
-
   public readonly monochromeEdges: boolean;
 
   public readonly visibleSurfaces: boolean;
@@ -272,7 +269,6 @@ export class ViewFlags {
     this.lighting = flags?.lighting ?? false;
     this.contrastEdges = flags?.contrastEdges ?? false;
     this.edgeOverrides = flags?.edgeOverrides ?? true;
-    this.edgeTransparency = flags?.edgeTransparency ?? false;
     this.monochromeEdges = flags?.monochromeEdges ?? false;
     this.visibleSurfaces = flags?.visibleSurfaces ?? true;
     this.backgroundSurfaceColor = flags?.backgroundSurfaceColor ?? false;
@@ -401,7 +397,6 @@ export class ViewFlags {
 
     if (this.contrastEdges) out.contrastEdges = true;
     if (!this.edgeOverrides) out.noEdgeOverrides = true;
-    if (this.edgeTransparency) out.edgeTransparency = true;
     if (this.monochromeEdges) out.monochromeEdges = true;
     if (!this.visibleSurfaces) out.noSurfaces = true;
     if (this.backgroundSurfaceColor) out.backgroundSurfaceColor = true;
@@ -463,7 +458,6 @@ export class ViewFlags {
 
       contrastEdges: this.contrastEdges,
       noEdgeOverrides: !this.edgeOverrides,
-      edgeTransparency: this.edgeTransparency,
       monochromeEdges: this.monochromeEdges,
       noSurfaces: !this.visibleSurfaces,
       backgroundSurfaceColor: this.backgroundSurfaceColor,

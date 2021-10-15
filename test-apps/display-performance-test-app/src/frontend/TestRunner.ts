@@ -3,22 +3,25 @@
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
 
-import * as path from "path";
+import { RealityDataAccessClient } from "@bentley/reality-data-client";
 import {
   assert, BeDuration, Dictionary, Id64, Id64Array, Id64String, ProcessDetector, SortedArray, StopWatch,
-} from "@bentley/bentleyjs-core";
-import { BackgroundMapType, DisplayStyleProps, FeatureAppearance, Hilite, RenderMode, ViewStateProps } from "@bentley/imodeljs-common";
+} from "@itwin/core-bentley";
+import {
+  BackgroundMapType, BaseMapLayerSettings, DisplayStyleProps, FeatureAppearance, Hilite, RenderMode, ViewStateProps,
+} from "@itwin/core-common";
 import {
   DisplayStyle3dState, DisplayStyleState, EntityState, FeatureSymbology, GLTimerResult, GLTimerResultCallback, IModelApp, IModelConnection,
-  PerformanceMetrics, Pixel, RenderSystem, ScreenViewport, SnapshotConnection, Target, TileAdmin, ViewRect, ViewState,
-} from "@bentley/imodeljs-frontend";
-import { System } from "@bentley/imodeljs-frontend/lib/webgl";
-import { HyperModeling } from "@bentley/hypermodeling-frontend";
+  PerformanceMetrics, Pixel, RenderSystem, ScreenViewport, SnapshotConnection, Target, TileAdmin, ToolAdmin, ViewRect, ViewState,
+} from "@itwin/core-frontend";
+import { System } from "@itwin/core-frontend/lib/cjs/webgl";
+import { HyperModeling } from "@itwin/hypermodeling-frontend";
+import * as path from "path";
 import DisplayPerfRpcInterface from "../common/DisplayPerfRpcInterface";
+import { DisplayPerfTestApp } from "./DisplayPerformanceTestApp";
 import {
   defaultEmphasis, defaultHilite, ElementOverrideProps, HyperModelingProps, TestConfig, TestConfigProps, TestConfigStack, ViewStateSpec, ViewStateSpecProps,
 } from "./TestConfig";
-import { DisplayPerfTestApp } from "./DisplayPerformanceTestApp";
 
 /** JSON representation of a set of tests. Each test in the set inherits the test set's configuration. */
 export interface TestSetProps extends TestConfigProps {
@@ -130,10 +133,18 @@ export class TestRunner {
   }
 
   public constructor(props: TestSetsProps) {
+    // NB: The default minimum spatial chord tolerance was changed from "no minimum" to 1mm. To preserve prior behavior,
+    // override it to zero.
+    // Subsequently pushed configs can override this if desired.
+    const defaultTileProps: TileAdmin.Props = { minimumSpatialTolerance: 0 };
+    props.tileProps = props.tileProps ? { ...defaultTileProps, ...props.tileProps } : defaultTileProps;
+
     this._config = new TestConfigStack(new TestConfig(props));
     this._testSets = props.testSet;
     this._minimizeOutput = true === props.minimize;
     this._logFileName = "_DispPerfTestAppViewLog.txt";
+
+    ToolAdmin.exceptionHandler = async (ex) => this.onException(ex);
   }
 
   /** Run all the tests. */
@@ -141,6 +152,23 @@ export class TestRunner {
     const msg = `View Log,  Model Base Location: ${this.curConfig.iModelLocation}\n  format: Time_started  ModelName  [ViewName]`;
     await this.logToConsole(msg);
     await this.logToFile(msg, { noAppend: true });
+
+    let needRestart = this.curConfig.requiresRestart(new TestConfig({})); // If current config differs from default, restart
+    const renderOptions: RenderSystem.Options = this.curConfig.renderOptions ?? {};
+    if (!this.curConfig.useDisjointTimer) {
+      const ext = this.curConfig.renderOptions?.disabledExtensions;
+      renderOptions.disabledExtensions = Array.isArray(ext) ? ext.concat(["EXT_disjoint_timer_query", "EXT_disjoint_timer_query_webgl2"]) : ["EXT_disjoint_timer_query", "EXT_disjoint_timer_query_webgl2"];
+      needRestart = true;
+    }
+    if (IModelApp.initialized && needRestart)
+      await IModelApp.shutdown();
+    if (needRestart) {
+      await DisplayPerfTestApp.startup({
+        renderSys: renderOptions,
+        tileAdmin: this.curConfig.tileProps,
+        realityDataAccess: new RealityDataAccessClient(),
+      });
+    }
 
     // Run all the tests
     for (const set of this._testSets)
@@ -170,9 +198,15 @@ export class TestRunner {
         await IModelApp.shutdown();
 
       if (!IModelApp.initialized) {
+        const renderOptions: RenderSystem.Options = this.curConfig.renderOptions ?? {};
+        if (!this.curConfig.useDisjointTimer) {
+          const ext = this.curConfig.renderOptions?.disabledExtensions;
+          renderOptions.disabledExtensions = Array.isArray(ext) ? ext.concat(["EXT_disjoint_timer_query", "EXT_disjoint_timer_query_webgl2"]) : ["EXT_disjoint_timer_query", "EXT_disjoint_timer_query_webgl2"];
+        }
         await DisplayPerfTestApp.startup({
-          renderSys: this.curConfig.renderOptions,
+          renderSys: renderOptions,
           tileAdmin: this.curConfig.tileProps,
+          realityDataAccess: new RealityDataAccessClient(),
         });
       }
 
@@ -205,9 +239,13 @@ export class TestRunner {
 
       await this.logTest();
 
-      const result = await this.runTest(context);
-      if (result)
-        await this.logToFile(result.selectedTileIds, { noNewLine: true });
+      try {
+        const result = await this.runTest(context);
+        if (result)
+          await this.logToFile(result.selectedTileIds, { noNewLine: true });
+      } catch (ex) {
+        await this.onException(ex);
+      }
     }
   }
 
@@ -367,8 +405,8 @@ export class TestRunner {
             await decorator.toggleAttachment(marker, true);
           }
         }
-      } catch (err) {
-        await this.logError(err.toString());
+      } catch (err: any) {
+        await DisplayPerfTestApp.logException(err, { dir: this.curConfig.outputPath, name: this._logFileName });
       }
     }
 
@@ -574,7 +612,7 @@ export class TestRunner {
     let iModel;
     try {
       iModel = await SnapshotConnection.openFile(path.join(filepath));
-    } catch (err) {
+    } catch (err: any) {
       await this.logError(`openSnapshot failed: ${err.toString()}`);
       return undefined;
     }
@@ -653,8 +691,6 @@ export class TestRunner {
 
     await DisplayPerfRpcInterface.getClient().finishCsv(renderData, this.curConfig.outputPath, this.curConfig.outputName, this.curConfig.csvFormat);
     await this.logToConsole("Tests complete. Press Ctrl-C to exit.");
-
-    return DisplayPerfRpcInterface.getClient().finishTest();
   }
 
   private async saveCsv(row: Map<string, number | string>): Promise<void> {
@@ -819,8 +855,7 @@ export class TestRunner {
     let totalTime: number;
     if (rowData.get("Finish GPU Queue")) { // If we can't collect GPU data, get non-interactive total time with 'Finish GPU Queue' time
       totalTime = Number(rowData.get("CPU Total Time")) + Number(rowData.get("Finish GPU Queue"));
-      rowData.set("Non-Interactive Total Time", totalTime);
-      rowData.set("Non-Interactive FPS", totalTime > 0.0 ? (1000.0 / totalTime).toFixed(fixed) : "0");
+      rowData.set("GPU Total Time", totalTime);
     }
 
     // Get these values from the timings.actualFps -- timings.actualFps === timings.cpu, unless in readPixels mode
@@ -834,21 +869,19 @@ export class TestRunner {
     }
 
     rowData.delete("Total Time");
-    totalRenderTime /= timings.actualFps.length;
+    totalRenderTime /= timings.actualFps.length; // ie the CPU Total Time
     totalTime /= timings.actualFps.length;
-    const totalGpuTime = Number(rowData.get("GPU-Total"));
-    if (totalGpuTime) {
-      const gpuBound = totalGpuTime > totalRenderTime;
-      const effectiveFps = 1000.0 / (gpuBound ? totalGpuTime : totalRenderTime);
+    const disjointTimerUsed = rowData.get("GPU-Total") !== undefined;
+    const totalGpuTime = Number(disjointTimerUsed ? rowData.get("GPU-Total") : rowData.get("GPU Total Time"));
+    const gpuBound = disjointTimerUsed ? (totalGpuTime > totalRenderTime) : (totalGpuTime > totalRenderTime + 5); // Add a 5ms tolerance for readPixel in this case
+    const effectiveFps = 1000.0 / (gpuBound ? totalGpuTime : totalRenderTime);
+    if (disjointTimerUsed) {
+      rowData.set("GPU Total Time", totalGpuTime.toFixed(fixed));
       rowData.delete("GPU-Total");
-      rowData.set("GPU Total Time", totalGpuTime.toFixed(fixed)); // Change the name of this column & change column order
-      rowData.set("Bound By", gpuBound ? (effectiveFps < 60.0 ? "gpu" : "gpu ?") : "cpu *");
-      rowData.set("Effective Total Time", gpuBound ? totalGpuTime.toFixed(fixed) : totalRenderTime.toFixed(fixed)); // This is the total gpu time if gpu bound or the total cpu time if cpu bound; times gather with running continuously
-      rowData.set("Effective FPS", effectiveFps.toFixed(fixed));
     }
-
-    rowData.set("Actual Total Time", totalTime.toFixed(fixed));
-    rowData.set("Actual FPS", totalTime > 0.0 ? (1000.0 / totalTime).toFixed(fixed) : "0");
+    rowData.set("Bound By", gpuBound ? (effectiveFps < 60.0 ? "gpu" : "gpu ?") : "cpu *");
+    rowData.set("Effective Total Time", gpuBound ? totalGpuTime.toFixed(fixed) : totalRenderTime.toFixed(fixed)); // This is the total gpu time if gpu bound or the total cpu time if cpu bound; times gather with running continuously
+    rowData.set("Effective FPS", effectiveFps.toFixed(fixed));
 
     return rowData;
   }
@@ -952,6 +985,13 @@ export class TestRunner {
       await savePng(this.getImageName(test, `type_${pixStr}_`), canvas);
     }
   }
+
+  private async onException(ex: any): Promise<void> {
+    // We need to log here so it gets written to the file.
+    await DisplayPerfTestApp.logException(ex, { dir: this.curConfig.outputPath, name: this._logFileName });
+    if ("terminate" === this.curConfig.onException)
+      await DisplayPerfRpcInterface.getClient().terminate();
+  }
 }
 
 function removeOptsFromString(input: string, ignore: string[] | string | undefined): string {
@@ -963,10 +1003,7 @@ function removeOptsFromString(input: string, ignore: string[] | string | undefin
     ignore = ignore.split(" ");
 
   ignore.forEach((del: string) => {
-    if (del === "+max")
-      output = output.replace(/\+max\d+/, "");
-    else
-      output = output.replace(del, "");
+    output = output.replace(del, "");
   });
 
   output = output.replace(/__+/, "_");
@@ -986,13 +1023,15 @@ function getRenderMode(vp: ScreenViewport): string {
   }
 }
 
-function getRenderOpts(curRenderOpts: RenderSystem.Options): string {
+function getRenderOpts(opts: RenderSystem.Options): string {
   let optString = "";
-  for (const [key, value] of Object.entries(curRenderOpts)) {
+  for (const propName of Object.keys(opts)) {
+    const key = propName as keyof RenderSystem.Options;
     switch (key) {
-      case "disabledExtensions":
-        if (value) {
-          for (const ext of value) {
+      case "disabledExtensions": {
+        const extensions = opts[key];
+        if (extensions) {
+          for (const ext of extensions) {
             switch (ext) {
               case "WEBGL_draw_buffers":
                 optString += "-drawBuf";
@@ -1021,89 +1060,71 @@ function getRenderOpts(curRenderOpts: RenderSystem.Options): string {
               case "EXT_frag_depth":
                 optString += "-fragDepth";
                 break;
-              default:
-                optString += `-${ext}`;
-                break;
             }
           }
         }
         break;
-      case "preserveShaderSourceCode":
-        if (value) optString += "+shadeSrc";
-        break;
+      }
       case "displaySolarShadows":
-        if (!value) optString += "-solShd";
-        break;
-      case "logarithmicZBuffer":
-        if (value) optString += "+logZBuf";
+        if (!opts[key]) optString += "-solShd";
         break;
       case "useWebGL2":
-        if (value) optString += "+webGL2";
+        if (opts[key]) optString += "+webGL2";
         break;
-      case "antialiasSamples":
-        if (value > 1) optString += `+aa${value as number}`;
+      case "antialiasSamples": {
+        const value = opts[key];
+        if (undefined !== value && value > 1) optString += `+aa${value}`;
         break;
-      default:
-        if (value) optString += `+${key}`;
+      }
     }
   }
+
   return optString;
 }
 
-function getTileProps(curTileProps: TileAdmin.Props): string {
+function getTileProps(props: TileAdmin.Props): string {
   let tilePropsStr = "";
-  for (const [key, value] of Object.entries(curTileProps)) {
+
+  for (const propName of Object.keys(props)) {
+    const key = propName as keyof TileAdmin.Props;
     switch (key) {
-      case "elideEmptyChildContentRequests":
-        if (value) tilePropsStr += "+elide";
-        break;
       case "enableInstancing":
-        if (value) tilePropsStr += "+inst";
-        break;
-      case "maxActiveRequests":
-        if (value !== 10) tilePropsStr += `+max${value}`;
-        break;
-      case "retryInterval":
-        if (value) tilePropsStr += `+retry${value}`;
+        if (props[key]) tilePropsStr += "+inst";
         break;
       case "disableMagnification":
-        if (value) tilePropsStr += "-mag";
+        if (props[key]) tilePropsStr += "-mag";
         break;
-      default:
-        if (value) tilePropsStr += `+${key}`;
     }
   }
+
   return tilePropsStr;
 }
 
 function getBackgroundMapProps(vp: ScreenViewport): string {
   let bmPropsStr = "";
+  const layer = vp.displayStyle.settings.mapImagery.backgroundBase;
+  if (layer instanceof BaseMapLayerSettings && layer.provider) {
+    switch (layer.provider.name) {
+      case "BingProvider":
+        break;
+      case "MapBoxProvider":
+        bmPropsStr += "MapBox";
+        break;
+    }
+
+    switch (layer.provider.type) {
+      case BackgroundMapType.Hybrid:
+        break;
+      case BackgroundMapType.Aerial:
+        bmPropsStr += "+aer";
+        break;
+      case BackgroundMapType.Street:
+        bmPropsStr += "+st";
+        break;
+    }
+  }
+
   const bmProps = vp.displayStyle.settings.backgroundMap;
-  switch (bmProps.providerName) {
-    case "BingProvider":
-      break;
-    case "MapBoxProvider":
-      bmPropsStr += "MapBox";
-      break;
-    default:
-      bmPropsStr += bmProps.providerName;
-      break;
-  }
-
-  switch (bmProps.mapType) {
-    case BackgroundMapType.Hybrid:
-      break;
-    case BackgroundMapType.Aerial:
-      bmPropsStr += "+aer";
-      break;
-    case BackgroundMapType.Street:
-      bmPropsStr += "+st";
-      break;
-    default:
-      bmPropsStr += `+type${bmProps.mapType}`;
-      break;
-  }
-
   if (bmProps.groundBias !== 0)
     bmPropsStr += `+bias${bmProps.groundBias}`;
 
@@ -1144,85 +1165,48 @@ function getOtherProps(vp: ScreenViewport): string {
   return propsStr;
 }
 
+const viewFlagsPropsStrings = {
+  dimensions: "-dim",
+  patterns: "-pat",
+  weights: "-wt",
+  styles: "-sty",
+  transparency: "-trn",
+  fill: "-fll",
+  textures: "-txt",
+  materials: "-mat",
+  visibleEdges: "+vsE",
+  hiddenEdges: "+hdE",
+  shadows: "+shd",
+  clipVolume: "-clp",
+  constructions: "+con",
+  monochrome: "+mno",
+  backgroundMap: "+bkg",
+  ambientOcclusion: "+ao",
+  forceSurfaceDiscard: "+fsd",
+  thematicDisplay: "+thematicDisplay",
+  grid: "+grid",
+  whiteOnWhiteReversal: "+wow",
+  acsTriad: "+acsTriad",
+};
+
 function getViewFlagsString(test: TestCase): string {
   let vfString = "";
-  for (const [key, value] of Object.entries(test.viewport.viewFlags)) {
-    switch (key) {
-      case "renderMode":
-        break;
-      case "dimensions":
-        if (!value) vfString += "-dim";
-        break;
-      case "patterns":
-        if (!value) vfString += "-pat";
-        break;
-      case "weights":
-        if (!value) vfString += "-wt";
-        break;
-      case "styles":
-        if (!value) vfString += "-sty";
-        break;
-      case "transparency":
-        if (!value) vfString += "-trn";
-        break;
-      case "fill":
-        if (!value) vfString += "-fll";
-        break;
-      case "textures":
-        if (!value) vfString += "-txt";
-        break;
-      case "materials":
-        if (!value) vfString += "-mat";
-        break;
-      case "visibleEdges":
-        if (value) vfString += "+vsE";
-        break;
-      case "hiddenEdges":
-        if (value) vfString += "+hdE";
-        break;
-      case "sourceLights":
-        if (value) vfString += "+scL";
-        break;
-      case "cameraLights":
-        if (value) vfString += "+cmL";
-        break;
-      case "solarLight":
-        if (value) vfString += "+slL";
-        break;
-      case "shadows":
-        if (value) vfString += "+shd";
-        break;
-      case "clipVolume":
-        if (!value) vfString += "-clp";
-        break;
-      case "constructions":
-        if (value) vfString += "+con";
-        break;
-      case "monochrome":
-        if (value) vfString += "+mno";
-        break;
-      case "noGeometryMap":
-        if (value) vfString += "+noG";
-        break;
-      case "backgroundMap":
-        if (value) vfString += "+bkg";
-        break;
-      case "hLineMaterialColors":
-        if (value) vfString += "+hln";
-        break;
-      case "edgeMask":
-        if (value === 1) vfString += "+genM";
-        if (value === 2) vfString += "+useM";
-        break;
-      case "ambientOcclusion":
-        if (value) vfString += "+ao";
-        break;
-      case "forceSurfaceDiscard":
-        if (value) vfString += "+fsd";
-        break;
-      default:
-        if (value) vfString += `+${key}`;
-    }
+
+  // Lighting flag always comes first.
+  const vf = test.viewport.viewFlags;
+  if (vf.lighting && RenderMode.SmoothShade === vf.renderMode)
+    vfString = "+lit";
+
+  for (const propName of Object.keys(vf)) {
+    const key = propName as keyof typeof viewFlagsPropsStrings;
+    const abbrev = viewFlagsPropsStrings[key];
+    if (!abbrev)
+      continue;
+
+    assert("-" === abbrev[0] || "+" === abbrev[0]);
+    const includeIf = "+" === abbrev[0];
+    if (vf[key] === includeIf)
+      vfString += abbrev;
   }
 
   if (undefined !== test.view.elementOverrides)

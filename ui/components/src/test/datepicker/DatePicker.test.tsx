@@ -6,11 +6,11 @@
 import { expect } from "chai";
 import React from "react";
 import sinon from "sinon";
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import TestUtils from "../TestUtils";
-import { DatePicker } from "../../ui-components/datepicker/DatePicker";
-import { SpecialKey } from "@bentley/ui-abstract";
-import { adjustDateToTimezone } from "../../ui-components/common/DateUtils";
+import { DatePicker } from "../../components-react/datepicker/DatePicker";
+import { SpecialKey } from "@itwin/appui-abstract";
+import { adjustDateToTimezone } from "../../components-react/common/DateUtils";
 
 describe("<DatePicker />", () => {
   let renderSpy: sinon.SinonSpy;
@@ -25,8 +25,6 @@ describe("<DatePicker />", () => {
     sinon.restore();
     renderSpy = sinon.spy();
   });
-
-  afterEach(cleanup);
 
   after(() => {
     TestUtils.terminateUiComponents();

@@ -2,39 +2,41 @@
 * Copyright (c) Bentley Systems, Incorporated. All rights reserved.
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
-import { ColorByName } from "@bentley/imodeljs-common";
-import { I18N } from "@bentley/imodeljs-i18n";
+import { ITwinLocalization } from "@itwin/core-i18n";
 import {
-  ArrayValue, BasePropertyEditorParams, ButtonGroupEditorParams, ColorEditorParams, CustomFormattedNumberParams, ImageCheckBoxParams, ParseResults,
-  Primitives, PrimitiveValue, PropertyDescription, PropertyEditorInfo, PropertyEditorParamTypes, PropertyRecord, PropertyValueFormat,
-  StandardEditorNames, StandardTypeNames, StructValue,
-} from "@bentley/ui-abstract";
-import { ColumnDescription, CompositeFilterDescriptorCollection, FilterableTable, UiComponents } from "../ui-components";
-import { TableFilterDescriptorCollection } from "../ui-components/table/columnfiltering/TableFilterDescriptorCollection";
+  ArrayValue, BasePropertyEditorParams, ButtonGroupEditorParams, CustomFormattedNumberParams, DisplayMessageType,
+  ImageCheckBoxParams, MessagePresenter, MessageSeverity, ParseResults,
+  Primitives, PrimitiveValue, PropertyDescription, PropertyEditorInfo, PropertyEditorParamTypes, PropertyRecord, PropertyValue, PropertyValueFormat,
+  StandardEditorNames, StandardTypeNames, StructValue, UiAbstract,
+} from "@itwin/appui-abstract";
+import { AsyncValueProcessingResult, ColumnDescription, CompositeFilterDescriptorCollection, DataControllerBase, FilterableTable, UiComponents } from "../components-react";
+import { TableFilterDescriptorCollection } from "../components-react/table/columnfiltering/TableFilterDescriptorCollection";
 
 // cSpell:ignore buttongroup
 
 /** @internal */
 export class TestUtils {
-  private static _i18n?: I18N;
+  private static _i18n?: ITwinLocalization;
   private static _uiComponentsInitialized = false;
 
-  public static get i18n(): I18N {
-    if (!TestUtils._i18n) {
-      // const port = process.debugPort;
-      // const i18nOptions = { urlTemplate: "http://localhost:" + port + "/locales/{{lng}}/{{ns}}.json" };
-      TestUtils._i18n = new I18N();
-    }
-    return TestUtils._i18n;
+  public static get i18n(): ITwinLocalization {
+    return TestUtils._i18n!;
   }
 
   public static async initializeUiComponents() {
     if (!TestUtils._uiComponentsInitialized) {
-      // This is required by our I18n module (specifically the i18next package).
-      (global as any).XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; // eslint-disable-line @typescript-eslint/no-var-requires
+      TestUtils._i18n = new ITwinLocalization();
+      await TestUtils.i18n.initialize(["IModelJs"]);
 
       await UiComponents.initialize(TestUtils.i18n);
       TestUtils._uiComponentsInitialized = true;
+
+      const mp: MessagePresenter = {
+        displayMessage: (_severity: MessageSeverity, _briefMessage: HTMLElement | string, _detailedMessage?: HTMLElement | string, _messageType?: DisplayMessageType.Toast): void => { },
+        displayInputFieldMessage: (_inputField: HTMLElement, _severity: MessageSeverity, _briefMessage: HTMLElement | string, _detailedMessage?: HTMLElement | string): void => { },
+        closeInputFieldMessage: (): void => { },
+      };
+      UiAbstract.messagePresenter = mp;
     }
   }
 
@@ -262,65 +264,6 @@ export class TestUtils {
     propertyRecord.isReadonly = false;
     return propertyRecord;
   }
-  public static createColorProperty(propertyName: string, colorValue: number) {
-
-    const value: PrimitiveValue = {
-      displayValue: "",
-      value: colorValue,
-      valueFormat: PropertyValueFormat.Primitive,
-    };
-
-    const description: PropertyDescription = {
-      name: propertyName,
-      displayLabel: propertyName,
-      typename: StandardTypeNames.Number,
-      editor: {
-        name: "color-picker",
-        params: [
-          {
-            type: PropertyEditorParamTypes.ColorData,
-            colorValues: [
-              ColorByName.blue as number,
-              ColorByName.red as number,
-              ColorByName.green as number,
-              ColorByName.yellow as number,
-              ColorByName.black as number,
-              ColorByName.gray as number,
-              ColorByName.purple as number,
-              ColorByName.pink as number,
-            ],
-            numColumns: 2,
-          } as ColorEditorParams,
-        ],
-      },
-    };
-
-    const propertyRecord = new PropertyRecord(value, description);
-    propertyRecord.isReadonly = false;
-    return propertyRecord;
-  }
-
-  public static createWeightProperty(propertyName: string, weight: number) {
-
-    const value: PrimitiveValue = {
-      displayValue: "",
-      value: weight,
-      valueFormat: PropertyValueFormat.Primitive,
-    };
-
-    const description: PropertyDescription = {
-      name: propertyName,
-      displayLabel: propertyName,
-      typename: StandardTypeNames.Number,
-      editor: {
-        name: StandardEditorNames.WeightPicker,
-      },
-    };
-
-    const propertyRecord = new PropertyRecord(value, description);
-    propertyRecord.isReadonly = false;
-    return propertyRecord;
-  }
 
   private static _formatLength = (numberValue: number): string => numberValue.toFixed(2);
 
@@ -433,6 +376,13 @@ export class TestFilterableTable implements FilterableTable {
   /** Gets ECExpression to get property display value. */
   public getPropertyDisplayValueExpression(property: string): string {
     return property;
+  }
+}
+
+/** @internal */
+export class MineDataController extends DataControllerBase {
+  public override async validateValue(_newValue: PropertyValue, _record: PropertyRecord): Promise<AsyncValueProcessingResult> {
+    return { encounteredError: true, errorMessage: { severity: MessageSeverity.Error, briefMessage: "Test" } };
   }
 }
 

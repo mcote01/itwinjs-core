@@ -6,7 +6,7 @@ import { assert, expect } from "chai";
 import * as path from "path";
 import { IModelHost, IModelHostConfiguration, KnownLocations } from "../../IModelHost";
 import { BriefcaseManager } from "../../BriefcaseManager";
-import { RpcRegistry } from "@bentley/imodeljs-common";
+import { RpcRegistry } from "@itwin/core-common";
 import { IModelTestUtils } from "../IModelTestUtils";
 import { Schemas } from "../../Schema";
 import sinon = require("sinon");
@@ -26,10 +26,9 @@ describe("IModelHost", () => {
     await IModelHost.startup();
 
     // Valid registered implemented RPCs
-    expect(RpcRegistry.instance.implementationClasses.size).to.equal(6);
+    expect(RpcRegistry.instance.implementationClasses.size).to.equal(5);
     expect(RpcRegistry.instance.implementationClasses.get("IModelReadRpcInterface")).to.exist;
     expect(RpcRegistry.instance.implementationClasses.get("IModelTileRpcInterface")).to.exist;
-    expect(RpcRegistry.instance.implementationClasses.get("IModelWriteRpcInterface")).to.exist;
     expect(RpcRegistry.instance.implementationClasses.get("SnapshotIModelRpcInterface")).to.exist;
     expect(RpcRegistry.instance.implementationClasses.get("WipRpcInterface")).to.exist;
     expect(RpcRegistry.instance.implementationClasses.get("DevToolsRpcInterface")).to.exist;

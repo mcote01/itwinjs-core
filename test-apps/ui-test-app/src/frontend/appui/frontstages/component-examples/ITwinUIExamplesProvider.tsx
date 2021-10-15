@@ -3,11 +3,11 @@
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
 import * as React from "react";
-import { Icon } from "@bentley/ui-core";
-import { Button, Checkbox, Input, ProgressLinear, ProgressRadial, Radio, Select, Slider, ToggleSwitch } from "@itwin/itwinui-react";
+import { Icon } from "@itwin/core-react";
+import { Button, Checkbox, Input, LabeledInput, ProgressLinear, ProgressRadial, Radio, Select, Slider, ToggleSwitch } from "@itwin/itwinui-react";
 import { ComponentExampleCategory } from "./ComponentExamples";
 import { createComponentExample } from "./ComponentExamplesProvider";
-import { IModelApp, NotifyMessageDetails, OutputMessagePriority } from "@bentley/imodeljs-frontend";
+import { IModelApp, NotifyMessageDetails, OutputMessagePriority } from "@itwin/core-frontend";
 
 function WrappedSlider() {
   const [currentValues, setCurrentValues] = React.useState([50]);
@@ -62,6 +62,10 @@ export class ITwinUIExamplesProvider {
         createComponentExample("ProgressRadial with value", "display value of 63", <ProgressRadial size="large" value={63}>63</ProgressRadial>),
         createComponentExample("ProgressLinear", "at 50%", <ProgressLinear value={50} className="uicore-full-width" />),
         createComponentExample("Indeterminate ProgressLinear", "indeterminate prop", <ProgressLinear indeterminate className="uicore-full-width" />),
+        createComponentExample("Labeled Input", "Labeled Input component", <LabeledInput label="Labeled Input" placeholder="Labeled Input" className="uicore-full-width" />),
+        createComponentExample("Labeled Input", "Labeled Input Icon", <LabeledInput label="Labeled Input with icon" placeholder="Labeled Input with Icon" status="positive" message="Positive message text" />),
+        createComponentExample("Labeled Input Warning", "Labeled Input Warning", <LabeledInput label="Labeled Input Warning" placeholder="Labeled Input Warning" status="warning" message="Warning message text" />),
+        createComponentExample("Labeled Input Error", "Labeled Input Error", <LabeledInput label="Labeled Input Error" placeholder="Labeled Input Error" status="negative" message="Error message text" />),
       ],
     };
   }

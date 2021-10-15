@@ -98,6 +98,10 @@
         "CornerRadius": "Corner Radius"
       }
     },
+    "OffsetFaces": {
+      "keyin": "editor offset faces",
+      "flyover": "Offset faces of surfaces and solids"
+    },
     "UndoAll": {
       "keyin": "editor undo all",
       "flyover": "Undo All"
@@ -158,6 +162,7 @@
         "NotAllowed": "A valid geographic coordinate reference system already exists",
         "NotGeolocated": "Not geolocated",
         "NoChanges": "No changes to project extents or geolocation to save",
+        "Readonly": "iModel is read-only",
         "ProjectExtents": "Project Extents",
         "LargeProjectExtents": "Project Extents Too Large",
         "ModifyProjectExtents": "Modify Project Extents",

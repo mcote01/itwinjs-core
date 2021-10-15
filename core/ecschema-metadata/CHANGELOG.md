@@ -1,6 +1,60 @@
-# Change Log - @bentley/ecschema-metadata
+# Change Log - @itwin/ecschema-metadata
 
-This log was last generated on Wed, 04 Aug 2021 20:29:34 GMT and should not be manually modified.
+This log was last generated on Tue, 21 Sep 2021 21:06:40 GMT and should not be manually modified.
+
+## 2.19.13
+Tue, 21 Sep 2021 21:06:40 GMT
+
+_Version update only_
+
+## 2.19.12
+Wed, 15 Sep 2021 18:06:46 GMT
+
+### Updates
+
+- Bump xmldom@^0.6.0 -> @xmldom/xmldom@^0.7.0, and remove @types/xmldom, as typedefs are now delivered with their core pkg. This should resolve cve-2021-32796
+
+## 2.19.11
+Thu, 09 Sep 2021 21:04:57 GMT
+
+_Version update only_
+
+## 2.19.10
+Wed, 08 Sep 2021 14:36:01 GMT
+
+_Version update only_
+
+## 2.19.9
+Wed, 25 Aug 2021 15:36:01 GMT
+
+_Version update only_
+
+## 2.19.8
+Mon, 23 Aug 2021 13:23:13 GMT
+
+_Version update only_
+
+## 2.19.7
+Fri, 20 Aug 2021 17:47:22 GMT
+
+### Updates
+
+- remove alpha toXmlString method and its implicit xmldom dependency
+
+## 2.19.6
+Tue, 17 Aug 2021 20:34:28 GMT
+
+_Version update only_
+
+## 2.19.5
+Fri, 13 Aug 2021 21:48:08 GMT
+
+_Version update only_
+
+## 2.19.4
+Thu, 12 Aug 2021 13:09:26 GMT
+
+_Version update only_
 
 ## 2.19.3
 Wed, 04 Aug 2021 20:29:34 GMT
@@ -25,6 +79,11 @@ Mon, 26 Jul 2021 12:21:25 GMT
 ### Updates
 
 - remove internal barrel-import usage
+
+## 2.18.4
+Tue, 10 Aug 2021 19:35:13 GMT
+
+_Version update only_
 
 ## 2.18.3
 Wed, 28 Jul 2021 17:16:30 GMT
@@ -501,7 +560,7 @@ Wed, 06 May 2020 13:17:49 GMT
 
 - new EC Rule 501 - CustomAttribute schemas must be referenced by the container's schema.
 - Removing deprecated API. Please see NextVersion.md under the heading 'ecschema-metadata Package' for details.
-- Deprecating schema classes' method 'toJson' and replacing it with the JSON.stringify supported method 'toJSON'.  Also deprecating the 'deserialize' method and replacing it with 'fromJSON' for naming consistency. 
+- Deprecating schema classes' method 'toJson' and replacing it with the JSON.stringify supported method 'toJSON'.  Also deprecating the 'deserialize' method and replacing it with 'fromJSON' for naming consistency.
 - Undefined display labels should equal empty display labels during schema comparison.
 - order imports.
 - Removed unused package dependencies
@@ -627,7 +686,7 @@ Mon, 13 May 2019 15:52:05 GMT
 - Adds parameter for api-extractor to validate missing release tags
 - Adds ignoreMissingTags flag
 - Fix broken links
-- Setup a generic context for tracking client requests, and made various related enhancements to logging, usage tracking and authorization. 
+- Setup a generic context for tracking client requests, and made various related enhancements to logging, usage tracking and authorization.
 - Added ability to suppress rule violations from being reported during schema validation.
 - Upgrade TypeDoc dependency to 0.14.2
 - Updated BIS and EC schema validation documentation and adjusted diagnostic codes to match documentation.

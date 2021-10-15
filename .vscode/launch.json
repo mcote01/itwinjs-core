@@ -50,6 +50,41 @@
       ]
     },
     {
+      "name": "Transformer Tests (Integration)",
+      "presentation": {
+        "group": "0_CoreTests",
+        "order": 1
+      },
+      "cwd": "${workspaceFolder}/core/transformer/",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test:integration"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/core/transformer/lib/**/*.js"
+      ]
+    },
+    {
+      "name": "Transformer Tests (Standalone)",
+      "presentation": {
+        "group": "0_CoreTests",
+        "order": 1
+      },
+      "cwd": "${workspaceFolder}/core/transformer/",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "test"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/core/transformer/lib/**/*.js"
+      ]
+    },
+    {
       "name": "Bentley Tests",
       "presentation": {
         "group": "0_CoreTests",
@@ -248,60 +283,6 @@
         "[NODE] Certa Test Runner for HyperModeling Tests"
       ]
     },
-    {
-      "name": "IModelBridgeFwk Tests (all)",
-      "presentation": {
-        "group": "0_CoreTests",
-        "order": 5
-      },
-      "cwd": "${workspaceFolder}/core/imodel-bridge",
-      "type": "pwa-node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test:all"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
-      ]
-    },
-    {
-      "name": "IModelBridgeFwk Tests (standalone)",
-      "presentation": {
-        "group": "0_CoreTests",
-        "order": 5
-      },
-      "cwd": "${workspaceFolder}/core/imodel-bridge",
-      "type": "pwa-node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test:standalone"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
-      ]
-    },
-    {
-      "name": "IModelBridgeFwk Tests (integration)",
-      "presentation": {
-        "group": "0_CoreTests",
-        "order": 6
-      },
-      "cwd": "${workspaceFolder}/core/imodel-bridge",
-      "type": "pwa-node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test:integration"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
-      ]
-    },
     { /* PARTIAL */
       "name": "[NODE] Certa Test Runner for Markup Tests",
       "presentation": {
@@ -358,6 +339,23 @@
       ],
       "outFiles": [
         "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
+      ]
+    },
+    {
+      "name": "Map Layers Tests",
+      "presentation": {
+        "group": "0_CoreTests",
+        "order": 7
+      },
+      "cwd": "${workspaceFolder}/extensions/map-layers",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "test"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/{core,extensions}/*/lib/**/*.js"
       ]
     },
     // CLIENTS TESTS
@@ -432,10 +430,13 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
-        "test:integration:chrome -- --debug"
+        "test:integration:chrome",
+        "--",
+        "--debug"
       ],
       "outFiles": [
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
+        "${workspaceFolder}/{core,clients}/*/lib/**/*.js",
+        "${workspaceFolder}/tools/certa/lib/**/*.js"
       ],
       "outputCapture": "std",
       "attachSimplePort": 5858, // NB: This must match ports.debugging in clients/extension/certa.json
@@ -450,10 +451,11 @@
       },
       "type": "pwa-chrome",
       "request": "attach",
-      "port": 9223, // NB: This must match ports.frontendDebugging in core/markup/certa.json
+      "port": 9223, // NB: This must match ports.frontendDebugging in clients/extension/certa.json
       "timeout": 20000,
       "outFiles": [
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
+        "${workspaceFolder}/{core,clients}/*/lib/**/*.js",
+        "${workspaceFolder}/tools/certa/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
         "[NODE] Certa Test Runner for Extension Client Tests (Integration)"
@@ -581,12 +583,10 @@
       "cwd": "${workspaceFolder}/ui/components",
       "type": "pwa-node",
       "request": "launch",
-      "program": "${workspaceFolder}/ui/components/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--config",
-        "../.mocharc.json",
-        "--no-timeouts",
-        "lib/test/**/*.test.js"
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test"
       ],
       "skipFiles": [
         "<node_internals>/**/*.js",
@@ -610,6 +610,25 @@
         "../.mocharc.json",
         "--no-timeouts",
         "lib/test/**/*.test.js"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/{core,ui}/*/lib/**/*.js"
+      ]
+    },
+    {
+      "name": "[UI] Tests: IModel Components",
+      "presentation": {
+        "group": "4_UI"
+      },
+      "cwd": "${workspaceFolder}/ui/imodel-components",
+      "type": "pwa-node",
+      "request": "launch",
+      "program": "${workspaceFolder}/ui/imodel-components/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--config",
+        "../.mocharc.json",
+        "--no-timeouts",
+        "lib/cjs/test/**/*.test.js"
       ],
       "outFiles": [
         "${workspaceFolder}/{core,ui}/*/lib/**/*.js"
@@ -721,16 +740,10 @@
       "cwd": "${workspaceFolder}/presentation/components",
       "type": "pwa-node",
       "request": "launch",
-      "program": "${workspaceFolder}/presentation/components/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--config",
-        "../.mocharc.json",
-        "--no-timeouts",
-        "-r",
-        "ignore-styles",
-        "-r",
-        "jsdom-global/register",
-        "lib/test/**/*.test.js"
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test"
       ],
       "outFiles": [
         "${workspaceFolder}/{core,ui,presentation}/*/lib/**/*.js"
@@ -751,7 +764,7 @@
         "--no-timeouts",
         "-r",
         "jsdom-global/register",
-        "lib/test/**/*.test.js"
+        "lib/cjs/test/**/*.test.js"
       ],
       "outFiles": [
         "${workspaceFolder}/{core,clients,presentation}/*/lib/**/*.js"
@@ -765,13 +778,10 @@
       "cwd": "${workspaceFolder}/full-stack-tests/presentation",
       "type": "pwa-node",
       "request": "launch",
-      "program": "${workspaceFolder}/full-stack-tests/presentation/node_modules/mocha/bin/_mocha",
-      "args": [
-        "-r",
-        "jsdom-global/register",
-        "-r",
-        "ignore-styles",
-        "lib/**/*.js"
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test"
       ],
       "env": {
         "NODE_ENV": "development",
@@ -889,23 +899,6 @@
       ],
       "outFiles": [
         "${workspaceFolder}/{core,clients}/*/lib/**/*.js"
-      ]
-    },
-    {
-      "name": "Extension CLI Tests (Integration)",
-      "presentation": {
-        "group": "6_Misc"
-      },
-      "cwd": "${workspaceFolder}/tools/extension-cli",
-      "type": "pwa-node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "wip-test:integration"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/{core,clients,tools}/*/lib/**/*.js"
       ]
     },
     {
@@ -1046,12 +1039,12 @@
         "--remote-debugging-port=9223"
       ],
       "env": {
-        "SVT_LOG_LEVEL": "TRACE",
+        "IMJS_LOG_LEVEL": "TRACE",
         "NODE_ENV": "development"
       },
       "outFiles": [
         "${workspaceFolder}/test-apps/ui-test-app/lib/**/*.js",
-        "${workspaceFolder}/{core,clients,presentation}/*/lib/**/*.js"
+        "${workspaceFolder}/{core,clients,editor,presentation}/*/lib/**/*.js"
       ],
       "autoAttachChildProcesses": false,
       "attachSimplePort": 0,
@@ -1070,7 +1063,7 @@
       "port": 9223,
       "outFiles": [
         "${workspaceFolder}/test-apps/ui-test-app/lib/**/*.js",
-        "${workspaceFolder}/{core,clients,ui,presentation}/*/lib/**/*.js"
+        "${workspaceFolder}/{core,clients,editor,ui,presentation}/*/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
         "[BACKEND] ui-test-app (electron)"
@@ -1087,7 +1080,7 @@
       "program": "${workspaceFolder}/test-apps/ui-test-app/lib/backend/main.js",
       "outFiles": [
         "${workspaceFolder}/test-apps/ui-test-app/lib/**/*.js",
-        "${workspaceFolder}/{core,clients,presentation}/*/lib/**/*.js"
+        "${workspaceFolder}/{core,clients,editor,presentation}/*/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
         "[FRONTEND] ui-test-app (chrome)"
@@ -1103,7 +1096,7 @@
       "url": "http://localhost:3000/",
       "outFiles": [
         "${workspaceFolder}/test-apps/ui-test-app/lib/**/*.js",
-        "${workspaceFolder}/{core,clients,ui,presentation}/*/lib/**/*.js"
+        "${workspaceFolder}/{core,clients,editor,ui,presentation}/*/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
         "[BACKEND] ui-test-app (chrome)"
@@ -1118,12 +1111,12 @@
       "type": "pwa-node",
       "request": "launch",
       "env": {
-        "SVT_LOG_LEVEL": "TRACE"
+        "IMJS_LOG_LEVEL": "TRACE"
       },
       "program": "${workspaceFolder}/test-apps/display-test-app/lib/backend/WebMain.js",
       "outFiles": [
         "${workspaceFolder}/test-apps/display-test-app/lib/backend/**/*.js",
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js",
+        "${workspaceFolder}/{core,clients,editor}/*/lib/**/*.js",
         "${workspaceFolder}/ui/abstract/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
@@ -1140,7 +1133,7 @@
       "url": "http://localhost:3000",
       "outFiles": [
         "${workspaceFolder}/test-apps/display-test-app/lib/**/*.js",
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js",
+        "${workspaceFolder}/{core,clients,editor}/*/lib/**/*.js",
         "${workspaceFolder}/ui/abstract/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
@@ -1161,13 +1154,13 @@
         "--remote-debugging-port=9223"
       ],
       "env": {
-        "SVT_LOG_LEVEL": "TRACE",
-        "SVT_NO_DEV_TOOLS": "1",
+        "IMJS_LOG_LEVEL": "TRACE",
+        "IMJS_NO_DEV_TOOLS": "1",
         "NODE_ENV": "development"
       },
       "outFiles": [
         "${workspaceFolder}/test-apps/display-test-app/lib/backend/**/*.js",
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js",
+        "${workspaceFolder}/{core,clients,editor}/*/lib/**/*.js",
         "${workspaceFolder}/ui/abstract/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
@@ -1184,7 +1177,7 @@
       "port": 9223,
       "outFiles": [
         "${workspaceFolder}/test-apps/display-test-app/lib/**/*.js",
-        "${workspaceFolder}/{core,clients}/*/lib/**/*.js",
+        "${workspaceFolder}/{core,clients,editor}/*/lib/**/*.js",
         "${workspaceFolder}/ui/abstract/lib/**/*.js"
       ],
       "cascadeTerminateToConfigurations": [
@@ -1891,7 +1884,8 @@
       "description": "Select client library to debug",
       "type": "pickString",
       "options": [
-        "product-settings"
+        "product-settings",
+        "itwin-registry"
       ]
     }
   ]

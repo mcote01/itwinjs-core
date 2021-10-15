@@ -6,7 +6,6 @@
 import * as chai from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as path from "path";
-import { Config } from "@bentley/bentleyjs-core";
 import { getTestAccessToken, TestBrowserAuthorizationClientConfiguration, TestUsers, TestUtility } from "../index";
 import * as fs from "fs";
 
@@ -29,22 +28,39 @@ const assert = chai.assert;
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-loadEnv(path.join(__dirname, "..", "..", ".env"));
+loadEnv(path.join(__dirname, "..", "..", "..", ".env"));
 
 describe("Sign in (#integration)", () => {
   let oidcConfig: TestBrowserAuthorizationClientConfiguration;
 
   before(() => {
+    if (process.env.IMJS_OIDC_BROWSER_TEST_CLIENT_ID === undefined)
+      throw new Error("Could not find IMJS_OIDC_BROWSER_TEST_CLIENT_ID");
+    if (process.env.IMJS_OIDC_BROWSER_TEST_REDIRECT_URI === undefined)
+      throw new Error("Could not find IMJS_OIDC_BROWSER_TEST_REDIRECT_URI");
+    if (process.env.IMJS_OIDC_BROWSER_TEST_SCOPES === undefined)
+      throw new Error("Could not find IMJS_OIDC_BROWSER_TEST_SCOPES");
+
     oidcConfig = {
-      clientId: Config.App.getString("imjs_oidc_browser_test_client_id"),
-      redirectUri: Config.App.getString("imjs_oidc_browser_test_redirect_uri"),
-      scope: Config.App.getString("imjs_oidc_browser_test_scopes"),
+      clientId: process.env.IMJS_OIDC_BROWSER_TEST_CLIENT_ID ?? "",
+      redirectUri: process.env.IMJS_OIDC_BROWSER_TEST_REDIRECT_URI ?? "",
+      scope: process.env.IMJS_OIDC_BROWSER_TEST_SCOPES ?? "",
     };
   });
 
   it("success with valid user", async () => {
     const validUser = TestUsers.regular;
     const token = await getTestAccessToken(oidcConfig, validUser);
+    assert.exists(token);
+  });
+
+  // test will not work without using a desktop client. setup correctly on master, will enable there.
+  it("success with valid user and iTwin Platform scope", async () => {
+    const validUser = TestUsers.regular;
+    const token = await getTestAccessToken({
+      ...oidcConfig,
+      scope: `${oidcConfig.scope} projects:read`,
+    }, validUser);
     assert.exists(token);
   });
 
@@ -69,7 +85,7 @@ describe("Sign in (#integration)", () => {
     const invalidUser = {
       email: "invalid@email.com",
       password: "invalid",
-      scope: Config.App.getString("imjs_oidc_browser_test_scopes"),
+      scope: process.env.IMJS_OIDC_BROWSER_TEST_SCOPES ?? "",
     };
     await expect(getTestAccessToken(oidcConfig, invalidUser))
       .to.be.rejectedWith(Error, `Failed OIDC signin for ${invalidUser.email}.\nError: We didn't recognize the username or password you entered. Please try again.`);
@@ -87,11 +103,6 @@ describe("TestUsers utility (#integration)", () => {
     assert.exists(token);
     token = await TestUtility.getAccessToken(TestUsers.superManager);
     assert.exists(token);
-  });
-
-  it("can construct request context for integration test users", async () => {
-    const requestContext = await TestUtility.getAuthorizedClientRequestContext(TestUsers.regular);
-    assert.exists(requestContext);
   });
 
 });

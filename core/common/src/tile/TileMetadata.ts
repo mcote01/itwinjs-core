@@ -8,8 +8,8 @@
 
 import {
   assert, ByteStream, compareBooleans, compareBooleansOrUndefined, compareNumbers, compareNumbersOrUndefined, compareStringsOrUndefined, Id64, Id64String,
-} from "@bentley/bentleyjs-core";
-import { Range3d, Vector3d } from "@bentley/geometry-core";
+} from "@itwin/core-bentley";
+import { Range3d, Vector3d } from "@itwin/core-geometry";
 import { BatchType } from "../FeatureTable";
 import { TileProps } from "../TileProps";
 import { CurrentImdlVersion, FeatureTableHeader, ImdlFlags, ImdlHeader } from "./IModelTileIO";
@@ -60,6 +60,7 @@ export interface TileOptions {
   readonly ignoreAreaPatterns: boolean;
   readonly enableExternalTextures: boolean;
   readonly useProjectExtents: boolean;
+  readonly optimizeBRepProcessing: boolean;
   readonly disableMagnification: boolean;
   readonly alwaysSubdivideIncompleteTiles: boolean;
 }
@@ -83,6 +84,7 @@ export namespace TileOptions {
       ignoreAreaPatterns: 0 !== (contentFlags & ContentFlags.IgnoreAreaPatterns),
       enableExternalTextures: 0 !== (contentFlags & ContentFlags.ExternalTextures),
       useProjectExtents: 0 !== (tree.flags & TreeFlags.UseProjectExtents),
+      optimizeBRepProcessing: 0 !== (tree.flags & TreeFlags.OptimizeBRepProcessing),
       disableMagnification: false,
       alwaysSubdivideIncompleteTiles: false,
     };
@@ -262,6 +264,7 @@ export const defaultTileOptions: TileOptions = Object.freeze({
   ignoreAreaPatterns: false,
   enableExternalTextures: true,
   useProjectExtents: true,
+  optimizeBRepProcessing: true,
   disableMagnification: false,
   alwaysSubdivideIncompleteTiles: false,
 });
@@ -325,6 +328,7 @@ export enum TreeFlags {
   None = 0,
   UseProjectExtents = 1 << 0, // Use project extents as the basis of the tile tree's range.
   EnforceDisplayPriority = 1 << 1, // For 3d plan projection models, group graphics into layers based on subcategory.
+  OptimizeBRepProcessing = 1 << 2, // Use an optimized pipeline for producing facets from BRep entities.
 }
 
 /** Describes a tile tree used to draw the contents of a model, possibly with embedded animation.
@@ -345,7 +349,7 @@ export interface PrimaryTileTreeId {
   enforceDisplayPriority?: boolean;
   /** If defined, the compact string representation of a clip vector applied to the tiles to produce cut geometry at the intersections with the clip planes.
    * Any geometry *not* intersecting the clip planes is omitted from the tiles.
-   * @see [ClipVector.toCompactString[($geometry-core).
+   * @see [ClipVector.toCompactString[($core-geometry).
    */
   sectionCut?: string;
 }
@@ -378,6 +382,8 @@ export type IModelTileTreeId = PrimaryTileTreeId | ClassifierTileTreeId;
 export function iModelTileTreeIdToString(modelId: Id64String, treeId: IModelTileTreeId, options: TileOptions): string {
   let idStr = "";
   let flags = options.useProjectExtents ? TreeFlags.UseProjectExtents : TreeFlags.None;
+  if (options.optimizeBRepProcessing)
+    flags |= TreeFlags.OptimizeBRepProcessing;
 
   if (BatchType.Primary === treeId.type) {
     if (undefined !== treeId.animationId)

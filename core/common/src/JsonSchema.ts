@@ -7,7 +7,6 @@
  */
 
 // from https://github.com/microsoft/vscode Copyright (c) 2015 - present Microsoft Corporation
-
 export type JSONSchemaType = "string" | "number" | "integer" | "boolean" | "null" | "array" | "object";
 
 export interface JSONSchema {

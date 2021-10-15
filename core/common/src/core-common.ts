@@ -67,6 +67,7 @@ export * from "./IModelVersion";
 export * from "./ipc/IpcSocket";
 export * from "./ipc/IpcWebSocket";
 export * from "./IpcAppProps";
+export * from "./JsonSchema";
 export * from "./LightSettings";
 export * from "./LinePixels";
 export * from "./Localization";

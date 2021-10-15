@@ -16,7 +16,6 @@ export * from "./Dictionary";
 export * from "./Disposable";
 export * from "./Id";
 export * from "./IndexMap";
-export * from "./JsonSchema";
 export * from "./JsonUtils";
 export * from "./Logger";
 export * from "./LRUMap";

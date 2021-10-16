@@ -8,7 +8,7 @@ import {
 } from "../ViewFlags";
 
 function invertDefaults(): ViewFlags {
-  const invertedProperties: Partial<ViewFlagsProperties> = { renderMode: RenderMode.SolidFill };
+  const invertedProperties: Partial<ViewFlagsProperties> = { renderMode: RenderMode.SmoothShade };
   for (const propname of Object.keys(ViewFlags.defaults)) {
     const key = propname as keyof ViewFlags;
     const value = ViewFlags.defaults[key];
@@ -42,9 +42,41 @@ describe("ViewFlags", () => {
         expect(fullOutput[key]).to.equal(output[key]);
     };
 
-    roundTrip({ }, { renderMode: RenderMode.Wireframe });
-    roundTrip({ acs: true, monochrome: true, renderMode: RenderMode.Wireframe }, "input");
-    roundTrip({ acs: false, monochrome: false, renderMode: RenderMode.SmoothShade }, { renderMode: RenderMode.SmoothShade });
+    roundTrip({ }, {
+      renderMode: RenderMode.Wireframe,
+      ignoreRenderMode: true,
+      monochromeEdges: true,
+      noEdgeOverrides: true,
+      noMaterial: true,
+      noTexture: true,
+      noSolarLight: true,
+      noSourceLights: true,
+      noCameraLights: true,
+      noSurfaces: true,
+      visEdges: true,
+    });
+
+    roundTrip({ acs: true, monochrome: true, renderMode: RenderMode.Wireframe }, {
+      acs: true,
+      monochrome: true,
+      renderMode: RenderMode.Wireframe,
+      ignoreRenderMode: true,
+      monochromeEdges: true,
+      noEdgeOverrides: true,
+      noMaterial: true,
+      noTexture: true,
+      noSolarLight: true,
+      noSourceLights: true,
+      noCameraLights: true,
+      noSurfaces: true,
+      visEdges: true,
+    });
+
+    roundTrip({ acs: false, monochrome: false, renderMode: RenderMode.SmoothShade }, {
+      renderMode: RenderMode.SmoothShade,
+      ignoreRenderMode: true,
+      noFill: true,
+    });
 
     const makeViewFlags = (on: boolean) => {
       const vfProps: Required<ViewFlagProps> = {
@@ -72,15 +104,15 @@ describe("ViewFlags", () => {
         thematicDisplay: on,
         forceSurfaceDiscard: on,
         noWhiteOnWhiteReversal: on,
-        renderMode: RenderMode.SolidFill,
+        renderMode: RenderMode.Wireframe,
 
         ignoreRenderMode: true,
-        contrastEdges: true,
-        noEdgeOverrides: false,
-        monochromeEdges: false,
-        noSurfaces: false,
-        backgroundSurfaceColor: false,
-        transparencyThreshold: true,
+        contrastEdges: on,
+        noEdgeOverrides: on,
+        monochromeEdges: on,
+        noSurfaces: on,
+        backgroundSurfaceColor: on,
+        transparencyThreshold: on,
       };
 
       return vfProps;
@@ -95,6 +127,13 @@ describe("ViewFlags", () => {
       noSolarLight: true,
       noSourceLights: true,
       renderMode: RenderMode.Wireframe,
+      ignoreRenderMode: true,
+      noSurfaces: true,
+      visEdges: true,
+      monochromeEdges: true,
+      noEdgeOverrides: true,
+      noMaterial: true,
+      noTexture: true,
     };
 
     roundTrip(undefined, defaults);
@@ -109,18 +148,19 @@ describe("ViewFlags", () => {
       noFill: true,
       grid: true,
       acs: true,
-      noTexture: true,
-      noMaterial: true,
-      visEdges: true,
       hidEdges: true,
       shadows: true,
       monochrome: true,
-      renderMode: RenderMode.SolidFill,
+      renderMode: RenderMode.SmoothShade,
       ambientOcclusion: true,
       thematicDisplay: true,
       backgroundMap: true,
       forceSurfaceDiscard: true,
       noWhiteOnWhiteReversal: true,
+      ignoreRenderMode: true,
+      transparencyThreshold: true,
+      backgroundSurfaceColor: true,
+      contrastEdges: true,
     });
   });
 
@@ -174,7 +214,6 @@ describe("ViewFlags", () => {
     expect(ViewFlags.fromJSON({ })).to.deep.equal({
       ...def,
       clipVolume: !def.clipVolume,
-      lighting: !def.lighting,
       constructions: !def.constructions,
     });
   });
@@ -191,14 +230,19 @@ describe("ViewFlags", () => {
     }
 
     expectLighting(ViewFlags.fromJSON(), false);
-    expectLighting(ViewFlags.fromJSON({}), true);
-    expectLighting(ViewFlags.fromJSON({ noSourceLights: true, noCameraLights: true, noSolarLight: true }), false);
-    expectLighting(ViewFlags.fromJSON({ noCameraLights: true, noSolarLight: true }), true);
-    expectLighting(ViewFlags.fromJSON({ noCameraLights: true }), true);
+    expectLighting(ViewFlags.fromJSON({}), false);
+    expectLighting(ViewFlags.fromJSON({ renderMode: RenderMode.SmoothShade, noSourceLights: true, noCameraLights: true, noSolarLight: true }), false);
+    expectLighting(ViewFlags.fromJSON({ renderMode: RenderMode.SmoothShade, noCameraLights: true, noSolarLight: true }), true);
+    expectLighting(ViewFlags.fromJSON({ renderMode: RenderMode.SmoothShade, noCameraLights: true }), true);
 
     expectLighting(new ViewFlags(), false);
     expectLighting(new ViewFlags({ lighting: false }), false);
     expectLighting(new ViewFlags({ lighting: true }), true);
+
+    expectLighting(ViewFlags.fromRenderMode(RenderMode.Wireframe), false);
+    expectLighting(ViewFlags.fromRenderMode(RenderMode.SolidFill), false);
+    expectLighting(ViewFlags.fromRenderMode(RenderMode.HiddenLine), false);
+    expectLighting(ViewFlags.fromRenderMode(RenderMode.SmoothShade), true);
   });
 
   it("with", () => {
@@ -216,8 +260,14 @@ describe("ViewFlags", () => {
 
   it("withRenderMode", () => {
     const vf = new ViewFlags({ renderMode: RenderMode.SolidFill });
-    expect(vf.withRenderMode(RenderMode.SolidFill)).to.equal(vf);
-    expect(vf.withRenderMode(RenderMode.HiddenLine).renderMode).to.equal(RenderMode.HiddenLine);
+    const sf = vf.withRenderMode(RenderMode.SolidFill);
+    for (const key of Object.keys(vf))
+      expect((sf as any)[key]).to.equal((vf as any)[key]);
+
+    expect(sf.equals(vf)).to.be.true;
+    expect(sf.toJSON()).to.deep.equal(vf.toJSON());
+
+    expect(vf.withRenderMode(RenderMode.HiddenLine).toJSON().renderMode).to.equal(RenderMode.HiddenLine);
   });
 
   it("compares for equality", () => {

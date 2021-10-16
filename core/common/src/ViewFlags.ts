@@ -96,6 +96,7 @@ renderModeDefaults[RenderMode.SmoothShade] = {
   monochromeEdges: false,
   transparencyThreshold: false,
   visibleSurfaces: true,
+  lighting: true,
 };
 
 function getRenderModeDefaults(mode: RenderMode): ViewFlagOverrides {
@@ -308,6 +309,9 @@ export class ViewFlags {
    */
   public constructor(flags?: Partial<ViewFlagsProperties>) {
     this.renderMode = flags?.renderMode ?? RenderMode.Wireframe;
+    const modeDefaults = getRenderModeDefaults(this.renderMode);
+    flags = flags ? { ...modeDefaults, ...flags } : modeDefaults;
+
     this.dimensions = flags?.dimensions ?? true;
     this.patterns = flags?.patterns ?? true;
     this.weights = flags?.weights ?? true;
@@ -330,6 +334,7 @@ export class ViewFlags {
     this.forceSurfaceDiscard = flags?.forceSurfaceDiscard ?? false;
     this.whiteOnWhiteReversal = flags?.whiteOnWhiteReversal ?? true;
     this.lighting = flags?.lighting ?? false;
+
     this.contrastEdges = flags?.contrastEdges ?? false;
     this.edgeOverrides = flags?.edgeOverrides ?? true;
     this.monochromeEdges = flags?.monochromeEdges ?? false;
@@ -531,7 +536,7 @@ export class ViewFlags {
   }
 
   /** A ViewFlags object with all properties initialized to their default values. */
-  public static readonly defaults = ViewFlags.fromRenderMode(RenderMode.Wireframe).with("lighting", true);
+  public static readonly defaults = ViewFlags.fromRenderMode(RenderMode.Wireframe);
 
   /** Create a ViewFlags.
    * @param flags The properties to initialize. Any properties not specified are initialized to their default values.
@@ -546,7 +551,8 @@ export class ViewFlags {
    * @note The default values differ slightly from those used by the constructor and [[create]]:
    *  - [[clipVolume]] defaults to false.
    *  - [[constructions]] defaults to true.
-   *  - [[lighting]] defaults to true unless all of [[ViewFlagProps.noSolarLight]], [[ViewFlagProps.noCameraLights]], and [[ViewFlagProps.noSourceLights]] are true.
+   *  - [[lighting]] defaults to true for RenderMode.SmoothShade unless ignoreRenderMode is true or all of [[ViewFlagProps.noSolarLight]],
+   *    [[ViewFlagProps.noCameraLights]], and [[ViewFlagProps.noSourceLights]] are true.
    */
   public static fromJSON(json?: ViewFlagProps): ViewFlags {
     if (!json)
@@ -566,7 +572,7 @@ export class ViewFlags {
     const defaults = undefined !== renderMode ? getRenderModeDefaults(renderMode) : { };
 
     const lighting = !JsonUtils.asBool(json.noCameraLights) || !JsonUtils.asBool(json.noSourceLights) || !JsonUtils.asBool(json.noSolarLight);
-    return new ViewFlags({
+    const props = {
       renderMode,
       lighting,
       constructions: !JsonUtils.asBool(json.noConstruct),
@@ -591,8 +597,21 @@ export class ViewFlags {
       forceSurfaceDiscard: JsonUtils.asBool(json.forceSurfaceDiscard),
       whiteOnWhiteReversal: !JsonUtils.asBool(json.noWhiteOnWhiteReversal),
 
+      contrastEdges: JsonUtils.asBool(json.contrastEdges),
+      edgeOverrides: !JsonUtils.asBool(json.noEdgeOverrides),
+      monochromeEdges: JsonUtils.asBool(json.monochromeEdges),
+      visibleSurfaces: !JsonUtils.asBool(json.noSurfaces),
+      backgroundSurfaceColor: JsonUtils.asBool(json.backgroundSurfaceColor),
+      transparencyThreshold: JsonUtils.asBool(json.transparencyThreshold),
+
       ...defaults,
-    });
+    };
+
+    // Lighting defaults to ON for smooth shade.
+    if (!lighting && !json.ignoreRenderMode && renderMode === RenderMode.SmoothShade)
+      props.lighting = false;
+
+    return new ViewFlags(props);
   }
 
   public static fromRenderMode(renderMode: RenderMode, props?: ViewFlagOverrides): ViewFlags {
@@ -628,7 +647,13 @@ export class ViewFlags {
       && this.ambientOcclusion === other.ambientOcclusion
       && this.thematicDisplay === other.thematicDisplay
       && this.forceSurfaceDiscard === other.forceSurfaceDiscard
-      && this.whiteOnWhiteReversal === other.whiteOnWhiteReversal;
+      && this.whiteOnWhiteReversal === other.whiteOnWhiteReversal
+      && this.contrastEdges === other.contrastEdges
+      && this.edgeOverrides === other.edgeOverrides
+      && this.monochromeEdges === other.monochromeEdges
+      && this.visibleSurfaces === other.visibleSurfaces
+      && this.backgroundSurfaceColor === other.backgroundSurfaceColor
+      && this.transparencyThreshold === other.transparencyThreshold;
   }
 }
 

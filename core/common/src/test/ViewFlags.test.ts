@@ -8,7 +8,7 @@ import {
 } from "../ViewFlags";
 
 function invertDefaults(): ViewFlags {
-  const invertedProperties: Partial<ViewFlagsProperties> = { renderMode: RenderMode.SmoothShade };
+  const invertedProperties: Partial<ViewFlagsProperties> = { };
   for (const propname of Object.keys(ViewFlags.defaults)) {
     const key = propname as keyof ViewFlags;
     const value = ViewFlags.defaults[key];
@@ -16,16 +16,31 @@ function invertDefaults(): ViewFlags {
       (invertedProperties as any)[key] = !value;
   }
 
-  return new ViewFlags(invertedProperties);
+  return ViewFlags.create(invertedProperties);
 }
 
 describe("ViewFlags", () => {
   it("should initialize to expected defaults", () => {
-    const flags = new ViewFlags();
+    const flags = ViewFlags.create();
     assert(flags.acsTriad === false);
     assert(flags.grid === false);
     assert(flags.fill === true);
-    assert(flags.renderMode === RenderMode.Wireframe);
+    assert(flags.getClosestRenderMode() === RenderMode.Wireframe);
+  });
+
+  it("initializes from render mode", () => {
+    for (const mode of [RenderMode.Wireframe, RenderMode.HiddenLine, RenderMode.SmoothShade, RenderMode.SolidFill]) {
+      const vf = ViewFlags.fromRenderMode(mode);
+      expect(vf.getClosestRenderMode()).to.equal(mode);
+
+      const json = vf.toJSON();
+      expect(json.renderMode).to.equal(mode);
+
+      const vf2 = ViewFlags.fromJSON(json);
+      expect(vf2.getClosestRenderMode()).to.equal(mode);
+      expect(vf2.toJSON()).to.deep.equal(json);
+      expect(vf2.equals(vf)).to.be.true;
+    }
   });
 
   it("should round-trip through JSON", () => {
@@ -137,7 +152,7 @@ describe("ViewFlags", () => {
     };
 
     roundTrip(undefined, defaults);
-    roundTrip(new ViewFlags().toJSON(), defaults);
+    roundTrip(ViewFlags.create().toJSON(), defaults);
 
     roundTrip(invertDefaults().toJSON(), {
       noDim: true,
@@ -164,18 +179,14 @@ describe("ViewFlags", () => {
     });
   });
 
-  it("should compute whether edges are required", () => {
-    const testCases: ViewFlags[] = [];
+  it("should initialize visibleEdges based on render mode and flag", () => {
     for (const renderMode of [RenderMode.Wireframe, RenderMode.HiddenLine, RenderMode.SolidFill, RenderMode.SmoothShade]) {
-      for (let i = 0; i < 2; i++) {
-        const vf = new ViewFlags({ renderMode, visibleEdges: i > 0 });
-        testCases.push(vf);
-      }
-    }
+      expect(ViewFlags.fromRenderMode(renderMode).visibleEdges).to.equal(RenderMode.SmoothShade !== renderMode);
+      expect(ViewFlags.fromRenderMode(renderMode, { visibleEdges: true }).visibleEdges).to.be.true;
+      expect(ViewFlags.fromRenderMode(renderMode, { visibleEdges: false }).visibleEdges).to.be.false;
 
-    for (const viewflags of testCases) {
-      const edgesRequired = RenderMode.SmoothShade !== viewflags.renderMode || viewflags.visibleEdges;
-      expect(viewflags.edgesRequired()).to.equal(edgesRequired);
+      // Undefined means "use default", which is false for visible edges.
+      expect(ViewFlags.fromRenderMode(renderMode, { visibleEdges: undefined }).visibleEdges).to.be.false;
     }
   });
 
@@ -187,7 +198,7 @@ describe("ViewFlags", () => {
     expect(def.copy(inv)).to.deep.equal(inv);
     expect(inv.copy(def)).to.deep.equal(def);
 
-    expect(inv.copy({ ...inv, renderMode: undefined, transparency: undefined })).to.deep.equal({ ...inv, renderMode: RenderMode.Wireframe, transparency: true });
+    expect(inv.copy({ ...inv, transparency: undefined })).to.deep.equal({ ...inv, transparency: true });
   });
 
   it("overrides", () => {
@@ -198,7 +209,7 @@ describe("ViewFlags", () => {
     expect(def.override(inv)).to.deep.equal(inv);
     expect(inv.override(def)).to.deep.equal(def);
 
-    expect(inv.override({ ...inv, renderMode: undefined, transparency: undefined })).to.deep.equal(inv);
+    expect(inv.override({ ...inv, transparency: undefined })).to.deep.equal(inv);
   });
 
   it("returns defaults if no properties supplied", () => {
@@ -235,9 +246,9 @@ describe("ViewFlags", () => {
     expectLighting(ViewFlags.fromJSON({ renderMode: RenderMode.SmoothShade, noCameraLights: true, noSolarLight: true }), true);
     expectLighting(ViewFlags.fromJSON({ renderMode: RenderMode.SmoothShade, noCameraLights: true }), true);
 
-    expectLighting(new ViewFlags(), false);
-    expectLighting(new ViewFlags({ lighting: false }), false);
-    expectLighting(new ViewFlags({ lighting: true }), true);
+    expectLighting(ViewFlags.create(), false);
+    expectLighting(ViewFlags.create({ lighting: false }), false);
+    expectLighting(ViewFlags.create({ lighting: true }), true);
 
     expectLighting(ViewFlags.fromRenderMode(RenderMode.Wireframe), false);
     expectLighting(ViewFlags.fromRenderMode(RenderMode.SolidFill), false);
@@ -246,7 +257,8 @@ describe("ViewFlags", () => {
   });
 
   it("constructs from self", () => {
-    expect(ViewFlags.defaults.equals(new ViewFlags(ViewFlags.defaults))).to.be.true;
+    expect(ViewFlags.defaults.equals(ViewFlags.create(ViewFlags.defaults))).to.be.true;
+    expect(ViewFlags.fromJSON(ViewFlags.defaults.toJSON()).toJSON()).to.deep.equal(ViewFlags.defaults.toJSON());
     expect(ViewFlags.fromJSON(ViewFlags.defaults.toJSON()).equals(ViewFlags.defaults)).to.be.true;
   });
 
@@ -264,8 +276,12 @@ describe("ViewFlags", () => {
   });
 
   it("withRenderMode", () => {
-    const vf = new ViewFlags({ renderMode: RenderMode.SolidFill });
+    const vf = ViewFlags.fromRenderMode(RenderMode.SolidFill);
     const sf = vf.withRenderMode(RenderMode.SolidFill);
+
+    expect(vf.getClosestRenderMode()).to.equal(RenderMode.SolidFill);
+    expect(sf.getClosestRenderMode()).to.equal(RenderMode.SolidFill);
+
     for (const key of Object.keys(vf))
       expect((sf as any)[key]).to.equal((vf as any)[key]);
 
@@ -282,47 +298,10 @@ describe("ViewFlags", () => {
       const value = def[key];
       if (typeof value !== "boolean") {
         expect(key).to.equal("renderMode");
-        expect(def.renderMode).to.equal(RenderMode.Wireframe);
+        expect(def.getClosestRenderMode()).to.equal(RenderMode.Wireframe);
         expect(def.equals(def.withRenderMode(RenderMode.SmoothShade))).to.be.false;
       } else {
         expect(def.equals(def.with(key, !value))).to.be.false;
-      }
-    }
-  });
-});
-
-describe("ViewFlagOverrides", () => {
-  it("should compute whether edges are required", () => {
-    const viewflagTestCases: ViewFlags[] = [];
-    for (const renderMode of [RenderMode.Wireframe, RenderMode.HiddenLine, RenderMode.SolidFill, RenderMode.SmoothShade]) {
-      for (let i = 0; i < 2; i++) {
-        const vf = new ViewFlags({ renderMode, visibleEdges: i > 0 });
-        viewflagTestCases.push(vf);
-      }
-    }
-
-    const ovrsTestCases: Array<[ViewFlagOverrides, RenderMode | undefined, boolean | undefined]> = [];
-    for (const renderMode of [undefined, RenderMode.Wireframe, RenderMode.HiddenLine, RenderMode.SolidFill, RenderMode.SmoothShade]) {
-      for (let i = 0; i < 3; i++) {
-        const ovrs: ViewFlagOverrides = { };
-        if (undefined !== renderMode)
-          ovrs.renderMode = renderMode;
-
-        let visibleEdges;
-        if (i > 0)
-          visibleEdges = ovrs.visibleEdges = i > 1;
-
-        ovrsTestCases.push([ovrs, renderMode, visibleEdges]);
-      }
-    }
-
-    for (const testCase of ovrsTestCases) {
-      for (let viewflags of viewflagTestCases) {
-        const renderMode = undefined !== testCase[1] ? testCase[1] : viewflags.renderMode;
-        const edges = undefined !== testCase[2] ? testCase[2] : viewflags.visibleEdges;
-        const edgesRequired = edges || RenderMode.SmoothShade !== renderMode;
-        viewflags = viewflags.override(testCase[0]);
-        expect(viewflags.edgesRequired()).to.equal(edgesRequired);
       }
     }
   });

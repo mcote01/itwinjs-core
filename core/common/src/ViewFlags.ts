@@ -45,6 +45,7 @@ export enum RenderMode {
 const renderModeDefaults: Array<ViewFlagOverrides> = [];
 
 renderModeDefaults[RenderMode.Wireframe] = {
+  ambientOcclusion: false,
   backgroundSurfaceColor: false,
   contrastEdges: false,
   edgeOverrides: false,
@@ -52,6 +53,7 @@ renderModeDefaults[RenderMode.Wireframe] = {
   lighting: false,
   materials: false,
   monochromeEdges: true,
+  shadows: false,
   textures: false,
   transparencyThreshold: false,
   visibleEdges: true,
@@ -59,6 +61,7 @@ renderModeDefaults[RenderMode.Wireframe] = {
 };
 
 renderModeDefaults[RenderMode.SolidFill] = {
+  ambientOcclusion: false,
   backgroundSurfaceColor: false,
   contrastEdges: true,
   edgeOverrides: true,
@@ -66,6 +69,7 @@ renderModeDefaults[RenderMode.SolidFill] = {
   lighting: false,
   materials: false,
   monochromeEdges: false,
+  shadows: false,
   textures: false,
   transparency: false,
   transparencyThreshold: true,
@@ -74,6 +78,7 @@ renderModeDefaults[RenderMode.SolidFill] = {
 };
 
 renderModeDefaults[RenderMode.HiddenLine] = {
+  ambientOcclusion: false,
   backgroundSurfaceColor: true,
   contrastEdges: false,
   edgeOverrides: true,
@@ -81,6 +86,7 @@ renderModeDefaults[RenderMode.HiddenLine] = {
   lighting: false,
   materials: false,
   monochromeEdges: false,
+  shadows: false,
   textures: false,
   transparency: false,
   transparencyThreshold: true,
@@ -93,10 +99,13 @@ renderModeDefaults[RenderMode.SmoothShade] = {
   contrastEdges: false,
   edgeOverrides: true,
   fill: false,
-  monochromeEdges: false,
-  transparencyThreshold: false,
-  visibleSurfaces: true,
   lighting: true,
+  materials: true,
+  monochromeEdges: false,
+  textures: true,
+  transparencyThreshold: false,
+  visibleEdges: false,
+  visibleSurfaces: true,
 };
 
 function getRenderModeDefaults(mode: RenderMode): ViewFlagOverrides {
@@ -182,10 +191,6 @@ export interface ViewFlagProps {
   transparencyThreshold?: boolean;
 }
 
-function edgesRequired(renderMode: RenderMode, visibleEdges: boolean): boolean {
-  return visibleEdges || RenderMode.SmoothShade !== renderMode;
-}
-
 /** Flags controlling how graphics appear within a view.
  * A [[ViewFlags]] object is immutable. There are several ways to produce a modified copy of a ViewFlags object:
  * ```ts
@@ -209,11 +214,6 @@ function edgesRequired(renderMode: RenderMode, visibleEdges: boolean): boolean {
  * @public
  */
 export class ViewFlags {
-  /** The basic rendering mode applied to the view. This modulates the behavior of some of the other flags.
-   * Default: [[RenderMode.Wireframe]].
-   * @see [[RenderMode]] for details.
-   */
-  public readonly renderMode: RenderMode;
   /** Whether to display geometry of class [[GeometryClass.Dimension]]. Default: true. */
   public readonly dimensions: boolean;
   /** Whether to display geometry of class [[GeometryClass.Pattern]]. Default: true. */
@@ -304,43 +304,36 @@ export class ViewFlags {
 
   public readonly transparencyThreshold: boolean;
 
-  /** Create a new ViewFlags.
-   * @param flags The properties to initialize. Any properties not specified are initialized to their default values.
-   */
-  public constructor(flags?: Partial<ViewFlagsProperties>) {
-    this.renderMode = flags?.renderMode ?? RenderMode.Wireframe;
-    const modeDefaults = getRenderModeDefaults(this.renderMode);
-    flags = flags ? { ...modeDefaults, ...flags } : modeDefaults;
+  private constructor(flags: Partial<ViewFlagsProperties>) {
+    this.dimensions = flags.dimensions ?? true;
+    this.patterns = flags.patterns ?? true;
+    this.weights = flags.weights ?? true;
+    this.styles = flags.styles ?? true;
+    this.transparency = flags.transparency ?? true;
+    this.fill = flags.fill ?? true;
+    this.textures = flags.textures ?? true;
+    this.materials = flags.materials ?? true;
+    this.acsTriad = flags.acsTriad ?? false;
+    this.grid = flags.grid ?? false;
+    this.visibleEdges = flags.visibleEdges ?? false;
+    this.hiddenEdges = flags.hiddenEdges ?? false;
+    this.shadows = flags.shadows ?? false;
+    this.clipVolume = flags.clipVolume ?? true;
+    this.constructions = flags.constructions ?? false;
+    this.monochrome = flags.monochrome ?? false;
+    this.backgroundMap = flags.backgroundMap ?? false;
+    this.ambientOcclusion = flags.ambientOcclusion ?? false;
+    this.thematicDisplay = flags.thematicDisplay ?? false;
+    this.forceSurfaceDiscard = flags.forceSurfaceDiscard ?? false;
+    this.whiteOnWhiteReversal = flags.whiteOnWhiteReversal ?? true;
+    this.lighting = flags.lighting ?? false;
 
-    this.dimensions = flags?.dimensions ?? true;
-    this.patterns = flags?.patterns ?? true;
-    this.weights = flags?.weights ?? true;
-    this.styles = flags?.styles ?? true;
-    this.transparency = flags?.transparency ?? true;
-    this.fill = flags?.fill ?? true;
-    this.textures = flags?.textures ?? true;
-    this.materials = flags?.materials ?? true;
-    this.acsTriad = flags?.acsTriad ?? false;
-    this.grid = flags?.grid ?? false;
-    this.visibleEdges = flags?.visibleEdges ?? false;
-    this.hiddenEdges = flags?.hiddenEdges ?? false;
-    this.shadows = flags?.shadows ?? false;
-    this.clipVolume = flags?.clipVolume ?? true;
-    this.constructions = flags?.constructions ?? false;
-    this.monochrome = flags?.monochrome ?? false;
-    this.backgroundMap = flags?.backgroundMap ?? false;
-    this.ambientOcclusion = flags?.ambientOcclusion ?? false;
-    this.thematicDisplay = flags?.thematicDisplay ?? false;
-    this.forceSurfaceDiscard = flags?.forceSurfaceDiscard ?? false;
-    this.whiteOnWhiteReversal = flags?.whiteOnWhiteReversal ?? true;
-    this.lighting = flags?.lighting ?? false;
-
-    this.contrastEdges = flags?.contrastEdges ?? false;
-    this.edgeOverrides = flags?.edgeOverrides ?? true;
-    this.monochromeEdges = flags?.monochromeEdges ?? false;
-    this.visibleSurfaces = flags?.visibleSurfaces ?? true;
-    this.backgroundSurfaceColor = flags?.backgroundSurfaceColor ?? false;
-    this.transparencyThreshold = flags?.transparencyThreshold ?? false;
+    this.contrastEdges = flags.contrastEdges ?? false;
+    this.edgeOverrides = flags.edgeOverrides ?? true;
+    this.monochromeEdges = flags.monochromeEdges ?? false;
+    this.visibleSurfaces = flags.visibleSurfaces ?? true;
+    this.backgroundSurfaceColor = flags.backgroundSurfaceColor ?? false;
+    this.transparencyThreshold = flags.transparencyThreshold ?? false;
   }
 
   /** Produce a copy of these ViewFlags with some modified properties. Any properties not explicitly specified by `changedFlags` will retain their current values.
@@ -378,7 +371,7 @@ export class ViewFlags {
    * @see [[withRenderMode]] to change the [[renderMode]] property.
    * @see [[copy]] and [[override]] to change multiple properties.
    */
-  public with(flag: keyof Omit<ViewFlagsProperties, "renderMode">, value: boolean): ViewFlags {
+  public with(flag: keyof ViewFlagsProperties, value: boolean): ViewFlags {
     if (this[flag] === value)
       return this;
 
@@ -393,49 +386,16 @@ export class ViewFlags {
    * @see [[copy]] and [[override]] to change multiple properties.
    */
   public withRenderMode(renderMode: RenderMode, props?: ViewFlagOverrides): ViewFlags {
+    // This resets any property that has a default for the specified render mode to that default.
+    // So, for example, if you turn off transparency and turn on visible edges, then switch to SmoothShade, edges will be disabled and transparency enabled.
     const defs = getRenderModeDefaults(renderMode);
     props = props ? { ...defs, ...props } : defs;
     return this.copy(props);
   }
 
-  /** Adjust view flags for renderer.
-   * @internal
-   */
-  public normalize(): ViewFlags {
-    switch (this.renderMode) {
-      case RenderMode.Wireframe:
-        if (this.visibleEdges || this.hiddenEdges)
-          return this.copy({ visibleEdges: false, hiddenEdges: false });
-        break;
-      case RenderMode.SmoothShade:
-        if (!this.visibleEdges)
-          return this.copy({ hiddenEdges: false });
-        break;
-      case RenderMode.HiddenLine:
-      case RenderMode.SolidFill:
-        if (!this.visibleEdges || this.transparency)
-          return this.copy({ visibleEdges: true, transparency: false });
-        break;
-    }
-
-    return this;
-  }
-
   /** @internal */
   public hiddenEdgesVisible(): boolean {
-    switch (this.renderMode) {
-      case RenderMode.SolidFill:
-      case RenderMode.HiddenLine:
-        return this.hiddenEdges;
-      case RenderMode.SmoothShade:
-        return this.visibleEdges && this.hiddenEdges;
-    }
-    return true;
-  }
-
-  /** Returns true if the edges of surfaces should be displayed, based on [[RenderMode]] and the [[visibleEdges]] flag. */
-  public edgesRequired(): boolean {
-    return edgesRequired(this.renderMode, this.visibleEdges);
+    return this.visibleEdges && this.hiddenEdges;
   }
 
   /** Convert to JSON representation. */
@@ -474,13 +434,13 @@ export class ViewFlags {
 
     // For backwards compatibility, determine a closest match for RenderMode.
     // Also set a flag indicating we should ignore this RenderMode when reinstantiating from JSON.
-    out.renderMode = this.computeRenderMode();
+    out.renderMode = this.getClosestRenderMode();
     out.ignoreRenderMode = true;
 
     return out;
   }
 
-  private computeRenderMode(): RenderMode {
+  public getClosestRenderMode(): RenderMode {
     if (this.visibleEdges) {
       if (!this.visibleSurfaces)
         return RenderMode.Wireframe;
@@ -498,7 +458,7 @@ export class ViewFlags {
    */
   public toFullyDefinedJSON(): Required<ViewFlagProps> {
     return {
-      renderMode: this.computeRenderMode(),
+      renderMode: this.getClosestRenderMode(),
       ignoreRenderMode: true,
 
       noConstruct: !this.constructions,
@@ -571,28 +531,19 @@ export class ViewFlags {
 
     const defaults = undefined !== renderMode ? getRenderModeDefaults(renderMode) : { };
 
-    const lighting = !JsonUtils.asBool(json.noCameraLights) || !JsonUtils.asBool(json.noSourceLights) || !JsonUtils.asBool(json.noSolarLight);
     const props = {
       renderMode,
-      lighting,
       constructions: !JsonUtils.asBool(json.noConstruct),
       dimensions: !JsonUtils.asBool(json.noDim),
       patterns: !JsonUtils.asBool(json.noPattern),
       weights: !JsonUtils.asBool(json.noWeight),
       styles: !JsonUtils.asBool(json.noStyle),
-      transparency: !JsonUtils.asBool(json.noTransp),
-      fill: !JsonUtils.asBool(json.noFill),
       grid: JsonUtils.asBool(json.grid),
       acsTriad: JsonUtils.asBool(json.acs),
-      textures: !JsonUtils.asBool(json.noTexture),
-      materials: !JsonUtils.asBool(json.noMaterial),
-      visibleEdges: JsonUtils.asBool(json.visEdges),
       hiddenEdges: JsonUtils.asBool(json.hidEdges),
-      shadows: JsonUtils.asBool(json.shadows),
       clipVolume: JsonUtils.asBool(json.clipVol),
       monochrome: JsonUtils.asBool(json.monochrome),
       backgroundMap: JsonUtils.asBool(json.backgroundMap),
-      ambientOcclusion: JsonUtils.asBool(json.ambientOcclusion),
       thematicDisplay: JsonUtils.asBool(json.thematicDisplay),
       forceSurfaceDiscard: JsonUtils.asBool(json.forceSurfaceDiscard),
       whiteOnWhiteReversal: !JsonUtils.asBool(json.noWhiteOnWhiteReversal),
@@ -607,9 +558,41 @@ export class ViewFlags {
       ...defaults,
     };
 
-    // Lighting defaults to ON for smooth shade.
-    if (!lighting && !json.ignoreRenderMode && renderMode === RenderMode.SmoothShade)
-      props.lighting = false;
+    // Some flags have defaults specific to a render mode but can be overridden.
+    if (!json.ignoreRenderMode) {
+      switch (renderMode) {
+        case RenderMode.Wireframe:
+          if (JsonUtils.asBool(json.noFill))
+            props.fill = false;
+          if (JsonUtils.asBool(json.noTransp))
+            props.transparency = false;
+          break;
+        case RenderMode.SmoothShade:
+          if (JsonUtils.asBool(json.noTexture))
+            props.textures = false;
+          if (JsonUtils.asBool(json.noMaterial))
+            props.materials = false;
+          if (JsonUtils.asBool(json.visEdges))
+            props.visibleEdges = true;
+          if (JsonUtils.asBool(json.ambientOcclusion))
+            props.ambientOcclusion = true;
+          if (JsonUtils.asBool(json.shadows))
+            props.shadows = true;
+          if (JsonUtils.asBool(json.noCameraLights) && JsonUtils.asBool(json.noSourceLights) && JsonUtils.asBool(json.noSolarLight))
+            props.lighting = false;
+
+          break;
+      }
+    } else {
+      props.fill = !JsonUtils.asBool(json.noFill);
+      props.transparency = !JsonUtils.asBool(json.noTransp);
+      props.textures = !JsonUtils.asBool(json.noTexture);
+      props.materials = !JsonUtils.asBool(json.noMaterial);
+      props.visibleEdges = JsonUtils.asBool(json.visEdges);
+      props.ambientOcclusion = JsonUtils.asBool(json.ambientOcclusion);
+      props.shadows = JsonUtils.asBool(json.shadows);
+      props.lighting = !JsonUtils.asBool(json.noCameraLights) || !JsonUtils.asBool(json.noSourceLights) || !JsonUtils.asBool(json.noSolarLight);
+    }
 
     return new ViewFlags(props);
   }
@@ -625,8 +608,7 @@ export class ViewFlags {
     if (this === other)
       return true;
 
-    return this.renderMode === other.renderMode
-      && this.dimensions === other.dimensions
+    return this.dimensions === other.dimensions
       && this.patterns === other.patterns
       && this.weights === other.weights
       && this.styles === other.styles

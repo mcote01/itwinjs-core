@@ -245,6 +245,11 @@ describe("ViewFlags", () => {
     expectLighting(ViewFlags.fromRenderMode(RenderMode.SmoothShade), true);
   });
 
+  it("constructs from self", () => {
+    expect(ViewFlags.defaults.equals(new ViewFlags(ViewFlags.defaults))).to.be.true;
+    expect(ViewFlags.fromJSON(ViewFlags.defaults.toJSON()).equals(ViewFlags.defaults)).to.be.true;
+  });
+
   it("with", () => {
     const def = ViewFlags.defaults;
     for (const propName of Object.keys(def)) {

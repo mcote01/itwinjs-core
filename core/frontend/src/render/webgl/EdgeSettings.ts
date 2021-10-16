@@ -115,6 +115,6 @@ export class EdgeSettings {
   }
 
   private isOverridden(vf: ViewFlags): boolean {
-    return vf.edgeOverrides;
+    return vf.visibleEdges && vf.edgeOverrides;
   }
 }

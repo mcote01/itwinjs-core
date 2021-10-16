@@ -27,7 +27,7 @@ export class BranchStack {
 
   public constructor() {
     const state = new BranchState({
-      viewFlags: new ViewFlags(),
+      viewFlags: ViewFlags.create(),
       transform: Transform.createIdentity(),
       edgeSettings: EdgeSettings.create(undefined),
       is3d: true,

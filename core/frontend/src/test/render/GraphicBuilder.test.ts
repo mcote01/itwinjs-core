@@ -59,7 +59,7 @@ describe("GraphicBuilder", () => {
     });
 
     it("always if generating edges", () => {
-      expect(viewport.viewFlags.edgesRequired()).to.be.true;
+      expect(viewport.viewFlags.visibleEdges).to.be.true;
       for (const type of graphicTypes) {
         expectNormals(type, { generateEdges: true }, true);
         expectNormals(type, { generateEdges: false }, type === GraphicType.Scene);
@@ -85,15 +85,15 @@ describe("GraphicBuilder", () => {
     }
 
     it("by default only for scene graphics, if view flags require them", () => {
-      expect(viewport.viewFlags.edgesRequired()).to.be.true;
+      expect(viewport.viewFlags.visibleEdges).to.be.true;
       for (const type of graphicTypes)
         expectEdges(type, {}, type === GraphicType.Scene);
     });
 
     it("never, if view flags do not require them", () => {
-      const vf = viewport.viewFlags.copy({ renderMode: RenderMode.SmoothShade, visibleEdges: false });
+      const vf = viewport.viewFlags.withRenderMode(RenderMode.SmoothShade, { visibleEdges: false });
       viewport.viewFlags = vf;
-      expect(viewport.viewFlags.edgesRequired()).to.be.false;
+      expect(viewport.viewFlags.visibleEdges).to.be.false;
 
       for (const type of graphicTypes)
         expectEdges(type, {}, false);
@@ -239,7 +239,7 @@ describe("GraphicBuilder", () => {
           }
         };
 
-        expect(viewport.viewFlags.edgesRequired()).to.be.true;
+        expect(viewport.viewFlags.visibleEdges).to.be.true;
 
         overrideCreateMesh(verifyParams);
         expect(createMeshInvoked).to.be.false;

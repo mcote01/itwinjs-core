@@ -258,7 +258,7 @@ export abstract class GraphicBuilder {
     this.iModel = vp?.iModel ?? options.iModel;
     this.type = options.type;
     this.pickable = options.pickable;
-    this.wantEdges = options.generateEdges ?? (this.type === GraphicType.Scene && (!vp || vp.viewFlags.edgesRequired()));
+    this.wantEdges = options.generateEdges ?? (this.type === GraphicType.Scene && (!vp || vp.viewFlags.visibleEdges));
     this.wantNormals = options.wantNormals ?? (this.wantEdges || this.type === GraphicType.Scene);
     this.preserveOrder = options.preserveOrder ?? (this.isOverlay || this.isViewBackground);
 

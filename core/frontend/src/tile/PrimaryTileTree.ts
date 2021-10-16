@@ -250,9 +250,7 @@ class PrimaryTreeReference extends TileTreeReference {
     const script = view.displayStyle.scheduleState;
     const animationId = undefined !== script ? script.getModelAnimationId(modelId) : undefined;
 
-    const renderMode = this._viewFlagOverrides.renderMode ?? view.viewFlags.renderMode;
-    const visibleEdges = this._viewFlagOverrides.visibleEdges ?? view.viewFlags.visibleEdges;
-    const edgesRequired = visibleEdges || RenderMode.SmoothShade !== renderMode;
+    const edgesRequired = this._viewFlagOverrides.visibleEdges ?? view.viewFlags.visibleEdges;
     const sectionCut = this._sectionClip?.clipString;
     return { type: BatchType.Primary, edgesRequired, animationId, animationTransformNodeId, sectionCut };
   }

@@ -52,7 +52,7 @@ export interface RenderPlan {
 export function createEmptyRenderPlan(): RenderPlan {
   return {
     is3d: true,
-    viewFlags: new ViewFlags(),
+    viewFlags: ViewFlags.create(),
     bgColor: ColorDef.white,
     monoColor: ColorDef.white,
     monochromeMode: MonochromeMode.Scaled,

@@ -51,7 +51,7 @@ export class BranchState {
 
   public get transform() { return this._opts.transform; }
   public get viewFlags() { return this._opts.viewFlags; }
-  public set viewFlags(vf: ViewFlags) { this._opts.viewFlags = vf.normalize(); }
+  public set viewFlags(vf: ViewFlags) { this._opts.viewFlags = vf; }
   public get clipVolume() { return this._opts.clipVolume; }
   public get planarClassifier() { return this._opts.planarClassifier; }
   public get textureDrape() { return this._opts.textureDrape; }
@@ -111,6 +111,5 @@ export class BranchState {
       opts.frustumScale = { x: 1, y: 1 };
 
     this._opts = opts;
-    this._opts.viewFlags = this._opts.viewFlags.normalize();
   }
 }

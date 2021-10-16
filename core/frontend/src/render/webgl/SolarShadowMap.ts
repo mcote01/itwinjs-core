@@ -223,7 +223,6 @@ export class SolarShadowMap implements RenderMemory.Consumer, WebGLDisposable {
   private readonly _scratchRange = Range3d.createNull();
   private readonly _scratchTransform = Transform.createIdentity();
 
-  private readonly _scratchViewFlags = new ViewFlags();
   private readonly _renderState: RenderState;
   private readonly _noZRenderState: RenderState;
   private readonly _batchState: BatchState;

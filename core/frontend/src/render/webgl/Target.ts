@@ -483,7 +483,7 @@ export abstract class Target extends RenderTarget implements RenderTargetDebugCo
     if (!plan.is3d)
       vf = vf.withRenderMode(RenderMode.Wireframe);
 
-    if (RenderMode.SmoothShade === vf.renderMode && plan.is3d && undefined !== plan.ao && vf.ambientOcclusion) {
+    if (plan.is3d && plan.ao && vf.ambientOcclusion && vf.visibleSurfaces) {
       this._wantAmbientOcclusion = true;
       this.ambientOcclusionSettings = plan.ao;
     } else {

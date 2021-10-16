@@ -1236,8 +1236,7 @@ abstract class Compositor extends SceneCompositor {
     // The BranchState needs to be created every time in case the symbology overrides changes.
     // It is based off of the current state, but turns off unnecessary and unwanted options, lighting being the most important.
     const top = this.target.uniforms.branch.top;
-    const viewFlags = top.viewFlags.copy({
-      renderMode: RenderMode.SmoothShade,
+    const viewFlags = top.viewFlags.withRenderMode(RenderMode.SmoothShade, {
       lighting: false,
       forceSurfaceDiscard: false,
       hiddenEdges: false,

@@ -387,8 +387,10 @@ export class ViewFlags {
    * @returns A new ViewFlags with the render mode changed as specified, or `this` if the render mode is already set to the requested value.
    * @see [[copy]] and [[override]] to change multiple properties.
    */
-  public withRenderMode(renderMode: RenderMode): ViewFlags {
-    return this.copy(getRenderModeDefaults(renderMode));
+  public withRenderMode(renderMode: RenderMode, props?: ViewFlagOverrides): ViewFlags {
+    const defs = getRenderModeDefaults(renderMode);
+    props = props ? { ...defs, ...props } : defs;
+    return this.copy(props);
   }
 
   /** Adjust view flags for renderer.
@@ -593,8 +595,10 @@ export class ViewFlags {
     });
   }
 
-  public static fromRenderMode(renderMode: RenderMode): ViewFlags {
-    return this.create(getRenderModeDefaults(renderMode));
+  public static fromRenderMode(renderMode: RenderMode, props?: ViewFlagOverrides): ViewFlags {
+    const def = getRenderModeDefaults(renderMode);
+    props = props ? { ...def, ...props } : def;
+    return this.create(props);
   }
 
   /** Returns true if `this` and `other` are equivalent. */

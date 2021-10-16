@@ -170,8 +170,7 @@ export class PlanarTextureProjection {
     state.flags.blend = false;
     state.flags.depthTest = false;
 
-    const viewFlags = target.currentViewFlags.copy({
-      renderMode: RenderMode.SmoothShade,
+    const viewFlags = target.currentViewFlags.withRenderMode(RenderMode.SmoothShade, {
       transparency: false,
       textures: false,
       lighting: false,

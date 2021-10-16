@@ -6,7 +6,6 @@
  * @module WebGL
  */
 
-import { RenderMode } from "@itwin/core-common";
 import { RenderPass } from "./RenderFlags";
 import { Target } from "./Target";
 
@@ -83,23 +82,12 @@ export class TechniqueFlags {
       // These are only useful if the geometry defines feature Ids.
       // In 3d, if we're only displaying surfaces or edges, not both, don't bother, unless forceSurfaceDiscard is true.
       this.isEdgeTestNeeded = this.hasFeatures ? (this.isClassified ? IsEdgeTestNeeded.No : IsEdgeTestNeeded.Yes) : IsEdgeTestNeeded.No;
-      if (!target.currentViewFlags.forceSurfaceDiscard && target.is3d && !target.isReadPixelsInProgress && this.isEdgeTestNeeded) {
-        switch (target.currentViewFlags.renderMode) {
-          case RenderMode.Wireframe:
-            // We're only displaying edges (ignoring filled planar regions)
-            this.isEdgeTestNeeded = IsEdgeTestNeeded.No;
-            break;
-          case RenderMode.SmoothShade:
-            if (!target.currentViewFlags.visibleEdges && !target.wantAmbientOcclusion && pass !== RenderPass.PlanarClassification) {
-              // We're only displaying surfaces (ignoring filled planar regions).
-              // NB: Filled text (blanking region) is handled by adjusting the depth in the surface vertex shader.
-              this.isEdgeTestNeeded = IsEdgeTestNeeded.No;
-            }
-            break;
-          default:
-            // SolidFill and HiddenLine always display edges and surfaces.
-            break;
-        }
+      const vf = target.currentViewFlags;
+      if (!vf.forceSurfaceDiscard && target.is3d && !target.isReadPixelsInProgress && this.isEdgeTestNeeded) {
+        if (!vf.visibleSurfaces)
+          this.isEdgeTestNeeded = IsEdgeTestNeeded.No;
+        else if (!vf.visibleEdges && !target.wantAmbientOcclusion && pass !== RenderPass.PlanarClassification)
+          this.isEdgeTestNeeded = IsEdgeTestNeeded.No;
       }
     }
   }

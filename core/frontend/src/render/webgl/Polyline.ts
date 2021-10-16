@@ -8,7 +8,7 @@
 
 import { dispose } from "@itwin/core-bentley";
 import { Point3d } from "@itwin/core-geometry";
-import { FeatureIndexType, PolylineTypeFlags, QParams3d, RenderMode } from "@itwin/core-common";
+import { FeatureIndexType, PolylineTypeFlags, QParams3d } from "@itwin/core-common";
 import { PolylineParams } from "../primitives/VertexTable";
 import { RenderMemory } from "../RenderMemory";
 import { LUTGeometry, PolylineBuffers } from "./CachedGeometry";
@@ -79,11 +79,12 @@ export class PolylineGeometry extends LUTGeometry {
 
   private _computeEdgePass(target: Target, colorInfo: ColorInfo): RenderPass {
     const vf = target.currentViewFlags;
-    if (RenderMode.SmoothShade === vf.renderMode && !vf.visibleEdges)
+    if (!vf.visibleEdges)
       return RenderPass.None;
 
     // Only want to return Translucent for edges if rendering in Wireframe mode ###TODO: what about overrides?
-    const isTranslucent: boolean = RenderMode.Wireframe === vf.renderMode && vf.transparency && colorInfo.hasTranslucency;
+    // Only want translucent edges if surfaces are not also displayed.
+    const isTranslucent = !vf.visibleSurfaces && vf.transparency && colorInfo.hasTranslucency;
     return isTranslucent ? RenderPass.Translucent : RenderPass.OpaqueLinear;
   }
 
@@ -92,7 +93,7 @@ export class PolylineGeometry extends LUTGeometry {
     if (this.isEdge) {
       let pass = this._computeEdgePass(target, this.lut.colorInfo);
       // Only display the outline in wireframe if Fill is off...
-      if (RenderPass.None !== pass && this.isOutlineEdge && RenderMode.Wireframe === vf.renderMode && vf.fill)
+      if (RenderPass.None !== pass && this.isOutlineEdge && !vf.visibleSurfaces && vf.fill)
         pass = RenderPass.None;
       return pass;
     }

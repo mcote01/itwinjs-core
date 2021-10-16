@@ -6,7 +6,7 @@
  * @module WebGL
  */
 
-import { ColorDef, HiddenLine, RenderMode, ViewFlags } from "@itwin/core-common";
+import { ColorDef, HiddenLine, ViewFlags } from "@itwin/core-common";
 import { FloatRgba } from "./FloatRGBA";
 import { OvrFlags, RenderPass } from "./RenderFlags";
 import { LineCode } from "./LineCode";
@@ -89,8 +89,8 @@ export class EdgeSettings {
 
   public getColor(vf: ViewFlags): FloatRgba | undefined {
     // In SolidFill mode, if edge color is not overridden, the edges don't use the element's line color.
-    if (RenderMode.SolidFill === vf.renderMode && !this._colorOverridden) {
-      // ###TODO? MicroStation seems to compute some contrast with fill and/or background color. Use white for now.
+    if (vf.contrastEdges && !this._colorOverridden) {
+      // ###TODO: Delete this after contrasting edge color PR is merged in.
       return white;
     }
 
@@ -119,13 +119,6 @@ export class EdgeSettings {
   }
 
   private isOverridden(vf: ViewFlags): boolean {
-    switch (vf.renderMode) {
-      case RenderMode.Wireframe:
-        return false; // edge overrides don't apply in wireframe mode
-      case RenderMode.SmoothShade:
-        return vf.visibleEdges;
-      default:
-        return true; // Edges always displayed in solid fill and hidden line modes
-    }
+    return vf.edgeOverrides;
   }
 }

@@ -8,7 +8,7 @@
 
 import { assert, dispose } from "@itwin/core-bentley";
 import { Point3d, Range3d } from "@itwin/core-geometry";
-import { FeatureIndexType, FillFlags, LinePixels, RenderMode, ViewFlags } from "@itwin/core-common";
+import { FeatureIndexType, FillFlags, LinePixels, ViewFlags } from "@itwin/core-common";
 import { InstancedGraphicParams } from "../InstancedGraphicParams";
 import { MeshParams, SegmentEdgeParams, SilhouetteParams, SurfaceType, TesselatedPolyline, VertexIndices } from "../primitives/VertexTable";
 import { RenderMemory } from "../RenderMemory";
@@ -268,12 +268,11 @@ export abstract class MeshGeometry extends LUTGeometry {
       return RenderPass.None;
 
     const vf = target.currentViewFlags;
-    if (RenderMode.SmoothShade === vf.renderMode && !vf.visibleEdges) {
+    if (!vf.visibleEdges)
       return RenderPass.None;
-    }
 
-    // Only want translucent edges in wireframe mode.
-    const isTranslucent = RenderMode.Wireframe === vf.renderMode && vf.transparency && this.colorInfo.hasTranslucency;
+    // If displaying both surfaces and edges, draw opaque edges.
+    const isTranslucent = !vf.visibleSurfaces && vf.transparency && this.colorInfo.hasTranslucency;
     return isTranslucent ? RenderPass.Translucent : RenderPass.OpaqueLinear;
   }
 }
@@ -327,7 +326,7 @@ export class EdgeGeometry extends MeshGeometry {
   public override getColor(target: Target): ColorInfo { return this.computeEdgeColor(target); }
   public get endPointAndQuadIndices(): BufferHandle { return this._endPointAndQuadIndices; }
   public override wantMonochrome(target: Target): boolean {
-    return target.currentViewFlags.renderMode === RenderMode.Wireframe;
+    return target.currentViewFlags.monochromeEdges;
   }
 
   protected constructor(indices: BufferHandle, endPointAndQuadsIndices: BufferHandle, numIndices: number, mesh: MeshData) {
@@ -412,7 +411,7 @@ export class PolylineEdgeGeometry extends MeshGeometry {
   public override get polylineBuffers(): PolylineBuffers { return this._buffers; }
 
   public override wantMonochrome(target: Target): boolean {
-    return target.currentViewFlags.renderMode === RenderMode.Wireframe;
+    return target.currentViewFlags.monochromeEdges;
   }
 
   protected _draw(numInstances: number, instanceBuffersContainer?: BuffersContainer): void {
@@ -432,11 +431,11 @@ export class PolylineEdgeGeometry extends MeshGeometry {
 
 /** @internal */
 export function wantMaterials(vf: ViewFlags): boolean {
-  return vf.materials && RenderMode.SmoothShade === vf.renderMode;
+  return vf.materials;
 }
 
 function wantLighting(vf: ViewFlags) {
-  return RenderMode.SmoothShade === vf.renderMode && vf.lighting;
+  return vf.lighting;
 }
 
 /** @internal */
@@ -552,15 +551,15 @@ export class SurfaceGeometry extends MeshGeometry {
       return RenderPass.Translucent;
 
     // In wireframe, unless fill is explicitly enabled for planar region, surface does not draw
-    if (RenderMode.Wireframe === vf.renderMode && !this.mesh.isTextureAlwaysDisplayed) {
+    if (!vf.visibleSurfaces && !this.mesh.isTextureAlwaysDisplayed) {
       const fillFlags = this.fillFlags;
       const showFill = FillFlags.Always === (fillFlags & FillFlags.Always) || (vf.fill && FillFlags.ByView === (fillFlags & FillFlags.ByView));
       if (!showFill)
         return RenderPass.None;
     }
 
-    // If transparency disabled by render mode or view flag, always draw opaque.
-    if (!vf.transparency || RenderMode.SolidFill === vf.renderMode || RenderMode.HiddenLine === vf.renderMode)
+    // If transparency disabled by view flags, always draw opaque.
+    if (!vf.transparency)
       return opaquePass;
 
     // We have 3 sources of alpha: the material, the texture, and the color.
@@ -591,7 +590,7 @@ export class SurfaceGeometry extends MeshGeometry {
       return true; // fill displayed even in wireframe
 
     const vf = target.currentViewFlags;
-    if (RenderMode.Wireframe === vf.renderMode || vf.visibleEdges)
+    if (vf.visibleEdges)
       return false; // never invert surfaces when edges are displayed
 
     if (this.isLit && wantLighting(vf))
@@ -651,10 +650,9 @@ export class SurfaceGeometry extends MeshGeometry {
       case RenderPass.OpaqueLayers:
       case RenderPass.TranslucentLayers:
       case RenderPass.OverlayLayers: {
-        const mode = vf.renderMode;
-        if (!this.isGlyph && (RenderMode.HiddenLine === mode || RenderMode.SolidFill === mode)) {
+        if (!this.isGlyph && vf.transparencyThreshold) {
           flags[SurfaceBitIndex.TransparencyThreshold] = 1;
-          if (RenderMode.HiddenLine === mode && FillFlags.Always !== (this.fillFlags & FillFlags.Always)) {
+          if (vf.backgroundSurfaceColor && FillFlags.Always !== (this.fillFlags & FillFlags.Always)) {
             // fill flags test for text - doesn't render with bg fill in hidden line mode.
             flags[SurfaceBitIndex.BackgroundFill] = 1;
           }
@@ -690,13 +688,11 @@ export class SurfaceGeometry extends MeshGeometry {
     const flags = target.currentViewFlags;
 
     // ###TODO need to distinguish between gradient fill and actual textures...
-    switch (flags.renderMode) {
-      case RenderMode.SmoothShade:
-        return flags.textures;
-      case RenderMode.Wireframe:
-        return FillFlags.Always === (fill & FillFlags.Always) || (flags.fill && FillFlags.ByView === (fill & FillFlags.ByView));
-      default:
-        return FillFlags.Always === (fill & FillFlags.Always);
-    }
+    if (flags.textures)
+      return true;
+    else if (!flags.visibleSurfaces)
+      return FillFlags.Always === (fill & FillFlags.Always) || (flags.fill && FillFlags.ByView === (fill & FillFlags.ByView));
+    else
+      return FillFlags.Always === (fill & FillFlags.Always);
   }
 }

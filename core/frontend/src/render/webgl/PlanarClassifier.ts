@@ -563,8 +563,7 @@ export class PlanarClassifier extends RenderPlanarClassifier implements RenderMe
     const prevState = system.currentRenderState.clone(scratchPrevRenderState);
     system.context.viewport(0, 0, this._width, this._height);
 
-    const vf = target.currentViewFlags.copy({
-      renderMode: RenderMode.SmoothShade,
+    const vf = target.currentViewFlags.withRenderMode(RenderMode.SmoothShade, {
       transparency: !this.isClassifyingPointCloud, // point clouds don't support transparency.
       textures: false,
       lighting: false,

@@ -8,7 +8,7 @@
 
 import { assert } from "@itwin/core-bentley";
 import { Range3d } from "@itwin/core-geometry";
-import { Frustum, FrustumPlanes, RenderMode, ViewFlags } from "@itwin/core-common";
+import { Frustum, FrustumPlanes, ViewFlags } from "@itwin/core-common";
 import { Decorations } from "../Decorations";
 import { SurfaceType } from "../primitives/VertexTable";
 import { GraphicList, RenderGraphic } from "../RenderGraphic";
@@ -571,7 +571,7 @@ export class RenderCommands implements Iterable<DrawCommands> {
 
     if (RenderPass.None === this._forcedRenderPass && prim.isEdge) {
       const vf: ViewFlags = this.target.currentViewFlags;
-      if (vf.renderMode !== RenderMode.Wireframe && vf.hiddenEdges)
+      if (vf.visibleSurfaces && vf.hiddenEdges)
         this.addPrimitiveCommand(command, RenderPass.HiddenEdge);
     }
   }

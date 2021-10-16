@@ -449,8 +449,7 @@ export class SolarShadowMap implements RenderMemory.Consumer, WebGLDisposable {
     gl.viewport(0, 0, shadowMapWidth, shadowMapHeight);
 
     // NB: textures and materials are needed because their transparencies affect whether or not a surface casts shadows
-    const viewFlags = target.currentViewFlags.copy({
-      renderMode: RenderMode.SmoothShade,
+    const viewFlags = target.currentViewFlags.withRenderMode(RenderMode.SmoothShade, {
       transparency: false,
       lighting: false,
       shadows: false,

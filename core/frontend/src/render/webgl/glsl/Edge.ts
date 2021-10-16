@@ -118,7 +118,7 @@ export function addEdgeContrast(vert: VertexShaderBuilder): void {
   vert.addUniform("u_bgIntensity", VariableType.Float, (prog) => {
     prog.addGraphicUniform("u_bgIntensity", (uniform, params) => {
       let bgi = -1;
-      if (params.geometry.isEdge && params.target.currentEdgeSettings.wantContrastingColor(params.target.currentViewFlags.renderMode))
+      if (params.geometry.isEdge && params.target.currentEdgeSettings.wantContrastingColor(params.target.currentViewFlags))
         bgi = params.target.uniforms.style.backgroundIntensity;
 
       uniform.setUniform1f(bgi);

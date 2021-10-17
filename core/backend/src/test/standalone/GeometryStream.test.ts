@@ -17,7 +17,7 @@ import {
   ElementGeometryUpdate, FillDisplay, FontProps, FontType, GeometricElement3dProps, GeometricElementProps, GeometryClass,
   GeometryContainmentRequestProps, GeometryParams, GeometryPartProps, GeometryStreamBuilder, GeometryStreamFlags, GeometryStreamIterator,
   GeometryStreamProps, Gradient, ImageGraphicCorners, ImageGraphicProps, IModel, LinePixels, LineStyle, MassPropertiesOperation,
-  MassPropertiesRequestProps, PhysicalElementProps, Placement3d, Placement3dProps, TextString, TextStringProps, ThematicGradientMode,
+  MassPropertiesRequestProps, PhysicalElementProps, Placement3d, Placement3dProps, RenderMode, TextString, TextStringProps, ThematicGradientMode,
   ThematicGradientSettings, ViewFlags,
 } from "@itwin/core-common";
 import { GeometricElement, GeometryPart, LineStyleDefinition, PhysicalObject, Platform, SnapshotDb } from "../../core-backend";
@@ -2803,7 +2803,7 @@ describe("Geometry Containment", () => {
 
     const expectedContainmentViewFlags: ClipPlaneContainment[] = [ClipPlaneContainment.StronglyInside, ClipPlaneContainment.StronglyOutside, ClipPlaneContainment.StronglyInside, ClipPlaneContainment.Ambiguous];
 
-    const flags = ViewFlags.defaults; // constructions are off by default...
+    const flags = ViewFlags.fromRenderMode(RenderMode.Wireframe); // constructions are off by default...
     requestProps.viewFlags = flags;
     requestProps.offSubCategories = undefined;
     result = await imodel.getGeometryContainment(requestProps);

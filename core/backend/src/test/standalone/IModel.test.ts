@@ -556,7 +556,7 @@ describe("iModel", () => {
   });
 
   it("should create display styles", () => {
-    const defaultViewFlags = ViewFlags.defaults.toJSON();
+    const defaultViewFlags = ViewFlags.fromRenderMode(RenderMode.Wireframe).toJSON();
     const defaultMapImagery = new DisplayStyleSettings({}).toJSON().mapImagery;
 
     const viewFlags = ViewFlags.fromRenderMode(RenderMode.Wireframe, { patterns: false, visibleEdges: true });

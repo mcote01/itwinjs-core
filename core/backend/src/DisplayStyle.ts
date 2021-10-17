@@ -9,7 +9,7 @@
 import { CompressedId64Set, Id64, Id64Array, Id64Set, Id64String, OrderedId64Iterable } from "@itwin/core-bentley";
 import {
   BisCodeSpec, Code, CodeScopeProps, CodeSpec, ColorDef, DisplayStyle3dProps, DisplayStyle3dSettings, DisplayStyle3dSettingsProps,
-  DisplayStyleProps, DisplayStyleSettings, PlanProjectionSettingsProps, RenderSchedule, SkyBoxImageProps, ViewFlags,
+  DisplayStyleProps, DisplayStyleSettings, PlanProjectionSettingsProps, RenderMode, RenderSchedule, SkyBoxImageProps, ViewFlags,
 } from "@itwin/core-common";
 import { DefinitionElement, RenderTimeline } from "./Element";
 import { IModelCloneContext } from "./IModelCloneContext";
@@ -162,7 +162,7 @@ export class DisplayStyle2d extends DisplayStyle {
         styles: {
           backgroundColor: 0,
           monochromeColor: ColorDef.white.toJSON(),
-          viewflags: ViewFlags.defaults,
+          viewflags: ViewFlags.fromRenderMode(RenderMode.Wireframe).toJSON(),
         },
       },
     };
@@ -282,7 +282,7 @@ export class DisplayStyle3d extends DisplayStyle implements DisplayStyle3dProps 
     options = options ?? {};
     let viewflags = options.viewFlags?.toJSON();
     if (!viewflags)
-      viewflags = options.viewflags ?? ViewFlags.defaults.toJSON();
+      viewflags = options.viewflags ?? ViewFlags.fromRenderMode(RenderMode.Wireframe).toJSON();
 
     const backgroundColor = options.backgroundColor instanceof ColorDef ? options.backgroundColor.toJSON() : options.backgroundColor;
 

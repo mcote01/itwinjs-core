@@ -8,12 +8,15 @@ import {
 } from "../ViewFlags";
 
 function invertDefaults(): ViewFlags {
-  const invertedProperties: Partial<ViewFlagsProperties> = { };
-  for (const propname of Object.keys(ViewFlags.defaults)) {
-    const key = propname as keyof ViewFlags;
-    const value = ViewFlags.defaults[key];
-    if (typeof value === "boolean")
-      (invertedProperties as any)[key] = !value;
+  return invertViewFlags(ViewFlags.create());
+}
+
+function invertViewFlags(vf: ViewFlags): ViewFlags {
+  const invertedProperties: Partial<Omit<ViewFlagsProperties, "renderMode">> = { };
+  for (const propname of Object.keys(vf)) {
+    const key = propname as keyof Partial<Omit<ViewFlagsProperties, "renderMode">>;
+    const value = vf[key];
+    invertedProperties[key] = !value;
   }
 
   return ViewFlags.create(invertedProperties);
@@ -21,11 +24,14 @@ function invertDefaults(): ViewFlags {
 
 describe("ViewFlags", () => {
   it("should initialize to expected defaults", () => {
-    const flags = ViewFlags.create();
+    let flags = ViewFlags.create();
     assert(flags.acsTriad === false);
     assert(flags.grid === false);
     assert(flags.fill === true);
-    assert(flags.getClosestRenderMode() === RenderMode.Wireframe);
+    assert(flags.getClosestRenderMode() === RenderMode.SmoothShade);
+
+    flags = ViewFlags.fromJSON();
+    expect(flags.getClosestRenderMode()).to.equal(RenderMode.Wireframe);
   });
 
   it("initializes from render mode", () => {
@@ -90,7 +96,6 @@ describe("ViewFlags", () => {
     roundTrip({ acs: false, monochrome: false, renderMode: RenderMode.SmoothShade }, {
       renderMode: RenderMode.SmoothShade,
       ignoreRenderMode: true,
-      noFill: true,
     });
 
     const makeViewFlags = (on: boolean) => {
@@ -152,9 +157,9 @@ describe("ViewFlags", () => {
     };
 
     roundTrip(undefined, defaults);
-    roundTrip(ViewFlags.create().toJSON(), defaults);
+    roundTrip(ViewFlags.create().toJSON(), ViewFlags.fromRenderMode(RenderMode.SmoothShade).toJSON());
 
-    roundTrip(invertDefaults().toJSON(), {
+    roundTrip(invertViewFlags(ViewFlags.fromJSON(defaults)).toJSON(), {
       noDim: true,
       noPattern: true,
       noWeight: true,
@@ -191,7 +196,7 @@ describe("ViewFlags", () => {
   });
 
   it("copies", () => {
-    const def = ViewFlags.defaults;
+    const def = ViewFlags.fromRenderMode(RenderMode.Wireframe);
     expect(def.copy({})).to.deep.equal(def);
 
     const inv = invertDefaults();
@@ -202,7 +207,7 @@ describe("ViewFlags", () => {
   });
 
   it("overrides", () => {
-    const def = ViewFlags.defaults;
+    const def = ViewFlags.fromRenderMode(RenderMode.Wireframe);
     expect(def.override({})).to.deep.equal(def);
 
     const inv = invertDefaults();
@@ -213,13 +218,13 @@ describe("ViewFlags", () => {
   });
 
   it("returns defaults if no properties supplied", () => {
-    expect(ViewFlags.fromJSON()).to.equal(ViewFlags.defaults);
-    expect(ViewFlags.create()).to.equal(ViewFlags.defaults);
-    expect(ViewFlags.create({ })).to.equal(ViewFlags.defaults);
+    expect(ViewFlags.fromJSON()).to.equal(ViewFlags.fromRenderMode(RenderMode.Wireframe));
+    expect(ViewFlags.create()).to.equal(ViewFlags.fromRenderMode(RenderMode.SmoothShade));
+    expect(ViewFlags.create({ })).to.equal(ViewFlags.fromRenderMode(RenderMode.SmoothShade));
   });
 
   it("uses different defaults for undefined vs ViewFlagProps", () => {
-    const def = ViewFlags.defaults;
+    const def = ViewFlags.fromRenderMode(RenderMode.Wireframe);
     expect(ViewFlags.fromJSON(undefined)).to.deep.equal(def);
 
     expect(ViewFlags.fromJSON({ })).to.deep.equal({
@@ -246,24 +251,26 @@ describe("ViewFlags", () => {
     expectLighting(ViewFlags.fromJSON({ renderMode: RenderMode.SmoothShade, noCameraLights: true, noSolarLight: true }), true);
     expectLighting(ViewFlags.fromJSON({ renderMode: RenderMode.SmoothShade, noCameraLights: true }), true);
 
-    expectLighting(ViewFlags.create(), false);
+    expectLighting(ViewFlags.create(), true);
     expectLighting(ViewFlags.create({ lighting: false }), false);
     expectLighting(ViewFlags.create({ lighting: true }), true);
 
-    expectLighting(ViewFlags.fromRenderMode(RenderMode.Wireframe), false);
-    expectLighting(ViewFlags.fromRenderMode(RenderMode.SolidFill), false);
-    expectLighting(ViewFlags.fromRenderMode(RenderMode.HiddenLine), false);
-    expectLighting(ViewFlags.fromRenderMode(RenderMode.SmoothShade), true);
+    for (const renderMode of [RenderMode.Wireframe, RenderMode.SmoothShade, RenderMode.SolidFill, RenderMode.HiddenLine]) {
+      const lit = RenderMode.SmoothShade === renderMode;
+      expectLighting(ViewFlags.fromJSON({ renderMode }), lit);
+      expectLighting(ViewFlags.fromRenderMode(renderMode), lit);
+    }
   });
 
   it("constructs from self", () => {
-    expect(ViewFlags.defaults.equals(ViewFlags.create(ViewFlags.defaults))).to.be.true;
-    expect(ViewFlags.fromJSON(ViewFlags.defaults.toJSON()).toJSON()).to.deep.equal(ViewFlags.defaults.toJSON());
-    expect(ViewFlags.fromJSON(ViewFlags.defaults.toJSON()).equals(ViewFlags.defaults)).to.be.true;
+    const vf = ViewFlags.fromRenderMode(RenderMode.Wireframe);
+    expect(vf.equals(ViewFlags.create(vf))).to.be.true;
+    expect(ViewFlags.fromJSON(vf.toJSON()).toJSON()).to.deep.equal(vf.toJSON());
+    expect(ViewFlags.fromJSON(vf.toJSON()).equals(vf)).to.be.true;
   });
 
   it("with", () => {
-    const def = ViewFlags.defaults;
+    const def = ViewFlags.fromJSON();
     for (const propName of Object.keys(def)) {
       const key = propName as keyof Omit<ViewFlagsProperties, "renderMode">;
       const value = def[key];
@@ -292,7 +299,7 @@ describe("ViewFlags", () => {
   });
 
   it("compares for equality", () => {
-    const def = ViewFlags.defaults;
+    const def = ViewFlags.fromJSON();
     for (const propName of Object.keys(def)) {
       const key = propName as keyof Omit<ViewFlagsProperties, "renderMode">;
       const value = def[key];

@@ -65,7 +65,7 @@ renderModeDefaults[RenderMode.SolidFill] = {
   backgroundSurfaceColor: false,
   contrastEdges: true,
   edgeOverrides: true,
-  fill: false,
+  fill: true,
   lighting: false,
   materials: false,
   monochromeEdges: false,
@@ -82,7 +82,7 @@ renderModeDefaults[RenderMode.HiddenLine] = {
   backgroundSurfaceColor: true,
   contrastEdges: false,
   edgeOverrides: true,
-  fill: false,
+  fill: true,
   lighting: false,
   materials: false,
   monochromeEdges: false,
@@ -98,7 +98,7 @@ renderModeDefaults[RenderMode.SmoothShade] = {
   backgroundSurfaceColor: false,
   contrastEdges: false,
   edgeOverrides: true,
-  fill: false,
+  fill: true,
   lighting: true,
   materials: true,
   monochromeEdges: false,
@@ -287,7 +287,7 @@ export class ViewFlags {
   public readonly whiteOnWhiteReversal: boolean;
 
   /** In [[RenderMode.SmoothShade]], whether to apply lighting to surfaces.
-   * Default: false, except when using [[fromJSON]].
+   * Default: true.
    * @see [[DisplayStyleSettings.lights]] to customize the light settings.
    */
   public readonly lighting: boolean;
@@ -326,7 +326,7 @@ export class ViewFlags {
     this.thematicDisplay = flags.thematicDisplay ?? false;
     this.forceSurfaceDiscard = flags.forceSurfaceDiscard ?? false;
     this.whiteOnWhiteReversal = flags.whiteOnWhiteReversal ?? true;
-    this.lighting = flags.lighting ?? false;
+    this.lighting = flags.lighting ?? true;
 
     this.contrastEdges = flags.contrastEdges ?? false;
     this.edgeOverrides = flags.edgeOverrides ?? true;
@@ -353,9 +353,9 @@ export class ViewFlags {
    */
   public override(overrides: Partial<ViewFlagsProperties>): ViewFlags {
     // Create a copy of the input with all undefined ViewFlags properties removed.
-    // Note we use the keys of `ViewFlags.defaults` instead of those of the input to avoid processing additional unrelated properties that may be present on input.
+    // Note we use the keys of an actual ViewFlags object instead of those of the input to avoid processing additional unrelated properties that may be present on input.
     overrides = { ...overrides };
-    for (const propName of Object.keys(ViewFlags.defaults)) {
+    for (const propName of Object.keys(ViewFlags.fromRenderMode(RenderMode.Wireframe))) {
       const key = propName as keyof Partial<ViewFlagsProperties>;
       if (undefined === overrides[key])
         delete overrides[key];
@@ -496,14 +496,11 @@ export class ViewFlags {
     };
   }
 
-  /** A ViewFlags object with all properties initialized to their default values. */
-  public static get defaults(): ViewFlags { return this.fromRenderMode(RenderMode.Wireframe); }
-
   /** Create a ViewFlags.
    * @param flags The properties to initialize. Any properties not specified are initialized to their default values.
    */
   public static create(flags?: Partial<ViewFlagsProperties>): ViewFlags {
-    return flags && !JsonUtils.isEmptyObject(flags) ? new ViewFlags(flags) : this.defaults;
+    return flags && !JsonUtils.isEmptyObject(flags) ? new ViewFlags(flags) : this.fromRenderMode(RenderMode.SmoothShade);
   }
 
   /** Create a ViewFlags from its JSON representation.
@@ -517,7 +514,7 @@ export class ViewFlags {
    */
   public static fromJSON(json?: ViewFlagProps): ViewFlags {
     if (!json)
-      return this.defaults;
+      return this.fromRenderMode(RenderMode.Wireframe);
 
     let renderMode: RenderMode | undefined;
     if (!json.ignoreRenderMode) {
@@ -599,7 +596,7 @@ export class ViewFlags {
 
   public static fromRenderMode(renderMode: RenderMode, props?: ViewFlagOverrides): ViewFlags {
     if (!props)
-      return flagsByRenderMode[renderMode] ?? this.defaults;
+      return flagsByRenderMode[renderMode] ?? this.fromRenderMode(RenderMode.Wireframe);
 
     const def = getRenderModeDefaults(renderMode);
     props = props ? { ...def, ...props } : def;
@@ -642,7 +639,8 @@ export class ViewFlags {
   }
 }
 
-const flagsByRenderMode = [RenderMode.Wireframe, RenderMode.SolidFill, RenderMode.HiddenLine, RenderMode.SmoothShade].map((x) => ViewFlags.create(getRenderModeDefaults(x)));
+const flagsByRenderMode: Array<ViewFlags> = [];
+[RenderMode.Wireframe, RenderMode.SolidFill, RenderMode.HiddenLine, RenderMode.SmoothShade].forEach((x) => flagsByRenderMode[x] = ViewFlags.create(getRenderModeDefaults(x)));
 
 /** A type containing all of the properties of [[ViewFlags]] with none of the methods and with the `readonly` modifiers removed.
  * @see [[ViewFlags.create]], [[ViewFlags.copy]], and [[ViewFlags.override]] for methods accepting an object of this type.

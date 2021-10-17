@@ -8,6 +8,8 @@
 
 import { BeEvent, JSONSchema, Mutable } from "@itwin/core-bentley";
 
+export type SettingType = string | number | boolean | object | SettingType[];
+
 /** A JavaScript object that acts a dictionary. */
 export type StringDictionary<V> = Record<string, V>;
 

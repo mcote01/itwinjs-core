@@ -6,115 +6,86 @@
  * @module Settings
  */
 
-import { SettingsSpecRegistry, StringDictionary } from "./SettingsSpecRegistry";
+import { BeEvent } from "@itwin/core-bentley";
+import { SettingType, StringDictionary } from "./SettingsSpecRegistry";
 
-export class SettingsFileContent {
-  public readonly fileName;
-  public
-}
-export type SettingsDictionary = StringDictionary<any>;
+export type SettingsDictionary = StringDictionary<SettingType>;
 
-export function getSetting<T>(settings: SettingsDictionary, settingPath: string[], defaultValue: T): T {
-  const accessSetting = (dict: SettingsDictionary, path: string[]) => {
-    let current = dict;
-    for (const component of path) {
-      if (typeof current !== "object")
-        return undefined;
-      current = current[component];
-    }
-    return current as T;
-  };
-
-  const result = accessSetting(settings, settingPath);
-  return result === undefined ? defaultValue : result;
+export enum SettingsPriority {
+  default,
+  organization,
+  iTwin,
+  iModel,
+  user,
+  memory,
 }
 
-export function merge(base: any, add: any, overwrite: boolean): void {
-  Object.keys(add).forEach((key) => {
-    if (key !== "__proto__") {
-      if (key in base) {
-        if (typeof base[key] === "object" && typeof add[key] === "object") {
-          merge(base[key], add[key], overwrite);
-        } else if (overwrite) {
-          base[key] = add[key];
-        }
-      } else {
-        base[key] = add[key];
-      }
+export function deepClone<T extends SettingType>(obj: any): T {
+  if (!obj || typeof obj !== "object") {
+    return obj;
+  }
+  const result = Array.isArray(obj) ? [] : {} as any;
+  Object.keys(obj).forEach((key: string) => {
+    const v = obj[key];
+    if (v && typeof v === "object") {
+      result[key] = deepClone(v);
+    } else {
+      result[key] = v;
     }
   });
+  return result;
 }
 
-export function removeFromDictionary(dict: SettingsDictionary, key: string): void {
+export class SettingsFile {
+  public constructor(
+    public readonly name: string,
+    public readonly priority: SettingsPriority,
+    public readonly settings: SettingsDictionary,
+  ) { }
 
-  const doRemove = (settings: SettingsDictionary, segments: string[]) => {
-    const first = segments.shift()!;
-    if (segments.length === 0) {
-      delete settings[first]; // Reached last segment
-      return;
-    }
+  public getSetting(settingName: string): SettingType | undefined {
+    return this.settings[settingName];
+  }
+}
 
-    if (Object.keys(settings).indexOf(first) !== -1) {
-      const value = settings[first];
-      if (typeof value === "object" && !Array.isArray(value)) {
-        doRemove(value, segments);
-        if (Object.keys(value).length === 0) {
-          delete settings[first];
-        }
+export class Settings {
+  private _files: SettingsFile[] = [];
+  public readonly onSettingsChanged = new BeEvent<() => void>();
+
+  public addFile(file: SettingsFile) {
+    for (let i = 0; i < this._files.length; ++i) {
+      if (this._files[i].priority > file.priority) {
+        this._files.splice(i, 0, file);
+        return;
       }
     }
-  };
-  doRemove(dict, key.split("."));
-}
+    this._files.push(file);
+    this.onSettingsChanged.raiseEvent();
+  }
 
-export function addToDictionary(settings: SettingsDictionary, key: string, value: any, conflictReporter: (message: string) => void): void {
-  const segments = key.split(".");
-  const last = segments.pop()!;
-
-  let curr = settings;
-  for (let i = 0; i < segments.length; ++i) {
-    const segment = segments[i];
-    let obj = curr[segment];
-    switch (typeof obj) {
-      case "undefined":
-        obj = curr[segment] = {};
-        break;
-      case "object":
-        break;
-      default:
-        conflictReporter(`Ignoring ${key} as ${segments.slice(0, i + 1).join(".")} is ${JSON.stringify(obj)}`);
-        return;
+  public dropFile(name: string, raiseEvent = true) {
+    for (let i = 0; i < this._files.length; ++i) {
+      if (this._files[i].name === name) {
+        this._files.splice(i, 1);
+        if (raiseEvent)
+          this.onSettingsChanged.raiseEvent();
+        return true;
+      }
     }
-    curr = obj;
+    return false;
   }
 
-  if (typeof curr === "object") {
-    try {
-      curr[last] = value;
-    } catch (e) {
-      conflictReporter(`Ignoring ${key} as ${segments.join(".")} is ${JSON.stringify(curr)}`);
+  public replaceFile(file: SettingsFile) {
+    this.dropFile(file.name, false);
+    this.addFile(file);
+  }
+
+  public getSetting<T extends SettingType>(settingName: string, defaultValue?: T): T | undefined {
+    for (const group of this._files) {
+      const val = group.getSetting(settingName);
+      if (val !== undefined)
+        return deepClone<T>(val);
     }
-  } else {
-    conflictReporter(`Ignoring ${key} as ${segments.join(".")} is ${JSON.stringify(curr)}`);
+    return defaultValue;
   }
-}
-
-export function toDictionary(properties: { [qualifiedKey: string]: any }, conflictReporter: (message: string) => void): SettingsDictionary {
-  const dict = {};
-  for (const key of Object.keys(properties))
-    addToDictionary(dict, key, properties[key], conflictReporter);
-
-  return dict;
-}
-
-export function getDefaultValues(): SettingsDictionary {
-  const specs = SettingsSpecRegistry.allSpecs;
-
-  const dict: SettingsDictionary = {};
-  for (const key of Object.keys(specs)) {
-    // eslint-disable-next-line no-console
-    addToDictionary(dict, key, specs[key].default, (message) => console.error(`Conflict in default settings: ${message}`));
-  }
-
-  return dict;
 }

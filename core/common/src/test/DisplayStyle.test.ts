@@ -297,13 +297,12 @@ describe("DisplayStyleSettings", () => {
 
 describe("DisplayStyleSettings overrides", () => {
   const baseProps: DisplayStyle3dSettingsProps = {
-    viewflags: {
+    viewflags: ViewFlags.fromRenderMode(RenderMode.HiddenLine, {
       backgroundMap: true,
-      acs: true,
-      noConstruct: true,
-      clipVol: true,
-      renderMode: RenderMode.HiddenLine,
-    },
+      acsTriad: true,
+      constructions: false,
+      clipVolume: true,
+    }).toJSON(),
     backgroundColor: ColorByName.aquamarine,
     monochromeColor: ColorByName.cyan,
     monochromeMode: MonochromeMode.Scaled,
@@ -507,6 +506,18 @@ describe("DisplayStyleSettings overrides", () => {
     roundTrip({ includeIModelSpecific: true, includeDrawingAids: true, includeBackgroundMap: true }, { ...baseProps, ...mapProps, ...iTwinProps, ...iModelProps, viewflags });
   });
 
+  it("overrides view flags", () => {
+    const settings = new DisplayStyle3dSettings({ styles: { ...baseProps, ...mapProps, ...iTwinProps, ...iModelProps } });
+    const oldVf = settings.viewFlags;
+    const newVf = ViewFlags.wireframe;
+    settings.applyOverrides({ viewflags: newVf.toFullyDefinedJSON() });
+    expect(settings.viewFlags.equals(oldVf)).to.be.false;
+    expect(settings.viewFlags.equals(newVf)).to.be.true;
+
+    settings.applyOverrides({ viewflags: { visEdges: !newVf.visibleEdges, noMaterial: newVf.materials, clipVol: !newVf.clipVolume } });
+    expect(settings.viewFlags.equals(newVf.copy({ visibleEdges: !newVf.visibleEdges, materials: !newVf.materials, clipVolume: !newVf.clipVolume }))).to.be.true;
+  });
+
   it("overrides selected settings", () => {
     const test = (overrides: DisplayStyle3dSettingsProps) => {
       const settings = new DisplayStyle3dSettings({ styles: { ...baseProps, ...mapProps, ...iTwinProps, ...iModelProps } });
@@ -522,8 +533,7 @@ describe("DisplayStyleSettings overrides", () => {
           expect(output[key]).to.deep.equal(originalSettings[key]);
     };
 
-    const viewflags = baseProps.viewflags;
-    test({ viewflags: { ...viewflags, renderMode: RenderMode.SolidFill } });
+    const viewflags = baseProps.viewflags!;
     test({ viewflags, backgroundColor: ColorByName.honeydew });
     test({ viewflags, monochromeColor: ColorByName.hotPink });
     test({ viewflags, monochromeMode: MonochromeMode.Flat });

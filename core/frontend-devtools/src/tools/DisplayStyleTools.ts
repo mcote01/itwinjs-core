@@ -8,7 +8,7 @@
  */
 
 import {
-  DisplayStyle3dSettingsProps, DisplayStyleOverridesOptions, RenderMode, SubCategoryAppearance, SubCategoryOverride, ViewFlags, ViewFlagsProperties,
+  DisplayStyle3dSettingsProps, DisplayStyleOverridesOptions, SubCategoryAppearance, SubCategoryOverride, ViewFlags, ViewFlagsProperties,
   WhiteOnWhiteReversalSettings,
 } from "@itwin/core-common";
 import {
@@ -18,17 +18,8 @@ import { copyStringToClipboard } from "../ClipboardUtilities";
 import { parseArgs } from "./parseArgs";
 import { parseToggle } from "./parseToggle";
 
-type BooleanFlagName =
-  "dimensions" | "patterns" | "weights" | "styles" | "transparency" | "fill" | "textures" | "materials" | "acsTriad" | "grid" | "visibleEdges" |
-  "hiddenEdges" | "lighting" | "shadows" | "clipVolume" | "constructions" | "monochrome" | "backgroundMap" | "ambientOcclusion" | "forceSurfaceDiscard";
-
-// Compiler has the info to construct this array for us, but we have no access to it...
-const booleanFlagNames: BooleanFlagName[] = [
-  "dimensions", "patterns", "weights", "styles", "transparency", "fill", "textures", "materials", "acsTriad", "grid", "visibleEdges",
-  "hiddenEdges", "lighting", "shadows", "clipVolume", "constructions", "monochrome", "backgroundMap", "ambientOcclusion", "forceSurfaceDiscard",
-];
-
-const lowercaseBooleanFlagNames = booleanFlagNames.map((name) => name.toLowerCase());
+const flagNames = Object.keys(ViewFlags.create()).filter((x) => typeof x === "boolean") as Array<keyof ViewFlagsProperties>;
+const lowercaseFlagNames = flagNames.map((name) => name.toLowerCase());
 
 /** Modifies the selected viewport's DisplayStyleState.
  * @beta
@@ -60,8 +51,7 @@ export abstract class DisplayStyleTool extends Tool {
 /** Modifies the selected viewport's ViewFlags.
  * The keyin syntax is as follows:
  *  fdt change viewflags flag=value
- * Where 'flag' is one of the BooleanFlagName values, or "renderMode"; and value is an integer.
- * For boolean flags, value is 0 for false or 1 for true. For renderMode, value is one of the RenderMode enum values.
+ * For boolean flags, value is 0 for false or 1 for true.
  * Flag names are case-insensitive.
  * @beta
  */
@@ -93,32 +83,18 @@ export class ChangeViewFlagsTool extends Tool {
         continue;
 
       const name = parts[0].toLowerCase();
-      if (name === "rendermode") {
-        switch (value) {
-          case RenderMode.SmoothShade:
-          case RenderMode.Wireframe:
-          case RenderMode.HiddenLine:
-          case RenderMode.SolidFill:
-            vf.renderMode = value;
-            vp.invalidateRenderPlan();
-            break;
-        }
-
-        continue;
-      }
-
       if (0 !== value && 1 !== value)
         continue;
 
-      const index = lowercaseBooleanFlagNames.indexOf(name);
+      const index = lowercaseFlagNames.indexOf(name);
       if (-1 !== index) {
-        const propName = booleanFlagNames[index];
+        const propName = flagNames[index];
         vf[propName] = 0 !== value;
         vp.invalidateRenderPlan();
       }
     }
 
-    return this.run(new ViewFlags(vf), vp);
+    return this.run(ViewFlags.create(vf), vp);
   }
 }
 

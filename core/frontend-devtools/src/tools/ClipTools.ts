@@ -147,7 +147,7 @@ export class TestClipStyleTool extends DisplayStyleTool {
     if (this._useStyle) {
       props.cutStyle = {
         viewflags: {
-          renderMode: RenderMode.SmoothShade,
+          visibleSurfaces: true,
           visibleEdges: true,
           hiddenEdges: false,
         },

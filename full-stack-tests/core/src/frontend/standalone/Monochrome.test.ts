@@ -24,13 +24,7 @@ describe("Monochrome", async () => {
 
   it("should always apply to surfaces and to edges only in wireframe", async () => {
     await testOnScreenViewport("0x24", imodel, 100, 100, async (vp) => {
-      let vf = vp.viewFlags.copy({
-        acsTriad: false,
-        visibleEdges: true,
-        hiddenEdges: false,
-        lighting: false,
-        monochrome: true,
-      });
+      let vf = vp.viewFlags.copy({ acsTriad: false, hiddenEdges: false, monochrome: true });
 
       vp.displayStyle.settings.monochromeColor = ColorDef.red;
       vp.displayStyle.settings.monochromeMode = MonochromeMode.Flat;
@@ -41,7 +35,7 @@ describe("Monochrome", async () => {
       const bgColor = Color.fromColorDef(ColorDef.blue);
 
       for (const renderMode of [RenderMode.Wireframe, RenderMode.HiddenLine, RenderMode.SolidFill, RenderMode.SmoothShade]) {
-        vf = vf.withRenderMode(renderMode);
+        vf = vf.withRenderMode(renderMode, { lighting: false, visibleEdges: true });
         vp.viewFlags = vf;
 
         await vp.waitForAllTilesToRender();

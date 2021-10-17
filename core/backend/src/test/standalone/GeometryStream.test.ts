@@ -2803,7 +2803,7 @@ describe("Geometry Containment", () => {
 
     const expectedContainmentViewFlags: ClipPlaneContainment[] = [ClipPlaneContainment.StronglyInside, ClipPlaneContainment.StronglyOutside, ClipPlaneContainment.StronglyInside, ClipPlaneContainment.Ambiguous];
 
-    const flags = new ViewFlags(); // constructions are off by default...
+    const flags = ViewFlags.defaults; // constructions are off by default...
     requestProps.viewFlags = flags;
     requestProps.offSubCategories = undefined;
     result = await imodel.getGeometryContainment(requestProps);

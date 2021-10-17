@@ -520,9 +520,7 @@ describe("iModel", () => {
 
     const settings: DisplayStyleSettingsProps = {
       backgroundColor: ColorDef.blue.toJSON(),
-      viewflags: ViewFlags.fromJSON({
-        renderMode: RenderMode.SolidFill,
-      }),
+      viewflags: { renderMode: RenderMode.SolidFill, },
     };
 
     const props: DisplayStyleProps = {
@@ -539,10 +537,10 @@ describe("iModel", () => {
     let style = imodel2.elements.getElement<DisplayStyle3d>(styleId);
     expect(style instanceof DisplayStyle3d).to.be.true;
 
-    expect(style.settings.viewFlags.renderMode).to.equal(RenderMode.SolidFill);
+    expect(style.settings.viewFlags.getClosestRenderMode()).to.equal(RenderMode.SolidFill);
     expect(style.settings.backgroundColor.equals(ColorDef.blue)).to.be.true;
 
-    const newFlags = style.settings.viewFlags.copy({ renderMode: RenderMode.SmoothShade });
+    const newFlags = style.settings.viewFlags.withRenderMode(RenderMode.SmoothShade);
     style.settings.viewFlags = newFlags;
     style.settings.backgroundColor = ColorDef.red;
     style.settings.monochromeColor = ColorDef.green;
@@ -552,16 +550,16 @@ describe("iModel", () => {
     style = imodel2.elements.getElement<DisplayStyle3d>(styleId);
     expect(style instanceof DisplayStyle3d).to.be.true;
 
-    expect(style.settings.viewFlags.renderMode).to.equal(RenderMode.SmoothShade);
+    expect(style.settings.viewFlags.getClosestRenderMode()).to.equal(RenderMode.SmoothShade);
     expect(style.settings.backgroundColor.equals(ColorDef.red)).to.be.true;
     expect(style.settings.monochromeColor.equals(ColorDef.green)).to.be.true;
   });
 
   it("should create display styles", () => {
-    const defaultViewFlags = new ViewFlags().toJSON();
+    const defaultViewFlags = ViewFlags.defaults.toJSON();
     const defaultMapImagery = new DisplayStyleSettings({}).toJSON().mapImagery;
 
-    const viewFlags = new ViewFlags({ patterns: false, visibleEdges: true });
+    const viewFlags = ViewFlags.fromRenderMode(RenderMode.Wireframe, { patterns: false, visibleEdges: true });
     const viewflags: ViewFlagProps = { noWhiteOnWhiteReversal: true, shadows: true, noTransp: true };
 
     const mapImagery: MapImageryProps = {

@@ -282,7 +282,7 @@ export class DisplayStyle3d extends DisplayStyle implements DisplayStyle3dProps 
     options = options ?? {};
     let viewflags = options.viewFlags?.toJSON();
     if (!viewflags)
-      viewflags = options.viewflags ?? new ViewFlags().toJSON();
+      viewflags = options.viewflags ?? ViewFlags.defaults.toJSON();
 
     const backgroundColor = options.backgroundColor instanceof ColorDef ? options.backgroundColor.toJSON() : options.backgroundColor;
 

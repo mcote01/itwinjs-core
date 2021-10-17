@@ -19,7 +19,7 @@ import { HyperModeling } from "@itwin/hypermodeling-frontend";
 import { RealityDataAccessClient } from "@bentley/reality-data-client";
 import DisplayPerfRpcInterface from "../common/DisplayPerfRpcInterface";
 import {
-  defaultEmphasis, defaultHilite, ElementOverrideProps, HyperModelingProps, TestConfig, TestConfigProps, TestConfigStack, ViewStateSpec, ViewStateSpecProps,
+  defaultEmphasis, defaultHilite, ElementOverrideProps, HyperModelingProps, TestConfig, TestConfigProps, TestConfigStack, ViewFlagProps, ViewStateSpec, ViewStateSpecProps,
 } from "./TestConfig";
 import { DisplayPerfTestApp } from "./DisplayPerformanceTestApp";
 
@@ -408,23 +408,28 @@ export class TestRunner {
 
     // Apply the view flags.
     if (config.viewFlags) {
-      const vf = viewport.viewFlags as { [key: string]: any };
-      const configVf = config.viewFlags as { [key: string]: any };
-      for (const key of Object.keys(vf)) {
-        const flag = configVf[key];
-        if (undefined !== flag) {
-          if (key === "renderMode" && typeof flag === "string") {
-            switch (flag.toLowerCase()) {
-              case "solidfill": vf.renderMode = RenderMode.SolidFill; break;
-              case "hiddenline": vf.renderMode = RenderMode.HiddenLine; break;
-              case "wireframe": vf.renderMode = RenderMode.Wireframe; break;
-              case "smoothshade": vf.renderMode = RenderMode.SmoothShade; break;
-            }
-          } else {
-            vf[key] = flag;
+      let vf = viewport.viewFlags;
+      let renderMode = config.viewFlags.renderMode;
+      if (undefined !== renderMode) {
+        if (typeof renderMode === "string") {
+          switch (renderMode.toLowerCase()) {
+            case "solidfill": renderMode = RenderMode.SolidFill; break;
+            case "hiddenline": renderMode = RenderMode.HiddenLine; break;
+            case "wireframe": renderMode = RenderMode.Wireframe; break;
+            case "smoothshade": renderMode = RenderMode.SmoothShade; break;
           }
-        } else {
-          configVf[key] = vf[key];
+        }
+
+        if (typeof renderMode !== "string")
+          vf = vf.withRenderMode(renderMode);
+      }
+
+      for (const key of Object.keys(config.viewFlags)) {
+        const propName = key as keyof ViewFlagProps;
+        if ("renderMode" !== propName) {
+          const flag = config.viewFlags[propName];
+          if (undefined !== flag)
+            vf = vf.with(propName, flag);
         }
       }
     }
@@ -995,7 +1000,7 @@ function removeOptsFromString(input: string, ignore: string[] | string | undefin
 }
 
 function getRenderMode(vp: ScreenViewport): string {
-  switch (vp.viewFlags.renderMode) {
+  switch (vp.viewFlags.getClosestRenderMode()) {
     case RenderMode.Wireframe: return "Wireframe";
     case RenderMode.HiddenLine: return "HiddenLine";
     case RenderMode.SolidFill: return "SolidFill";
@@ -1175,7 +1180,7 @@ function getViewFlagsString(test: TestCase): string {
 
   // Lighting flag always comes first.
   const vf = test.viewport.viewFlags;
-  if (vf.lighting && RenderMode.SmoothShade === vf.renderMode)
+  if (vf.lighting && RenderMode.SmoothShade === vf.getClosestRenderMode())
     vfString = "+lit";
 
   for (const propName of Object.keys(vf)) {

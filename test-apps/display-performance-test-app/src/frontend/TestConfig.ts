@@ -6,7 +6,7 @@
 import * as path from "path";
 import { assert, Id64Array, Id64String } from "@itwin/core-bentley";
 import {
-  BackgroundMapProps, ColorDef, Hilite, RenderMode, ViewFlags, ViewStateProps,
+  BackgroundMapProps, ColorDef, Hilite, RenderMode, ViewFlags, ViewFlagsProperties, ViewStateProps,
 } from "@itwin/core-common";
 import { RenderSystem, TileAdmin } from "@itwin/core-frontend";
 
@@ -19,7 +19,7 @@ export interface ViewSize {
 /** Selectively overrides individual ViewFlags for a TestConfig.
  * @note renderMode can be a string "wireframe", "hiddenline", "solidfill", or "smoothshade" (case-insensitive).
  */
-export type ViewFlagProps = Partial<Omit<ViewFlags, "renderMode">> & { renderMode?: string | RenderMode };
+export type ViewFlagProps = Partial<Omit<ViewFlagsProperties, "renderMode">> & { renderMode?: string | RenderMode };
 
 /** The types of saved views to include in a TestConfig. Case-insensitive in TestConfigProps; always lower-case in TestConfig.
  * local and internal mean exactly the same thing - include all persistent views from the iModel, including private ones.

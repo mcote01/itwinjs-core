@@ -98,7 +98,6 @@ export class ThematicDisplayEditor {
   }
 
   private readonly _vp: Viewport;
-  private readonly _scratchViewFlags = new ViewFlags();
   private readonly _update: (view: ViewState) => void;
   private readonly _thematicDisplayMode: ComboBox;
   private readonly _thematicGradientMode: ComboBox;

@@ -262,7 +262,7 @@ export class LightingEditor {
 
     this._updates.push((view: ViewState) => {
       const vf = view.viewFlags;
-      const visible = view.is3d() && RenderMode.SmoothShade === vf.renderMode;
+      const visible = view.is3d();
       elems.div.style.display = visible ? "" : "none";
       if (visible)
         elems.checkbox.checked = vf.lighting;

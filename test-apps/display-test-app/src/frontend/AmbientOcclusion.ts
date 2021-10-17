@@ -9,7 +9,6 @@ import { Viewport, ViewState, ViewState3d } from "@itwin/core-frontend";
 
 export class AmbientOcclusionEditor {
   private readonly _vp: Viewport;
-  private readonly _scratchViewFlags = new ViewFlags();
   private readonly _update: (view: ViewState) => void;
   private readonly _aoBias: Slider;
   private readonly _aoZLengthCap: Slider;
@@ -23,7 +22,7 @@ export class AmbientOcclusionEditor {
   public constructor(vp: Viewport, parent: HTMLElement) {
     this._vp = vp;
 
-    const isAOSupported = (view: ViewState) => view.is3d() && RenderMode.SmoothShade === view.viewFlags.renderMode;
+    const isAOSupported = (view: ViewState) => view.is3d() && view.viewFlags.visibleSurfaces;
     const isAOEnabled = (view: ViewState) => view.viewFlags.ambientOcclusion;
 
     const div = document.createElement("div");

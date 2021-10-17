@@ -82,8 +82,7 @@ export function openDecorationGeometryExample(viewer: Viewer): void {
   viewer.viewport.turnCameraOn();
   viewer.viewport.zoomToVolume(viewer.viewport.iModel.projectExtents);
 
-  viewer.viewport.viewFlags = viewer.viewport.viewFlags.copy({
-    renderMode: RenderMode.SmoothShade,
+  viewer.viewport.viewFlags = viewer.viewport.viewFlags.withRenderMode(RenderMode.SmoothShade, {
     lighting: true,
     visibleEdges: true,
     whiteOnWhiteReversal: false,

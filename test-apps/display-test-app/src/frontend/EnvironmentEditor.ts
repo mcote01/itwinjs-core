@@ -50,7 +50,7 @@ export class EnvironmentEditor {
     const lightingEditor = new LightingEditor(vp, lightingDiv);
     this._updates.push((view: ViewState) => {
       lightingEditor.update(view);
-      lightingDiv.style.display = view.is3d() && RenderMode.SmoothShade === view.viewFlags.renderMode ? "" : "none";
+      lightingDiv.style.display = view.is3d() ? "" : "none";
     });
 
     lightingDiv.appendChild(document.createElement("hr"));

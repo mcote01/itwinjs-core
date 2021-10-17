@@ -400,7 +400,7 @@ export class ViewAttributes {
       name: "Render Mode: ",
       entries,
       id: "viewAttr_renderMode",
-      value: this._vp.viewFlags.renderMode,
+      value: this._vp.viewFlags.getClosestRenderMode(),
       handler: (thing) => {
         this._vp.viewFlags = this._vp.viewFlags.withRenderMode(Number.parseInt(thing.value, 10));
         this.sync();
@@ -411,7 +411,7 @@ export class ViewAttributes {
       const visible = view.is3d();
       div.style.display = visible ? "block" : "none";
       if (visible)
-        select.value = view.viewFlags.renderMode.toString();
+        select.value = view.viewFlags.getClosestRenderMode().toString();
     });
 
     this._element.appendChild(div);

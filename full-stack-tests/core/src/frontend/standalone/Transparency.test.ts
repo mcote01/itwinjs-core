@@ -113,7 +113,7 @@ describe("Transparency", async () => {
   async function test(setup: (vp: TestViewport) => void, verify: (vp: TestViewport) => void): Promise<void> {
     decorator.reset();
     await testOnScreenViewport("0x24", imodel, 100, 100, async (viewport) => {
-      expect(viewport.viewFlags.renderMode).to.equal(RenderMode.SmoothShade);
+      expect(viewport.viewFlags.getClosestRenderMode()).to.equal(RenderMode.SmoothShade);
       expect(viewport.displayStyle.backgroundColor.equals(ColorDef.black)).to.be.true;
 
       viewport.changeViewedModels([]);

@@ -147,7 +147,7 @@ describe("Viewport changed events", async () => {
       // Modifying the style's properties directly also produces an event.
       mon.expect(ChangeFlag.DisplayStyle, ViewportState.RenderPlan, () => {
         vp.displayStyle.backgroundColor = ColorDef.red;
-        vp.displayStyle.viewFlags = new ViewFlags();
+        vp.displayStyle.viewFlags = ViewFlags.create();
       });
 
       // Modify display style through Viewport API.

@@ -53,7 +53,7 @@ export class GeoJsonImporter {
       case "hybrid": mapType = BackgroundMapType.Hybrid; break;
     }
 
-    this._viewFlags = new ViewFlags({ renderMode: RenderMode.SmoothShade, backgroundMap: undefined !== mapType });
+    this._viewFlags = ViewFlags.fromRenderMode(RenderMode.SmoothShade, { backgroundMap: undefined !== mapType });
     if (undefined !== mapType)
       this._backgroundMap = { providerName: "BingProvider", groundBias: mapGroundBias, providerData: { mapType } };
   }

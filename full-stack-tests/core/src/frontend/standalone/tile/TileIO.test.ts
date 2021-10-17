@@ -65,10 +65,7 @@ export function fakeViewState(iModel: IModelConnection, options?: { visibleEdges
   return {
     iModel,
     is3d: () => true !== options?.is2d,
-    viewFlags: new ViewFlags({
-      renderMode: options?.renderMode ?? RenderMode.SmoothShade,
-      visibleEdges: options?.visibleEdges ?? false,
-    }),
+    viewFlags: ViewFlags.fromRenderMode(options?.renderMode ?? RenderMode.SmoothShade, { visibleEdges: options?.visibleEdges ?? false }),
     displayStyle: {
       scheduleState,
     },

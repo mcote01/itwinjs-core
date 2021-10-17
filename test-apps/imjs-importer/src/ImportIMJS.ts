@@ -75,7 +75,7 @@ export class ImportIMJS {
 
   public constructor(db: IModelDb) {
     this.iModelDb = db;
-    this._viewFlags = new ViewFlags({ renderMode: RenderMode.SmoothShade, lighting: true });
+    this._viewFlags = ViewFlags.fromRenderMode(RenderMode.SmoothShade);
   }
   public static create(databasePath: string, rootSubject: string): ImportIMJS | undefined {
     fs.unlink(databasePath, (_err) => { });

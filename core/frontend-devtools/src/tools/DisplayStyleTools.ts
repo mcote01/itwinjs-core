@@ -18,7 +18,7 @@ import { copyStringToClipboard } from "../ClipboardUtilities";
 import { parseArgs } from "./parseArgs";
 import { parseToggle } from "./parseToggle";
 
-const flagNames = Object.keys(ViewFlags.create()).filter((x) => typeof x === "boolean") as Array<keyof ViewFlagsProperties>;
+const flagNames = Object.keys(ViewFlags.create()).filter((x) => typeof x === "boolean") as Array<keyof Omit<ViewFlagsProperties, "renderMode">>;
 const lowercaseFlagNames = flagNames.map((name) => name.toLowerCase());
 
 /** Modifies the selected viewport's DisplayStyleState.

@@ -372,6 +372,7 @@ export class ViewFlags {
    * @see [[copy]] and [[override]] to change multiple properties.
    */
   public with(flag: keyof ViewFlagsProperties, value: boolean): ViewFlags {
+    assert("renderMode" !== flag);
     if (this[flag] === value)
       return this;
 
@@ -496,7 +497,7 @@ export class ViewFlags {
   }
 
   /** A ViewFlags object with all properties initialized to their default values. */
-  public static readonly defaults = ViewFlags.fromRenderMode(RenderMode.Wireframe);
+  public static get defaults(): ViewFlags { return this.fromRenderMode(RenderMode.Wireframe); }
 
   /** Create a ViewFlags.
    * @param flags The properties to initialize. Any properties not specified are initialized to their default values.
@@ -532,7 +533,6 @@ export class ViewFlags {
     const defaults = undefined !== renderMode ? getRenderModeDefaults(renderMode) : { };
 
     const props = {
-      renderMode,
       constructions: !JsonUtils.asBool(json.noConstruct),
       dimensions: !JsonUtils.asBool(json.noDim),
       patterns: !JsonUtils.asBool(json.noPattern),
@@ -598,6 +598,9 @@ export class ViewFlags {
   }
 
   public static fromRenderMode(renderMode: RenderMode, props?: ViewFlagOverrides): ViewFlags {
+    if (!props)
+      return flagsByRenderMode[renderMode] ?? this.defaults;
+
     const def = getRenderModeDefaults(renderMode);
     props = props ? { ...def, ...props } : def;
     return this.create(props);
@@ -639,11 +642,13 @@ export class ViewFlags {
   }
 }
 
+const flagsByRenderMode = [RenderMode.Wireframe, RenderMode.SolidFill, RenderMode.HiddenLine, RenderMode.SmoothShade].map((x) => ViewFlags.create(getRenderModeDefaults(x)));
+
 /** A type containing all of the properties of [[ViewFlags]] with none of the methods and with the `readonly` modifiers removed.
  * @see [[ViewFlags.create]], [[ViewFlags.copy]], and [[ViewFlags.override]] for methods accepting an object of this type.
  * @public
  */
-export type ViewFlagsProperties = Mutable<NonFunctionPropertiesOf<ViewFlags>>;
+export type ViewFlagsProperties = Mutable<NonFunctionPropertiesOf<ViewFlags>> & { renderMode?: never };
 
 /** A type that describes how to override selected properties of a [[ViewFlags]].
  * @see [[ViewFlags.override]] to apply the overrides to a ViewFlags object.

@@ -100,7 +100,7 @@ describe("ViewState", () => {
     // query and change various viewFlags and displayStyle settings and ensure the changes propagate when cloning the state
 
     const vf = vs0.viewFlags;
-    vs0.viewFlags = vf.copy({
+    vs0.viewFlags = vf.withRenderMode(vf.getClosestRenderMode() === RenderMode.HiddenLine ? RenderMode.SmoothShade : RenderMode.HiddenLine, {
       acsTriad: !vf.acsTriad,
       ambientOcclusion: !vf.ambientOcclusion,
       backgroundMap: !vf.backgroundMap,
@@ -114,7 +114,6 @@ describe("ViewState", () => {
       materials: !vf.materials,
       monochrome: !vf.monochrome,
       patterns: !vf.patterns,
-      renderMode: vf.renderMode === RenderMode.HiddenLine ? RenderMode.SmoothShade : RenderMode.HiddenLine,
       shadows: !vf.shadows,
       styles: !vf.styles,
       textures: !vf.textures,
@@ -194,7 +193,7 @@ describe("ViewState", () => {
     assert.equal(vs0.viewFlags.monochrome, vs1.viewFlags.monochrome, "clone should copy viewFlags.monochrome");
     // This flag test will fail because the backend doesn't do anything with it - assert.equal(vs0.viewFlags.noGeometryMap, vs1.viewFlags.noGeometryMap, "clone should copy viewFlags.noGeometryMap");
     assert.equal(vs0.viewFlags.patterns, vs1.viewFlags.patterns, "clone should copy viewFlags.patterns");
-    assert.equal(vs0.viewFlags.renderMode, vs1.viewFlags.renderMode, "clone should copy viewFlags.renderMode");
+    assert.equal(vs0.viewFlags.getClosestRenderMode(), vs1.viewFlags.getClosestRenderMode(), "clone should copy viewFlags.renderMode");
     assert.equal(vs0.viewFlags.shadows, vs1.viewFlags.shadows, "clone should copy viewFlags.shadows");
     assert.equal(vs0.viewFlags.styles, vs1.viewFlags.styles, "clone should copy viewFlags.styles");
     assert.equal(vs0.viewFlags.textures, vs1.viewFlags.textures, "clone should copy viewFlags.textures");

@@ -58,8 +58,7 @@ describe("Monochrome", async () => {
 
   it("should scale with surface color in scaled mode", async () => {
     await testOnScreenViewport("0x24", imodel, 100, 100, async (vp) => {
-      const vf = vp.viewFlags.copy({
-        renderMode: RenderMode.SmoothShade,
+      const vf = vp.viewFlags.withRenderMode(RenderMode.SmoothShade, {
         acsTriad: false,
         visibleEdges: false,
         lighting: false,

@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import { Id64 } from "@itwin/core-bentley";
 import {
-  ColorDef, Feature, FeatureAppearance, FeatureAppearanceProps, GeometryClass, LinePixels, RgbColor, SubCategoryOverride, ViewDefinitionProps, ViewFlags,
+  ColorDef, Feature, FeatureAppearance, FeatureAppearanceProps, GeometryClass, LinePixels, RenderMode, RgbColor, SubCategoryOverride, ViewDefinitionProps, ViewFlags,
 } from "@itwin/core-common";
 import { FeatureSymbology, IModelApp, IModelConnection, SnapshotConnection, SpatialViewState, ViewState } from "@itwin/core-frontend";
 import { assert, expect } from "chai";
@@ -62,7 +62,7 @@ describe("FeatureSymbology.Overrides", () => {
 
   it("isClassVisible works as expected", () => {
     let overrides = new Overrides();
-    viewState.displayStyle.viewFlags = new ViewFlags({ constructions: false, dimensions: false, patterns: false });
+    viewState.displayStyle.viewFlags = ViewFlags.fromRenderMode(RenderMode.Wireframe, { constructions: false, dimensions: false, patterns: false });
 
     assert.isFalse(overrides.isClassVisible(GeometryClass.Construction), "constructions 1");
     assert.isFalse(overrides.isClassVisible(GeometryClass.Dimension), "dimensions 1");
@@ -114,7 +114,7 @@ describe("FeatureSymbology.Overrides", () => {
     overrides.setVisibleSubCategory(subCategoryId);
     assert.isFalse(overrides.isFeatureVisible(feature), "if geometryClass isn't visible, feature isn't visible");
 
-    viewState.displayStyle.viewFlags = new ViewFlags({ constructions: true });
+    viewState.displayStyle.viewFlags = ViewFlags.fromRenderMode(RenderMode.Wireframe, { constructions: true });
     overrides = new Overrides(viewState);
     overrides.setVisibleSubCategory(subCategoryId);
     assert.isTrue(overrides.isFeatureVisible(feature), "if geometryClass and subCategory are visible, feature is visible");
@@ -157,7 +157,7 @@ describe("FeatureSymbology.Overrides", () => {
     appearance = overrides.getFeatureAppearance(feature, id);
     assert.isDefined(appearance, "return true if elementId is in always drawn set");
 
-    viewState.displayStyle.viewFlags = new ViewFlags({ constructions: true });
+    viewState.displayStyle.viewFlags = ViewFlags.fromRenderMode(RenderMode.Wireframe, { constructions: true });
     overrides = new Overrides(viewState);
     overrides.setVisibleSubCategory(subCategoryId);
     appearance = overrides.getFeatureAppearance(feature, id);
@@ -248,7 +248,7 @@ describe("FeatureSymbology.Overrides", () => {
     assert.isFalse(overrides.isFeatureVisible(feature), "if elementId is in display style's excludedElements, feature isn't visible");
     assert.isTrue(overrides.isFeatureVisible(feature2), "if elementId is in always drawn set and not in the neverDrawn set and not in display style's excludedElements, feature is visible");
 
-    viewState.displayStyle.viewFlags = new ViewFlags({ constructions: true });
+    viewState.displayStyle.viewFlags = ViewFlags.fromRenderMode(RenderMode.Wireframe, { constructions: true });
     overrides = new Overrides(viewState);
     overrides.setVisibleSubCategory(subCategoryId);
     assert.isFalse(overrides.isFeatureVisible(feature), "if elementId is in excludedElements and if geometryClass and subCategory are visible, feature isn't visible");

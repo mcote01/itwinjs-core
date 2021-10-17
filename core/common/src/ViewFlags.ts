@@ -594,9 +594,17 @@ export class ViewFlags {
     return new ViewFlags(props);
   }
 
+  public static get wireframe(): ViewFlags { return this.fromRenderMode(RenderMode.Wireframe); }
+  public static get smoothShaded(): ViewFlags { return this.fromRenderMode(RenderMode.SmoothShade); }
+  public static get solidFill(): ViewFlags { return this.fromRenderMode(RenderMode.SolidFill); }
+  public static get hiddenLine(): ViewFlags { return this.fromRenderMode(RenderMode.HiddenLine); }
+
   public static fromRenderMode(renderMode: RenderMode, props?: ViewFlagOverrides): ViewFlags {
-    if (!props)
-      return flagsByRenderMode[renderMode] ?? this.fromRenderMode(RenderMode.Wireframe);
+    if (!props) {
+      const flags = flagsByRenderMode[renderMode];
+      assert(undefined !== flags, "Invalid RenderMode in ViewFlags.fromRenderMode");
+      return flags ?? flagsByRenderMode[RenderMode.Wireframe];
+    }
 
     const def = getRenderModeDefaults(renderMode);
     props = props ? { ...def, ...props } : def;

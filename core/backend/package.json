@@ -119,6 +119,7 @@
     "deep-assign": "^2.0.0",
     "form-data": "^2.3.2",
     "fs-extra": "^8.1.0",
+    "json5": "^2.2.0",
     "glob": "^7.1.2",
     "js-base64": "^3.6.1",
     "multiparty": "^4.2.1",

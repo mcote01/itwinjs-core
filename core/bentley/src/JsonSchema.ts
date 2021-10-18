@@ -5,15 +5,17 @@
 
 // adapted from https://github.com/microsoft/vscode Copyright (c) 2015 - present Microsoft Corporation
 
-export type JSONSchemaType = "string" | "number" | "integer" | "boolean" | "null" | "array" | "object";
+export type JSONSchemaTypeName = "string" | "number" | "integer" | "boolean" | "null" | "array" | "object";
+
+export type JSONSchemaType = string | number | boolean | object | JSONSchemaType[];
 
 export interface JSONSchema {
   id?: string;
   $id?: string;
   $schema?: string;
-  type?: JSONSchemaType | JSONSchemaType[];
+  type?: JSONSchemaTypeName | JSONSchemaTypeName[];
   title?: string;
-  default?: any;
+  default?: JSONSchemaType;
   definitions?: JSONSchemaMap;
   description?: string;
   properties?: JSONSchemaMap;
@@ -41,7 +43,7 @@ export interface JSONSchema {
   allOf?: JSONSchema[];
   oneOf?: JSONSchema[];
   not?: JSONSchema;
-  enum?: any[];
+  enum?: JSONSchemaType[];
   format?: string;
 
   // schema draft 06

@@ -340,6 +340,7 @@ importers:
       glob: ^7.1.2
       internal-tools: workspace:*
       js-base64: ^3.6.1
+      json5: ^2.2.0
       mkdirp: ^1.0.4
       mocha: ^8.3.2
       multiparty: ^4.2.1
@@ -363,6 +364,7 @@ importers:
       fs-extra: 8.1.0
       glob: 7.2.0
       js-base64: 3.7.2
+      json5: 2.2.0
       multiparty: 4.2.2
       semver: 5.7.1
       ws: 7.5.5

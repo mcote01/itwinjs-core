@@ -8,11 +8,6 @@
 
 import { BeEvent, JSONSchema, Mutable } from "@itwin/core-bentley";
 
-export type SettingType = string | number | boolean | object | SettingType[];
-
-/** A JavaScript object that acts a dictionary. */
-export type StringDictionary<V> = Record<string, V>;
-
 export interface SettingSpec extends Readonly<JSONSchema> {
   readonly enumItemLabels?: string[];
   readonly multilineEdit?: true;
@@ -30,8 +25,8 @@ export interface SettingsGroupSpec {
 /** used for editing Settings files and finding default values. */
 export class SettingsSpecRegistry {
   private constructor() { } // singleton
-  public static readonly allGroups: StringDictionary<SettingsGroupSpec> = {};
-  public static readonly allSpecs: StringDictionary<SettingSpec> = {};
+  private static readonly _allGroups = new Map<string, SettingsGroupSpec>();
+  public static readonly allSpecs = new Map<string, SettingSpec>();
   public static readonly onSpecsChanged = new BeEvent<() => void>();
   public static readonly onSettingsUpdated = new BeEvent<(properties: string[]) => void>();
 
@@ -46,13 +41,13 @@ export class SettingsSpecRegistry {
     return problems;
   }
 
-  public static unregister(settingsGroup: SettingsGroupSpec[]): void {
-    const properties = this.doDeregister(settingsGroup);
+  public static unregister(groupName: string[]): void {
+    const properties = this.doDeregister(groupName);
     this.onSpecsChanged.raiseEvent();
     this.onSettingsUpdated.raiseEvent(properties);
   }
 
-  public static update({ add, remove }: { add: SettingsGroupSpec[], remove: SettingsGroupSpec[] }): void {
+  public static update({ add, remove }: { add: SettingsGroupSpec[], remove: string[] }): void {
     const properties = new Set<string>();
     this.doDeregister(remove).forEach((setting) => properties.add(setting));
     this.doRegister(add).forEach((setting) => properties.add(setting));
@@ -65,22 +60,25 @@ export class SettingsSpecRegistry {
     const properties: string[] = [];
     settingsGroup.forEach((group) => {
       properties.push(...this.validateAndRegister(group, problems)); // fills in defaults
-      this.allGroups[group.groupName] = group;
+      this._allGroups.set(group.groupName, group);
     });
     return properties;
   }
 
-  private static doDeregister(groups: SettingsGroupSpec[]): string[] {
+  private static doDeregister(groupNames: string[]): string[] {
     const properties: string[] = [];
-    const deregisterGroup = (group: SettingsGroupSpec) => {
-      for (const key of Object.keys(group.properties)) {
-        properties.push(key);
-        delete this.allSpecs.key;
-      }
+    const deregisterGroup = (groupName: string) => {
+      const group = this._allGroups.get(groupName);
+      if (undefined !== group)
+        for (const base of Object.keys(group.properties)) {
+          const key = `${group.groupName}.${base}`;
+          properties.push(key);
+          this.allSpecs.delete(key);
+        }
     };
-    for (const group of groups) {
-      deregisterGroup(group);
-      delete this.allGroups[group.groupName];
+    for (const groupName of groupNames) {
+      deregisterGroup(groupName);
+      this._allGroups.delete(groupName);
     }
     return properties;
   }
@@ -88,7 +86,7 @@ export class SettingsSpecRegistry {
   private static validateProperty(property: string): string | undefined {
     if (!property.trim())
       return "empty property name";
-    if (undefined !== this.allSpecs[property])
+    if (this.allSpecs.has(property))
       return `property "${property}" is already defined`;
 
     return undefined;
@@ -97,7 +95,8 @@ export class SettingsSpecRegistry {
   private static validateAndRegister(group: SettingsGroupSpec, problems?: string[]): string[] {
     const keys: string[] = [];
     const properties = group.properties;
-    for (const key of Object.keys(properties)) {
+    for (const base of Object.keys(properties)) {
+      const key = `${group.groupName}.${base}`;
       const problem = this.validateProperty(key);
       if (problem) {
         problems?.push(problem);
@@ -105,9 +104,9 @@ export class SettingsSpecRegistry {
         continue;
       }
 
-      const property: Mutable<SettingSpec> = properties[key];
+      const property: Mutable<SettingSpec> = properties[base];
       property.default = property.default ?? this.getDefaultValue(property.type);
-      this.allSpecs[key] = properties[key];
+      this.allSpecs.set(key, property);
       keys.push(key);
     }
     return keys;

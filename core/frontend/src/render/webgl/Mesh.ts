@@ -326,7 +326,7 @@ export class EdgeGeometry extends MeshGeometry {
   public override getColor(target: Target): ColorInfo { return this.computeEdgeColor(target); }
   public get endPointAndQuadIndices(): BufferHandle { return this._endPointAndQuadIndices; }
   public override wantMonochrome(target: Target): boolean {
-    return target.currentViewFlags.monochromeEdges;
+    return !target.currentViewFlags.visibleSurfaces;
   }
 
   protected constructor(indices: BufferHandle, endPointAndQuadsIndices: BufferHandle, numIndices: number, mesh: MeshData) {
@@ -411,7 +411,7 @@ export class PolylineEdgeGeometry extends MeshGeometry {
   public override get polylineBuffers(): PolylineBuffers { return this._buffers; }
 
   public override wantMonochrome(target: Target): boolean {
-    return target.currentViewFlags.monochromeEdges;
+    return !target.currentViewFlags.visibleSurfaces;
   }
 
   protected _draw(numInstances: number, instanceBuffersContainer?: BuffersContainer): void {

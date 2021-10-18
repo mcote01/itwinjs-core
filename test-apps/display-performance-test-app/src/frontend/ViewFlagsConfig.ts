@@ -37,7 +37,6 @@ const remaps = new Map<keyof ViewFlagsConfigProps, Remap>([
   ["whiteOnWhiteReversal", "noWhiteOnWhiteReversal"],
   ["contrastEdges", "contrastEdges"],
   ["edgeOverrides", "noEdgeOverrides"],
-  ["monochromeEdges", "monochromeEdges"],
   ["visibleSurfaces", "noSurfaces"],
   ["backgroundSurfaceColor", "backgroundSurfaceColor"],
   ["transparencyThreshold", "transparencyThreshold"],

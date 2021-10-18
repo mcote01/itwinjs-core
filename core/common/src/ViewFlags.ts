@@ -52,7 +52,6 @@ renderModeDefaults[RenderMode.Wireframe] = {
   fill: true,
   lighting: false,
   materials: false,
-  monochromeEdges: true,
   shadows: false,
   textures: false,
   transparencyThreshold: false,
@@ -68,7 +67,6 @@ renderModeDefaults[RenderMode.SolidFill] = {
   fill: true,
   lighting: false,
   materials: false,
-  monochromeEdges: false,
   shadows: false,
   textures: false,
   transparency: false,
@@ -85,7 +83,6 @@ renderModeDefaults[RenderMode.HiddenLine] = {
   fill: true,
   lighting: false,
   materials: false,
-  monochromeEdges: false,
   shadows: false,
   textures: false,
   transparency: false,
@@ -101,7 +98,6 @@ renderModeDefaults[RenderMode.SmoothShade] = {
   fill: true,
   lighting: true,
   materials: true,
-  monochromeEdges: false,
   textures: true,
   transparencyThreshold: false,
   visibleEdges: false,
@@ -185,7 +181,6 @@ export interface ViewFlagProps {
   ignoreRenderMode?: boolean;
   contrastEdges?: boolean;
   noEdgeOverrides?: boolean;
-  monochromeEdges?: boolean;
   noSurfaces?: boolean;
   backgroundSurfaceColor?: boolean;
   transparencyThreshold?: boolean;
@@ -296,8 +291,6 @@ export class ViewFlags {
 
   public readonly edgeOverrides: boolean;
 
-  public readonly monochromeEdges: boolean;
-
   public readonly visibleSurfaces: boolean;
 
   public readonly backgroundSurfaceColor: boolean;
@@ -330,7 +323,6 @@ export class ViewFlags {
 
     this.contrastEdges = flags.contrastEdges ?? false;
     this.edgeOverrides = flags.edgeOverrides ?? true;
-    this.monochromeEdges = flags.monochromeEdges ?? false;
     this.visibleSurfaces = flags.visibleSurfaces ?? true;
     this.backgroundSurfaceColor = flags.backgroundSurfaceColor ?? false;
     this.transparencyThreshold = flags.transparencyThreshold ?? false;
@@ -428,7 +420,6 @@ export class ViewFlags {
 
     if (this.contrastEdges) out.contrastEdges = true;
     if (!this.edgeOverrides) out.noEdgeOverrides = true;
-    if (this.monochromeEdges) out.monochromeEdges = true;
     if (!this.visibleSurfaces) out.noSurfaces = true;
     if (this.backgroundSurfaceColor) out.backgroundSurfaceColor = true;
     if (this.transparencyThreshold) out.transparencyThreshold = true;
@@ -489,7 +480,6 @@ export class ViewFlags {
 
       contrastEdges: this.contrastEdges,
       noEdgeOverrides: !this.edgeOverrides,
-      monochromeEdges: this.monochromeEdges,
       noSurfaces: !this.visibleSurfaces,
       backgroundSurfaceColor: this.backgroundSurfaceColor,
       transparencyThreshold: this.transparencyThreshold,
@@ -547,7 +537,6 @@ export class ViewFlags {
 
       contrastEdges: JsonUtils.asBool(json.contrastEdges),
       edgeOverrides: !JsonUtils.asBool(json.noEdgeOverrides),
-      monochromeEdges: JsonUtils.asBool(json.monochromeEdges),
       visibleSurfaces: !JsonUtils.asBool(json.noSurfaces),
       backgroundSurfaceColor: JsonUtils.asBool(json.backgroundSurfaceColor),
       transparencyThreshold: JsonUtils.asBool(json.transparencyThreshold),
@@ -640,7 +629,6 @@ export class ViewFlags {
       && this.whiteOnWhiteReversal === other.whiteOnWhiteReversal
       && this.contrastEdges === other.contrastEdges
       && this.edgeOverrides === other.edgeOverrides
-      && this.monochromeEdges === other.monochromeEdges
       && this.visibleSurfaces === other.visibleSurfaces
       && this.backgroundSurfaceColor === other.backgroundSurfaceColor
       && this.transparencyThreshold === other.transparencyThreshold;

@@ -239,8 +239,13 @@ export class TestRunner {
       return undefined;
 
     const vp = test.viewport;
-    if (testConfig.testType === "image" || testConfig.testType === "both") {
+    if (testConfig.testType === "image" || testConfig.testType === "both" || testConfig.testType === "filenames") {
       this.updateTestNames(test, undefined, true);
+      if (testConfig.testType === "filenames") {
+        const testName = this.getTestName(test, undefined, false, true);
+        await this.logToConsole(testName);
+        return;
+      }
 
       const canvas = vp.readImageToCanvas();
       await savePng(this.getImageName(test), canvas);
@@ -409,7 +414,7 @@ export class TestRunner {
     }
 
     // Apply the view flags.
-    let viewflags = { ...viewport.view.displayStyle.jsonProperties.styles.viewFlags };
+    let viewflags = { ...viewport.view.displayStyle.jsonProperties.styles.viewflags };
     if (config.viewFlags) {
       viewflags = { ...viewflags, ...config.viewFlags };
       viewport.viewFlags = ViewFlags.fromJSON(viewflags);
@@ -423,7 +428,7 @@ export class TestRunner {
       OverrideProvider.override(viewport, view.elementOverrides);
 
     // Ensure all tiles required for the view are loaded.
-    const result = await this.waitForTilesToLoad(viewport);
+    const result = "filenames" !== config.testType ? await this.waitForTilesToLoad(viewport) : { selectedTileIds: "", tileLoadingTime: 0 };
 
     // Set selected elements after all tiles have loaded.
     if (view.selectedElements) {
@@ -690,7 +695,7 @@ export class TestRunner {
     testName += `_${configs.viewName}`;
     testName += configs.displayStyle ? `_${configs.displayStyle.trim()}` : "";
 
-    const renderMode = getRenderMode(test.viewport);
+    const renderMode = getRenderMode(test.viewflags);
     if (renderMode)
       testName += `_${renderMode}`;
 
@@ -752,7 +757,7 @@ export class TestRunner {
 
     rowData.set("Skip & Time Renders", `${configs.numRendersToSkip} & ${configs.numRendersToTime}`);
     rowData.set("Display Style", test.viewport.displayStyle.name);
-    rowData.set("Render Mode", getRenderMode(test.viewport));
+    rowData.set("Render Mode", getRenderMode(test.viewflags));
     rowData.set("View Flags", getViewFlagsString(test) !== "" ? ` ${getViewFlagsString(test)}` : "");
     rowData.set("Render Options", getRenderOpts(configs.renderOptions) !== "" ? ` ${getRenderOpts(configs.renderOptions)}` : "");
 
@@ -980,13 +985,14 @@ function removeOptsFromString(input: string, ignore: string[] | string | undefin
   return output;
 }
 
-function getRenderMode(vp: ScreenViewport): string {
-  switch (vp.viewFlags.getClosestRenderMode()) {
-    case RenderMode.Wireframe: return "Wireframe";
+function getRenderMode(viewflags: ViewFlagProps): string {
+  switch (viewflags.renderMode) {
     case RenderMode.HiddenLine: return "HiddenLine";
     case RenderMode.SolidFill: return "SolidFill";
     case RenderMode.SmoothShade: return "SmoothShade";
-    default: return "";
+    case RenderMode.Wireframe:
+    default:
+      return "Wireframe";
   }
 }
 

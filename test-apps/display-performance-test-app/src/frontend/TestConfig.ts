@@ -29,8 +29,9 @@ export type SavedViewType = "both" | "external" | "internal" | "local";
  * readPixels means to record and output timing for drawing to an offscreen framebuffer for reading pixel data.
  * image means to save an image of the screen.
  * both means to do "timing" and "image".
+ * filenames means to simply output the filename generated for each test without producing any image or timing data.
  */
-export type TestType = "timing" | "readPixels" | "image" | "both";
+export type TestType = "timing" | "readPixels" | "image" | "both" | "filenames";
 
 /** Specifies symbology overrides to apply to elements in a TestConfig. */
 export interface ElementOverrideProps {

@@ -107,11 +107,9 @@ export namespace ViewFlagsConfig {
     if (RenderMode.SmoothShade === props.renderMode && (!props.noSourceLights || !props.noCameraLights || !props.noSolarLight))
       str = "+lit";
 
-    for (const propName of Object.keys(props)) {
+    for (const propName of Object.keys(propsStrings)) {
       const key = propName as keyof typeof propsStrings;
       const abbrev = propsStrings[key];
-      if (!abbrev)
-        continue;
 
       assert("-" === abbrev[0] || "+" === abbrev[0]);
       const includeIf = "+" === abbrev[0];
@@ -119,7 +117,7 @@ export namespace ViewFlagsConfig {
       if (key.startsWith("no"))
         value = !value;
 
-      if (value === includeIf)
+      if (!!value === includeIf)
         str += abbrev;
     }
 

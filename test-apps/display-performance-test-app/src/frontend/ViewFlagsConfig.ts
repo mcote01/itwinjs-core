@@ -104,7 +104,7 @@ export namespace ViewFlagsConfig {
     let str = "";
 
     // Lighting flag always comes first.
-    if (RenderMode.SmoothShade === props && (!props.noSourceLights || !props.noCameraLights || !props.noSolarLight))
+    if (RenderMode.SmoothShade === props.renderMode && (!props.noSourceLights || !props.noCameraLights || !props.noSolarLight))
       str = "+lit";
 
     for (const propName of Object.keys(props)) {

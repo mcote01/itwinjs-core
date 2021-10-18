@@ -420,6 +420,7 @@ export class TestRunner {
       viewport.viewFlags = ViewFlags.fromJSON(viewflags);
     }
 
+
     if (config.backgroundMap)
       viewport.changeBackgroundMapProps(viewport.displayStyle.settings.backgroundMap.clone(config.backgroundMap).toJSON());
 

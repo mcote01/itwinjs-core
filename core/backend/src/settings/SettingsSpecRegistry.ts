@@ -30,6 +30,13 @@ export class SettingsSpecRegistry {
   public static readonly onSpecsChanged = new BeEvent<() => void>();
   public static readonly onSettingsUpdated = new BeEvent<(properties: string[]) => void>();
 
+  public static reset() {
+    this._allGroups.clear();
+    this.allSpecs.clear();
+    this.onSpecsChanged.clear();
+    this.onSettingsUpdated.clear();
+  }
+
   public static register(settingsGroup: SettingsGroupSpec | SettingsGroupSpec[]): string[] {
     if (!Array.isArray(settingsGroup))
       settingsGroup = [settingsGroup];
@@ -41,37 +48,28 @@ export class SettingsSpecRegistry {
     return problems;
   }
 
-  public static unregister(groupName: string[]): void {
-    const properties = this.doDeregister(groupName);
+  public static remove(groupName: string[]): void {
+    const properties = this.doRemove(groupName);
     this.onSpecsChanged.raiseEvent();
     this.onSettingsUpdated.raiseEvent(properties);
-  }
-
-  public static update({ add, remove }: { add: SettingsGroupSpec[], remove: string[] }): void {
-    const properties = new Set<string>();
-    this.doDeregister(remove).forEach((setting) => properties.add(setting));
-    this.doRegister(add).forEach((setting) => properties.add(setting));
-
-    this.onSpecsChanged.raiseEvent();
-    this.onSettingsUpdated.raiseEvent(Array.from(properties));
   }
 
   private static doRegister(settingsGroup: SettingsGroupSpec[], problems?: string[]): string[] {
     const properties: string[] = [];
     settingsGroup.forEach((group) => {
+      this.doRemove([group.groupName]);
       properties.push(...this.validateAndRegister(group, problems)); // fills in defaults
       this._allGroups.set(group.groupName, group);
     });
     return properties;
   }
 
-  private static doDeregister(groupNames: string[]): string[] {
+  private static doRemove(groupNames: string[]): string[] {
     const properties: string[] = [];
     const deregisterGroup = (groupName: string) => {
       const group = this._allGroups.get(groupName);
       if (undefined !== group)
-        for (const base of Object.keys(group.properties)) {
-          const key = `${group.groupName}.${base}`;
+        for (const key of Object.keys(group.properties)) {
           properties.push(key);
           this.allSpecs.delete(key);
         }
@@ -95,8 +93,7 @@ export class SettingsSpecRegistry {
   private static validateAndRegister(group: SettingsGroupSpec, problems?: string[]): string[] {
     const keys: string[] = [];
     const properties = group.properties;
-    for (const base of Object.keys(properties)) {
-      const key = `${group.groupName}.${base}`;
+    for (const key of Object.keys(properties)) {
       const problem = this.validateProperty(key);
       if (problem) {
         problems?.push(problem);
@@ -104,7 +101,7 @@ export class SettingsSpecRegistry {
         continue;
       }
 
-      const property: Mutable<SettingSpec> = properties[base];
+      const property: Mutable<SettingSpec> = properties[key];
       property.default = property.default ?? this.getDefaultValue(property.type);
       this.allSpecs.set(key, property);
       keys.push(key);

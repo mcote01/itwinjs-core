@@ -4,55 +4,25 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { expect } from "chai";
-import { SettingsGroupSpec, SettingsSpecRegistry } from "../settings/SettingsSpecRegistry";
+import { SettingsSpecRegistry } from "../settings/SettingsSpecRegistry";
+import * as fs from "fs-extra";
+import { IModelTestUtils } from ".";
+import { parse } from "json5";
 
 describe.only("SettingsRegistry", () => {
 
   it("register groups", () => {
+    const fileName = IModelTestUtils.resolveAssetFile("Settings.schema.json");
+    const settingRaw = fs.readFileSync(fileName, "utf-8");
+    const group1 = parse(settingRaw);
 
-    const group: SettingsGroupSpec = {
-      groupName: "workbench",
-      order: 7,
-      title: "Workbench settings",
-      properties: {
-        "list.multiSelectModifier": {
-          type: "string",
-          enum: ["ctrlCmd", "alt"],
-          enumDescriptions: [
-            "Maps to `Control` on Windows and Linux and to `Command` on macOS.",
-            "Maps to `Alt` on Windows and Linux and to `Option` on macOS.",
-          ],
-          default: "ctrlCmd",
-          description: "multiSelectModifier",
-        },
-        "list.openMode": {
-          type: "string",
-          enum: ["singleClick", "doubleClick"],
-          default: "singleClick",
-          description: "openModeModifier",
-        },
-        "list.horizontalScrolling": {
-          type: "boolean",
-          default: false,
-          description: "horizontalScrolling setting",
-        },
-        "tree.indent": {
-          type: "number",
-          default: 8,
-          minimum: 0,
-          maximum: 40,
-          description: "tree indent setting",
-        },
-        "tree.blah": {
-          type: "string",
-        },
-      },
-    };
-    const props = SettingsSpecRegistry.register(group);
+    SettingsSpecRegistry.reset();
+    const props = SettingsSpecRegistry.register(group1);
+
     expect(props.length).equals(0);
-    expect(SettingsSpecRegistry.allSpecs.get("workbench.list.openMode")!.type).equals("string");
-    expect(SettingsSpecRegistry.allSpecs.get("workbench.list.openMode")!.default).equals("singleClick");
-    expect(SettingsSpecRegistry.allSpecs.get("workbench.tree.blah")!.default).equals("");
+    expect(SettingsSpecRegistry.allSpecs.get("group1.list.openMode")!.type).equals("string");
+    expect(SettingsSpecRegistry.allSpecs.get("group1.list.openMode")!.default).equals("singleClick");
+    expect(SettingsSpecRegistry.allSpecs.get("group1.tree.blah")!.default).equals("blah default");
   });
 
 });

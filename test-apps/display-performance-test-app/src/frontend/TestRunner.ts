@@ -8,7 +8,7 @@ import {
   assert, BeDuration, Dictionary, Id64, Id64Array, Id64String, ProcessDetector, SortedArray, StopWatch,
 } from "@itwin/core-bentley";
 import {
-  BackgroundMapType, BaseMapLayerSettings, DisplayStyleProps, FeatureAppearance, Hilite, RenderMode, ViewStateProps,
+  BackgroundMapType, BaseMapLayerSettings, DisplayStyleProps, FeatureAppearance, Hilite, RenderMode, ViewFlagProps, ViewFlags, ViewStateProps,
 } from "@itwin/core-common";
 import {
   DisplayStyle3dState, DisplayStyleState, EntityState, FeatureSymbology, GLTimerResult, GLTimerResultCallback, IModelApp, IModelConnection,
@@ -19,8 +19,9 @@ import { HyperModeling } from "@itwin/hypermodeling-frontend";
 import { RealityDataAccessClient } from "@bentley/reality-data-client";
 import DisplayPerfRpcInterface from "../common/DisplayPerfRpcInterface";
 import {
-  defaultEmphasis, defaultHilite, ElementOverrideProps, HyperModelingProps, TestConfig, TestConfigProps, TestConfigStack, ViewFlagProps, ViewStateSpec, ViewStateSpecProps,
+  defaultEmphasis, defaultHilite, ElementOverrideProps, HyperModelingProps, TestConfig, TestConfigProps, TestConfigStack, ViewStateSpec, ViewStateSpecProps,
 } from "./TestConfig";
+import { ViewFlagsConfig } from "./ViewFlagsConfig";
 import { DisplayPerfTestApp } from "./DisplayPerformanceTestApp";
 
 /** JSON representation of a set of tests. Each test in the set inherits the test set's configuration. */
@@ -58,6 +59,7 @@ interface TestResult {
 interface TestCase extends TestResult {
   readonly viewport: ScreenViewport;
   view: TestViewState;
+  viewflags: ViewFlagProps;
 }
 
 /** Timings collected during TestRunner.runTest. */
@@ -407,31 +409,10 @@ export class TestRunner {
     }
 
     // Apply the view flags.
+    let viewflags = { ...viewport.view.displayStyle.jsonProperties.styles.viewFlags };
     if (config.viewFlags) {
-      let vf = viewport.viewFlags;
-      let renderMode = config.viewFlags.renderMode;
-      if (undefined !== renderMode) {
-        if (typeof renderMode === "string") {
-          switch (renderMode.toLowerCase()) {
-            case "solidfill": renderMode = RenderMode.SolidFill; break;
-            case "hiddenline": renderMode = RenderMode.HiddenLine; break;
-            case "wireframe": renderMode = RenderMode.Wireframe; break;
-            case "smoothshade": renderMode = RenderMode.SmoothShade; break;
-          }
-        }
-
-        if (typeof renderMode !== "string")
-          vf = vf.withRenderMode(renderMode);
-      }
-
-      for (const key of Object.keys(config.viewFlags)) {
-        const propName = key as keyof ViewFlagProps;
-        if ("renderMode" !== propName) {
-          const flag = config.viewFlags[propName];
-          if (undefined !== flag)
-            vf = vf.with(propName, flag);
-        }
-      }
+      viewflags = { ...viewflags, ...config.viewFlags };
+      viewport.viewFlags = ViewFlags.fromJSON(viewflags);
     }
 
     if (config.backgroundMap)
@@ -451,7 +432,7 @@ export class TestRunner {
       viewport.renderFrame();
     }
 
-    return { ...result, viewport, view };
+    return { ...result, viewport, view, viewflags };
   }
 
   private async waitForTilesToLoad(viewport: ScreenViewport): Promise<TestResult> {
@@ -1151,49 +1132,8 @@ function getOtherProps(vp: ScreenViewport): string {
   return propsStr;
 }
 
-const viewFlagsPropsStrings = {
-  dimensions: "-dim",
-  patterns: "-pat",
-  weights: "-wt",
-  styles: "-sty",
-  transparency: "-trn",
-  fill: "-fll",
-  textures: "-txt",
-  materials: "-mat",
-  visibleEdges: "+vsE",
-  hiddenEdges: "+hdE",
-  shadows: "+shd",
-  clipVolume: "-clp",
-  constructions: "+con",
-  monochrome: "+mno",
-  backgroundMap: "+bkg",
-  ambientOcclusion: "+ao",
-  forceSurfaceDiscard: "+fsd",
-  thematicDisplay: "+thematicDisplay",
-  grid: "+grid",
-  whiteOnWhiteReversal: "+wow",
-  acsTriad: "+acsTriad",
-};
-
 function getViewFlagsString(test: TestCase): string {
-  let vfString = "";
-
-  // Lighting flag always comes first.
-  const vf = test.viewport.viewFlags;
-  if (vf.lighting && RenderMode.SmoothShade === vf.getClosestRenderMode())
-    vfString = "+lit";
-
-  for (const propName of Object.keys(vf)) {
-    const key = propName as keyof typeof viewFlagsPropsStrings;
-    const abbrev = viewFlagsPropsStrings[key];
-    if (!abbrev)
-      continue;
-
-    assert("-" === abbrev[0] || "+" === abbrev[0]);
-    const includeIf = "+" === abbrev[0];
-    if (vf[key] === includeIf)
-      vfString += abbrev;
-  }
+  let vfString = ViewFlagsConfig.abbreviate(test.viewflags);
 
   if (undefined !== test.view.elementOverrides)
     vfString += "+ovrEl";

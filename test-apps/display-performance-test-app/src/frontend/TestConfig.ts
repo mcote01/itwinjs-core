@@ -6,20 +6,16 @@
 import * as path from "path";
 import { assert, Id64Array, Id64String } from "@itwin/core-bentley";
 import {
-  BackgroundMapProps, ColorDef, Hilite, RenderMode, ViewFlags, ViewFlagsProperties, ViewStateProps,
+  BackgroundMapProps, ColorDef, Hilite, RenderMode, ViewFlagProps, ViewStateProps,
 } from "@itwin/core-common";
 import { RenderSystem, TileAdmin } from "@itwin/core-frontend";
+import { ViewFlagsConfig, ViewFlagsConfigProps } from "./ViewFlagsConfig";
 
 /** Dimensions of the Viewport for a TestConfig. */
 export interface ViewSize {
   readonly width: number;
   readonly height: number;
 }
-
-/** Selectively overrides individual ViewFlags for a TestConfig.
- * @note renderMode can be a string "wireframe", "hiddenline", "solidfill", or "smoothshade" (case-insensitive).
- */
-export type ViewFlagProps = Partial<Omit<ViewFlagsProperties, "renderMode">> & { renderMode?: string | RenderMode };
 
 /** The types of saved views to include in a TestConfig. Case-insensitive in TestConfigProps; always lower-case in TestConfig.
  * local and internal mean exactly the same thing - include all persistent views from the iModel, including private ones.
@@ -136,7 +132,7 @@ export interface TestConfigProps {
   /** The name (Code value) of a display style to apply to the view. */
   displayStyle?: string;
   /** Overrides for selected ViewFlags to apply to the view. */
-  viewFlags?: ViewFlagProps;
+  viewFlags?: ViewFlagsConfigProps;
   /** Selectively overrides how the background map is drawn. */
   backgroundMap?: BackgroundMapProps;
   /** Selectively overrides options used to initialize the RenderSystem. */
@@ -272,7 +268,8 @@ export class TestConfig {
 
     this.tileProps = merge(this.tileProps, props.tileProps);
     this.backgroundMap = merge(this.backgroundMap, props.backgroundMap);
-    this.viewFlags = merge(this.viewFlags, props.viewFlags);
+    if (props.viewFlags)
+      this.viewFlags = merge(this.viewFlags, ViewFlagsConfig.toViewFlagProps(props.viewFlags));
 
     if (props.hilite)
       this.hilite = hiliteSettings(this.hilite ?? defaultHilite, props.hilite);

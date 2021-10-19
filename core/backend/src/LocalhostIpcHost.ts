@@ -37,9 +37,9 @@ class LocalTransport extends IpcWebSocketTransport {
   public connect(connection: ws) {
     this._connections.add(connection);
 
-    connection.on("message", (data) => {
+    connection.on("message", (data: ws.RawData, isBinary: boolean) => {
       for (const listener of IpcWebSocket.receivers) {
-        listener({} as Event, JSON.parse(data as string));
+        listener({} as Event, JSON.parse((isBinary ? data : data.toString()) as string));
       }
     });
 

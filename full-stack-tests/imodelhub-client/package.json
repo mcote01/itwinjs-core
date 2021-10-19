@@ -36,12 +36,12 @@
   },
   "dependencies": {
     "@itwin/core-bentley": "workspace:*",
-    "@bentley/imodelhub-client": "workspace:*",
     "@itwin/core-common": "workspace:*",
+    "@bentley/imodelhub-client": "workspace:*",
     "@bentley/itwin-client": "workspace:*",
     "chai": "^4.1.2",
     "deep-assign": "^2.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^10.0.0",
     "js-base64": "^3.6.1",
     "mocha": "^8.3.2",
     "nock": "^12.0.3"
@@ -53,7 +53,7 @@
     "@bentley/itwin-registry-client": "workspace:*",
     "@types/chai": "^4.1.4",
     "@types/deep-assign": "^0.1.0",
-    "@types/fs-extra": "^4.0.7",
+    "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^8.2.2",
     "cpx": "^1.5.0",
     "dotenv": "^10.0.0",

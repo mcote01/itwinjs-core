@@ -11,33 +11,34 @@
 import { assert } from "@itwin/core-bentley";
 import { JsonUtils, Mutable, NonFunctionPropertiesOf } from "@itwin/core-bentley";
 
-/** Enumerates the available basic rendering modes, as part of a [DisplayStyle]($backend)'s [[ViewFlags]].
- * The rendering mode broadly affects various aspects of the display style - in particular, whether and how surfaces and their edges are drawn.
+/** Enumerates a handful of basic rendering styles that can be used as the basis for creating a [[ViewFlags]].
+ * Each mode defines default values for some of the view flags - in particular, whether and how surfaces and their edges are drawn.
+ * @see [[ViewFlags.fromRenderMode]] to obtain a ViewFlags for a render mode.
  * @public
  */
 export enum RenderMode {
-  /** Renders only the edges of surfaces, with exceptions for planar regions based on their [[FillFlags]].
-   * Lighting (and by extension, shadows) is not applied.
-   * [[HiddenLine.Settings]] are not applied - edges use the elements' width, style, and color.
-   * [[ViewFlags.hiddenEdges]] is ignored - hidden edges are never displayed in wireframe mode.
+  /** Renders only the edges of surfaces. The following flags' default values are overridden:
+   *  - visibleEdges: true.
+   *  - visibleSurfaces, lighting, materials, textures, edgeOverrides: false.
+   * @see [[ViewFlags.wireframe]]
    */
   Wireframe = 0,
-  /** By default, renders surfaces without their edges.
-   * Lighting and shadows can be applied using [[ViewFlags.lighting]] and [[ViewFlags.shadows]].
-   * Edges can be enabled using [[ViewFlags.visibleEdges]] and [[ViewFlags.hiddenEdges]], and their appearance customized using [[HiddenLine.Settings]].
-   * Surfaces can be drawn with transparency, based on [[ViewFlags.transparency]].
-   */
+    /** Renders surfaces with lighting and without their edges.
+     * @see [[ViewFlags.smoothShaded]]
+     */
   SmoothShade = 6,
-  /** Renders surfaces and their edges. By default, edges are drawn in white; this can be overridden using [[HiddenLine.Settings]].
-   * All surfaces are rendered opaque. If a surface's transparency is below that specified by [[HiddenLine.Settings.transparencyThreshold]], it is not rendered.
-   * Materials and textures are not applied - surfaces are drawn in their actual colors.
-   * [[ViewFlags.visibleEdges]] is ignored - visible edges are always drawn. Hidden edges can be enabled using [[ViewFlags.hiddenEdges]].
-   * Lighting (and by extension, shadows) is not applied.
+  /** Renders surfaces without lighting, materials, or transparency; and their edges in a contrasting shade of grey.
+   * The following flags' default values are overridden:
+   *  - contrastEdges, transparencyThreshold, visibleEdges: true.
+   *  - lighting, materials, textures, transparency: false.
+   * @see [[ViewFlags.solidFill]]
    */
   SolidFill = 4,
-  /** Identical to [[RenderMode.SolidFill]], except:
-   *  - Surfaces are drawn using the [DisplayStyle]($backend)'s background color.
-   *  - Edges are drawn using their surface's colors; this can be overridden using [[HiddenLine.Settings]].
+  /** Renders surfaces without lighting or transparency using the view's background color; and their edges using the surface color.
+   * The following flags' default values are overridden:
+   *  - backgroundSurfaceColor, transparencyThreshold, visibleEdges: true.
+   *  - lighting, materials, textures, transparency: false.
+   * @see [[ViewFlags.hiddenLine]]
    */
   HiddenLine = 3,
 }
@@ -158,7 +159,7 @@ export interface ViewFlagProps {
   clipVol?: boolean;
   /** If true, apply the view's [[DisplayStyleSettings.monochromeColor]] and [[DisplayStyleSettings.monochromeMode]] to produce a monochrome image. */
   monochrome?: boolean;
-  /** The basic rendering mode, which affects the behavior of other flags. */
+  /** The basic rendering mode, which affects the behavior of other flags unless [[ignoreRenderMode]] is `true`. */
   renderMode?: RenderMode;
   /** Display a background map. */
   backgroundMap?: boolean;
@@ -178,11 +179,19 @@ export interface ViewFlagProps {
    */
   noWhiteOnWhiteReversal?: boolean;
 
+  /** If true, [[renderMode]] is ignored; otherwise, [[ViewFlags.fromJSON]] will initialize other flags based on the [[RenderMode]]. */
   ignoreRenderMode?: boolean;
+  /** If true and [[noEdgeOverrides]] is false or edge color is not overridden by [[HiddenLine.Settings]], edges are drawn in a shade of grey chosen
+   * for best contrast with both the surface color and the view's background color.
+   */
   contrastEdges?: boolean;
+  /** If true, the color, width, and style overrides normally applied by [[HiddenLine.Settings]] are not applied. */
   noEdgeOverrides?: boolean;
+  /** If true, surfaces are not displayed, with exceptions for planar regions based on their [[FillFlags]]. */
   noSurfaces?: boolean;
+  /** If true, surfaces are drawn using the view's background color. */
   backgroundSurfaceColor?: boolean;
+  /** If true, surfaces with transparency below [[HiddenLine.Settings.transparencyThreshold]] are not drawn. */
   transparencyThreshold?: boolean;
 }
 

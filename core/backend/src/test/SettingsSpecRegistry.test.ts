@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { expect } from "chai";
-import { SettingsSpecRegistry } from "../settings/SettingsSpecRegistry";
+import { SettingsSpecRegistry } from "../workspace/SettingsSpecRegistry";
 import * as fs from "fs-extra";
 import { IModelTestUtils } from ".";
 import { parse } from "json5";

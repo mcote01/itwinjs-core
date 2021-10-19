@@ -5,8 +5,8 @@
 
 import { expect } from "chai";
 import { IModelTestUtils } from "./IModelTestUtils";
-import { Settings, SettingsPriority } from "../settings/Settings";
-import { SettingsGroupSpec, SettingSpec, SettingsSpecRegistry } from "../settings/SettingsSpecRegistry";
+import { Settings, SettingsPriority } from "../workspace/Settings";
+import { SettingsGroupSpec, SettingSpec, SettingsSpecRegistry } from "../workspace/SettingsSpecRegistry";
 import { Mutable } from "@itwin/core-bentley";
 
 describe.only("Settings", () => {

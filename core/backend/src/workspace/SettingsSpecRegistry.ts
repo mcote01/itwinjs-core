@@ -3,7 +3,7 @@
 * See LICENSE.md in the project root for license terms and full copyright notice.
 *--------------------------------------------------------------------------------------------*/
 /** @packageDocumentation
- * @module Settings
+ * @module Workspace
  */
 
 import * as fs from "fs-extra";
@@ -51,7 +51,8 @@ export class SettingsSpecRegistry {
   /** event that signals that the values in [[allSpecs]] have changed in some way. */
   public static readonly onSpecsChanged = new BeEvent<() => void>();
 
-  /** Clear the contents of the registry and remove all event listeners. This is really only necessary for tests of the Settings system.
+  /** Clear the contents of the registry and remove all event listeners.
+   * @note This is really only necessary for tests of the Settings system.
    * @internal
    */
   public static reset() {
@@ -60,8 +61,9 @@ export class SettingsSpecRegistry {
     this.onSpecsChanged.clear();
   }
 
-  /** Add one or more [[SettingGroupSpec]]s to the registry. `SettingsGroupSpec`s must include a `groupName` member that is used
-   * to identify the group. If a group with the same name is already registered, the old value is first removed and then the new group is registered.
+  /**
+   * Add one or more [[SettingGroupSpec]]s to the registry. `SettingsGroupSpec`s must include a `groupName` member that is used
+   * to identify the group. If a group with the same name is already registered, the old values are first removed and then the new group is added.
    * @returns an array of problems found adding properties of the supplied group(s).
    */
   public static addGroup(settingsGroup: SettingsGroupSpec | SettingsGroupSpec[]): string[] {

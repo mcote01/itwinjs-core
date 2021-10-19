@@ -5,24 +5,24 @@
 
 import { expect } from "chai";
 import { SettingsSpecRegistry } from "../workspace/SettingsSpecRegistry";
-import * as fs from "fs-extra";
 import { IModelTestUtils } from ".";
-import { parse } from "json5";
 
 describe.only("SettingsRegistry", () => {
 
   it("register groups", () => {
-    const fileName = IModelTestUtils.resolveAssetFile("Settings.schema.json");
-    const settingRaw = fs.readFileSync(fileName, "utf-8");
-    const group1 = parse(settingRaw);
-
     SettingsSpecRegistry.reset();
-    const props = SettingsSpecRegistry.register(group1);
 
-    expect(props.length).equals(0);
-    expect(SettingsSpecRegistry.allSpecs.get("group1.list.openMode")!.type).equals("string");
-    expect(SettingsSpecRegistry.allSpecs.get("group1.list.openMode")!.default).equals("singleClick");
-    expect(SettingsSpecRegistry.allSpecs.get("group1.tree.blah")!.default).equals("blah default");
+    // can't add a group with no name
+    expect(() => SettingsSpecRegistry.addGroup({} as any)).to.throw("settings group has no name");
+
+    SettingsSpecRegistry.addGroup({ groupName: "app1" } as any);
+
+    const problems = SettingsSpecRegistry.addFile(IModelTestUtils.resolveAssetFile("TestSettings.schema.json"));
+    expect(problems.length).equals(0);
+
+    expect(SettingsSpecRegistry.allSpecs.get("app1/list/openMode")!.type).equals("string");
+    expect(SettingsSpecRegistry.allSpecs.get("app1/list/openMode")!.default).equals("singleClick");
+    expect(SettingsSpecRegistry.allSpecs.get("app1/tree/blah")!.default).equals("blah default");
   });
 
 });

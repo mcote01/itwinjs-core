@@ -1,58 +1,11 @@
 {
-    "files.autoSave": "onFocusChange",
-    "terminal.integrated.profiles.windows": {
-        "default": {
-            "path": [
-                "${env:windir}\\Sysnative\\cmd.exe",
-                "${env:windir}\\System32\\cmd.exe"
-            ],
-            "args": [
-                "/k",
-                "d:\\startup\\iModel02.cmd"
-            ],
-            "icon": "terminal-cmd"
-        },
-        "iModel02": {
-            "path": [
-                "${env:windir}\\Sysnative\\cmd.exe",
-                "${env:windir}\\System32\\cmd.exe"
-            ],
-            "args": [
-                "/k",
-                "d:\\startup\\iModel02.cmd"
-            ],
-            "icon": "terminal-cmd"
-        },
-        "Command Prompt": {
-            "path": [
-                "${env:windir}\\Sysnative\\cmd.exe",
-                "${env:windir}\\System32\\cmd.exe"
-            ],
-            "args": [],
-            "icon": "terminal-cmd"
-        },
-        "Git Bash": {
-            "source": "Git Bash"
-        },
-    },
-    "terminal.integrated.defaultProfile.windows": "iModel02",
-    "editor.minimap.enabled": true,
-    "editor.cursorSmoothCaretAnimation": true,
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "**/SdkSources/*": true
-    },
-    "editor.fontWeight": "normal",
-    "editor.fontSize": 12,
-    "editor.multiCursorModifier": "ctrlCmd",
-    "editor.cursorStyle": "line",
-    "git.enableSmartCommit": true,
-    "git.confirmSync": false,
-    "alignment.surroundSpace": {
+    "editor/fontWeight": "normal",
+    "editor/fontSize": 12,
+    "editor/multiCursorModifier": "ctrlCmd",
+    "editor/cursorStyle": "line",
+    "git/enableSmartCommit": true,
+    "git/confirmSync": false,
+    "alignment/surroundSpace": {
         "colon": [
             -1,
             1
@@ -69,9 +22,9 @@
         "comment": 2 // Special how much space to add between the trailing comment and the code.
         // If this value is negative, it means don't align the trailing comment.
     },
-    "window.restoreWindows": "all",
-    "window.restoreFullscreen": true,
-    "cSpell.enableFiletypes": [
+    "window/restoreWindows": "all",
+    "window/restoreFullscreen": true,
+    "cSpell/enableFiletypes": [
         "c",
         "cpp",
         "csharp",
@@ -90,41 +43,21 @@
         "xml",
         "yml"
     ],
-    "problems.autoReveal": true,
-    "editor.snippetSuggestions": "top",
-    "git.autofetch": true,
-    "gitlens.advanced.messages": {
-        "suppressCommitHasNoPreviousCommitWarning": true,
-        "suppressFileNotUnderSourceControlWarning": true,
-        "suppressImproperWorkspaceCasingWarning": true,
-    },
-    "gitlens.codeLens.enabled": false,
-    "gitlens.keymap": "chorded",
-    "breadcrumbs.enabled": true,
-    "extensions.autoUpdate": true,
-    "tslint.jsEnable": true,
-    "C_Cpp.updateChannel": "Insiders",
-    "terminal.integrated.fontFamily": "Fira Code",
-    "editor.suggestSelection": "first",
-    "debug.toolBarLocation": "docked",
-    "editor.fontFamily": "Fira Code Retina, Consolas, 'Courier New', monospace",
-    "files.trimTrailingWhitespace": true,
-    "gitlens.blame.ignoreWhitespace": true,
-    "editor.renderWhitespace": "selection",
-    "editor.lineHeight": 11,
-    "editor.fontLigatures": true,
-    "workbench.colorCustomizations": {
-        "[Visual Studio Light]": {
-            "editor.lineHighlightBorder": "#2422222a",
-            "editor.background": "#ece2c5",
+    "editor/renderWhitespace": "selection",
+    "editor/lineHeight": 11,
+    "editor/fontLigatures": true,
+    "workbench/colorCustomizations": {
+        "Visual Studio Light": {
+            "editor/lineHighlightBorder": "#2422222a",
+            "editor/background": "#ece2c5",
             "sideBar.background": "#e2daca"
         }
     },
-    "editor.tokenColorCustomizations": {
-        "[Default High Contrast]": {
+    "editor/tokenColorCustomizations": {
+        "Default High Contrast": {
             "comments": "#FF0000"
         },
-        "[Visual Studio Light]": {
+        "Visual Studio Light": {
             "types": "#9c3569",
             "variables": "#7e5007",
             "textMateRules": [
@@ -200,82 +133,8 @@
             ]
         }
     },
-    "workbench.colorTheme": "Visual Studio Light",
-    "[cpp]": {
-        "editor.defaultFormatter": "ms-vscode.cpptools"
-    },
-    "cSpell.fixSpellingWithRenameProvider": true,
-    "LineCount.includes": [
-        "**/*.ts*",
-        "**/*.js*",
-        "**/*.glsl",
-        "**/*.cpp",
-        "**/*.h"
-    ],
-    "editor.tabSize": 2,
-    "diffEditor.ignoreTrimWhitespace": true,
-    "gitlens.gitCommands.closeOnFocusOut": true,
-    "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "html.format.contentUnformatted": "",
-    "C_Cpp.errorSquiggles": "Enabled",
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "editor.suggest.showStatusBar": true,
-    "editor.suggest.showSnippets": false,
-    "workbench.editorAssociations": {
-        "*.ipynb": "jupyter.notebook.ipynb"
-    },
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "sameLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "sameLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "sameLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "sameLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
-    "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, UseTab: Never, IndentWidth: 4, TabWidth: 4,  AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: false, ColumnLimit: 0, AccessModifierOffset: -4, NamespaceIndentation: All, FixNamespaceComments: false }",
-    "C_Cpp.vcFormat.indent.braces": true,
-    "C_Cpp.vcFormat.indent.caseContents": false,
-    "security.workspace.trust.untrustedFiles": "open",
-    "typescript.inlayHints.enumMemberValues.enabled": true,
-    "javascript.inlayHints.parameterNames.enabled": "all",
-    "cSpell.enabledLanguageIds": [
-        "asciidoc",
-        "c",
-        "cpp",
-        "csharp",
-        "css",
-        "git-commit",
-        "go",
-        "graphql",
-        "handlebars",
-        "haskell",
-        "html",
-        "jade",
-        "java",
-        "javascript",
-        "javascriptreact",
-        "json",
-        "jsonc",
-        "jupyter",
-        "latex",
-        "less",
-        "php",
-        "plaintext",
-        "python",
-        "pug",
-        "restructuredtext",
-        "rust",
-        "scala",
-        "scss",
-        "text",
-        "typescript",
-        "typescriptreact",
-        "yaml",
-        "yml",
-        "md",
-        "markdown"
-    ],
-    "gitlens.views.branches.branches.layout": "list",
-    "editor.codeActionsOnSave": null,
-    "window.zoomLevel": 1,
-    "app1:tree:blah": "blah default"
+    "workbench/colorTheme": "Visual Studio Light",
+    "editor/codeActionsOnSave": null,
+    "window/zoomLevel": 1,
+    "app1/tree/blah": "blah default"
 }

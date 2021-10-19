@@ -52,6 +52,13 @@ export class Settings {
   private static _registryListener: () => void;
   public static readonly onSettingsChanged = new BeEvent<() => void>();
 
+  private static updateDefaults() {
+    const defaults: SettingDictionary = {};
+    for (const [specName, val] of SettingsSpecRegistry.allSpecs)
+      defaults[specName] = val.default!;
+    this.addDictionary("_default_", 0, defaults);
+  }
+
   public static reset() {
     if (!this._registryListener)
       this._registryListener = SettingsSpecRegistry.onSpecsChanged.addListener(() => this.updateDefaults());
@@ -60,19 +67,12 @@ export class Settings {
     this.updateDefaults();
   }
 
-  private static updateDefaults() {
-    const defaults: SettingDictionary = {};
-    for (const [specName, val] of SettingsSpecRegistry.allSpecs)
-      defaults[specName] = val.default!;
-    this.addDictionary("_default_", 0, defaults);
-  }
-
   public static addFile(fileName: string, priority: SettingsPriority) {
     this.addJson(fileName, priority, fs.readFileSync(fileName, "utf-8"));
   }
 
-  public static addJson(dictionaryName: string, priority: SettingsPriority, json: string) {
-    this.addDictionary(dictionaryName, priority, parse(json));
+  public static addJson(dictionaryName: string, priority: SettingsPriority, settingsJson: string) {
+    this.addDictionary(dictionaryName, priority, parse(settingsJson));
   }
 
   public static addDictionary(dictionaryName: string, priority: SettingsPriority, settings: SettingDictionary) {

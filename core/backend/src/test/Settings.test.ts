@@ -11,11 +11,11 @@ import { Mutable } from "@itwin/core-bentley";
 
 describe.only("Settings", () => {
 
-  const group1: SettingsGroupSpec = {
-    groupName: "group1",
+  const app1: SettingsGroupSpec = {
+    groupName: "app1",
     title: "group 1 settings",
     properties: {
-      "group1.sub1": {
+      "app1:sub1": {
         type: "string",
         enum: ["va1", "alt1"],
         enumDescriptions: [
@@ -25,20 +25,20 @@ describe.only("Settings", () => {
         default: "val1",
         description: "the first value",
       },
-      "group1.sub2": {
+      "app1:sub2": {
         type: "array",
         description: "an array",
       },
-      "group1.boolVal": {
+      "app1:boolVal": {
         type: "boolean",
         default: true,
         description: "boolean defaults to true",
       },
-      "group1.strVal": {
+      "app1:strVal": {
         type: "string",
         default: "default string val",
       },
-      "group1.intVal": {
+      "app1:intVal": {
         type: "integer",
         default: 22,
       },
@@ -46,28 +46,28 @@ describe.only("Settings", () => {
   };
 
   const imodel1Settings = {
-    "group1.sub1": "imodel1 value",
-    "group1.sub2": {
+    "app1:sub1": "imodel1 value",
+    "app1:sub2": {
       arr: ["a1", "a2"],
     },
-    "group1.setting2": 2,
-    "group1.setting3": "setting 3 val",
+    "app1:setting2": 2,
+    "app1:setting3": "setting 3 val",
   };
 
   const imodel2Settings = {
-    "group1.sub1": "imodel2 value",
-    "group1.sub2": {
+    "app1:sub1": "imodel2 value",
+    "app1:sub2": {
       arr: ["a21", "a22"],
     },
   };
 
   const iTwinSettings = {
-    "group1.sub1": "val3",
-    "group1.sub2": {
+    "app1:sub1": "val3",
+    "app1:sub2": {
       arr: ["a31", "a32", "a33"],
     },
-    "group2.setting6": "val 6",
-    "group3.obj": {
+    "app2:setting6": "val 6",
+    "app3:obj": {
       member1: "test2",
       member2: "test3",
       member3: {
@@ -82,38 +82,38 @@ describe.only("Settings", () => {
 
   it("priority test", () => {
     Settings.reset();
-    SettingsSpecRegistry.register(group1);
+    SettingsSpecRegistry.register(app1);
     Settings.addDictionary("iModel1.setting.json", SettingsPriority.iModel, imodel1Settings);
     Settings.addDictionary("iModel2.setting.json", SettingsPriority.iModel, imodel2Settings);
     Settings.addDictionary("iTwin.setting.json", SettingsPriority.iTwin, iTwinSettings);
 
-    expect(Settings.getSetting<string>("group1.sub1")).equals(imodel2Settings["group1.sub1"]);
-    expect(Settings.getSetting<string>("group2.setting6")).equals(iTwinSettings["group2.setting6"]);
-    expect(Settings.getSetting<any>("group1.sub2").arr).deep.equals(imodel2Settings["group1.sub2"].arr);
+    expect(Settings.getSetting<string>("app1:sub1")).equals(imodel2Settings["app1:sub1"]);
+    expect(Settings.getSetting<string>("app2:setting6")).equals(iTwinSettings["app2:setting6"]);
+    expect(Settings.getSetting<any>("app1:sub2").arr).deep.equals(imodel2Settings["app1:sub2"].arr);
 
-    const group3obj = Settings.getSetting<any>("group3.obj");
-    expect(group3obj).deep.equals(iTwinSettings["group3.obj"]);
-    group3obj.member3.part2[0].m1 = "bad"; // should modify a copy
-    expect(iTwinSettings["group3.obj"].member3.part2[0].m1).equal(0);
+    const app3obj = Settings.getSetting<any>("app3:obj");
+    expect(app3obj).deep.equals(iTwinSettings["app3:obj"]);
+    app3obj.member3.part2[0].m1 = "bad"; // should modify a copy
+    expect(iTwinSettings["app3:obj"].member3.part2[0].m1).equal(0);
 
-    expect(Settings.getSetting<any>("group3.obj")).deep.equals(iTwinSettings["group3.obj"]); // should be original value
-    expect(Settings.getSetting<boolean>("group1.boolVal")).equals(true);
-    expect(Settings.getSetting<string>("group1.strVal")).equals(group1.properties["group1.strVal"].default);
-    expect(Settings.getSetting<number>("group1.intVal")).equals(22);
+    expect(Settings.getSetting<any>("app3:obj")).deep.equals(iTwinSettings["app3:obj"]); // should be original value
+    expect(Settings.getSetting<boolean>("app1:boolVal")).equals(true);
+    expect(Settings.getSetting<string>("app1:strVal")).equals(app1.properties["app1:strVal"].default);
+    expect(Settings.getSetting<number>("app1:intVal")).equals(22);
     expect(Settings.getSetting("not there")).is.undefined;
     expect(Settings.getSetting("not there", "fallback")).equals("fallback");
 
-    iTwinSettings["group2.setting6"] = "new value for 6";
+    iTwinSettings["app2:setting6"] = "new value for 6";
     Settings.addDictionary("iTwin.setting.json", SettingsPriority.iTwin, iTwinSettings);
-    expect(Settings.getSetting<string>("group2.setting6")).equals(iTwinSettings["group2.setting6"]);
+    expect(Settings.getSetting<string>("app2:setting6")).equals(iTwinSettings["app2:setting6"]);
 
-    (group1.properties["group1.strVal"] as Mutable<SettingSpec>).default = "new default";
-    SettingsSpecRegistry.register(group1);
+    (app1.properties["app1:strVal"] as Mutable<SettingSpec>).default = "new default";
+    SettingsSpecRegistry.register(app1);
     // after re-registering, the new default should be updated
-    expect(Settings.getSetting<string>("group1.strVal")).equals(group1.properties["group1.strVal"].default);
+    expect(Settings.getSetting<string>("app1:strVal")).equals(app1.properties["app1:strVal"].default);
 
     Settings.dropDictionary("iTwin.setting.json");
-    expect(Settings.getSetting<string>("group2.setting6")).is.undefined;
+    expect(Settings.getSetting<string>("app2:setting6")).is.undefined;
   });
 
   it("Read Settings", () => {

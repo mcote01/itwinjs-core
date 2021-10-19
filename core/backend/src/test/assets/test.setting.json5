@@ -277,5 +277,5 @@
     "gitlens.views.branches.branches.layout": "list",
     "editor.codeActionsOnSave": null,
     "window.zoomLevel": 1,
-    "group1.tree.blah": "blah default"
+    "app1:tree:blah": "blah default"
 }

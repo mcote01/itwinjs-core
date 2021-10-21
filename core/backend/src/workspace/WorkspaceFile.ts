@@ -10,18 +10,17 @@ import * as fs from "fs-extra";
 import { join } from "path";
 import { AccessToken, DbResult, OpenMode } from "@itwin/core-bentley";
 import { SQLiteDb } from "../SQLiteDb";
-import { Settings } from "./Settings";
-import { Workspace } from "./Workspace";
 import { IModelJsFs } from "../IModelJsFs";
+import { IModelHost } from "../IModelHost";
 
 export class WorkspaceFile {
   public readonly workspaceName: string;
   public readonly id: string;
   protected readonly db = new SQLiteDb();
 
-  constructor(workspaceName: string) {
+  constructor(workspaceName: string, workspaceId: string) {
     this.workspaceName = workspaceName;
-    this.id = Settings.getString(`workspaceId/${workspaceName}`, workspaceName);
+    this.id = workspaceId;
   }
 
   public async attach() {
@@ -34,13 +33,13 @@ export class WorkspaceFile {
   }
 
   private getDir() {
-    return join(Workspace.workspaceRoot, this.workspaceName);
+    return join(IModelHost.workspaceRoot, this.workspaceName);
   }
   private getLocalDbName() {
     return join(this.getDir(), `${this.id}.ws.db`);
   }
-  private getFileName(resourceName: string) {
-    const fullPath = join(this.getDir(), "files", ...resourceName.split("/"));
+  private makeLocalFileName(resourceName: string) {
+    const fullPath = join(this.getDir(), "Files", ...resourceName.split("/"));
     IModelJsFs.recursiveMkDirSync(fullPath);
     return fullPath;
   }
@@ -104,13 +103,13 @@ export class WorkspaceFile {
       nativeDb.embedFile(embedArg);
   }
 
-  public getFile(resourceName: string): string {
+  public getLocalFile(resourceName: string): string {
     const nativeDb = this.db.nativeDb;
     const info = nativeDb.queryEmbeddedFile(resourceName);
     if (undefined === info)
       throw new Error(`file ${resourceName} not found in workspace ${this.workspaceName}`);
 
-    const localFileName = this.getFileName(resourceName);
+    const localFileName = this.makeLocalFileName(resourceName);
     const stat = fs.lstatSync(localFileName);
     if (Math.trunc(stat.mtimeMs) !== info.date || stat.size !== info.size) { // check whether the file is already up to date.
       if (undefined !== stat.size)

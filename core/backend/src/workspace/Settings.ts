@@ -108,4 +108,30 @@ export class Settings {
     }
     return defaultValue;
   }
+
+  public static getString(settingName: string, defaultValue: string): string;
+  public static getString(settingName: string, defaultValue?: string): string | undefined {
+    const out = this.getSetting<string>(settingName);
+    return typeof out === "string" ? out : defaultValue;
+  }
+  public static getBoolean(settingName: string, defaultValue: boolean): boolean;
+  public static getBoolean(settingName: string, defaultValue?: boolean): boolean | undefined {
+    const out = this.getSetting<boolean>(settingName);
+    return typeof out === "boolean" ? out : defaultValue;
+  }
+  public static getNumber(settingName: string, defaultValue: number): number;
+  public static getNumber(settingName: string, defaultValue?: number): number | undefined {
+    const out = this.getSetting<number>(settingName);
+    return typeof out === "number" ? out : defaultValue;
+  }
+  public static getObj(settingName: string, defaultValue: object): object;
+  public static getObj(settingName: string, defaultValue?: object): object | undefined {
+    const out = this.getSetting<object>(settingName);
+    return typeof out === "object" ? out : defaultValue;
+  }
+  public static getArray<T>(settingName: string, defaultValue: Array<T>): Array<T>;
+  public static getArray<T>(settingName: string, defaultValue?: Array<T>): Array<T> | undefined {
+    const out = this.getSetting<Array<T>>(settingName);
+    return Array.isArray(out) ? out : defaultValue;
+  }
 }

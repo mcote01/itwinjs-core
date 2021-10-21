@@ -7,7 +7,7 @@ import { expect } from "chai";
 import { SettingsSpecRegistry } from "../workspace/SettingsSpecRegistry";
 import { IModelTestUtils } from ".";
 
-describe.only("SettingsRegistry", () => {
+describe("SettingsRegistry", () => {
 
   it("register groups", () => {
     SettingsSpecRegistry.reset();

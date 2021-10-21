@@ -8,19 +8,19 @@
 
 import * as fs from "fs-extra";
 import { join } from "path";
-import { AccessToken, DbResult, OpenMode } from "@itwin/core-bentley";
+import { AccessToken, DbResult, GuidString, OpenMode } from "@itwin/core-bentley";
 import { SQLiteDb } from "../SQLiteDb";
 import { IModelJsFs } from "../IModelJsFs";
 import { IModelHost } from "../IModelHost";
 
 export class WorkspaceFile {
   public readonly workspaceName: string;
-  public readonly id: string;
+  public readonly id: GuidString;
   protected readonly db = new SQLiteDb();
 
-  constructor(workspaceName: string, workspaceId: string) {
+  constructor(workspaceName: string, workspaceId?: GuidString) {
     this.workspaceName = workspaceName;
-    this.id = workspaceId;
+    this.id = workspaceId ?? workspaceName;
   }
 
   public async attach() {
@@ -46,7 +46,8 @@ export class WorkspaceFile {
 
   public create() {
     this.db.createDb(this.getLocalDbName());
-    this.db.executeSQL("CREATE TABLE resources(id TEXT PRIMARY KEY NOT NULL,type TEXT,value BLOB)");
+    this.db.executeSQL("CREATE TABLE strings(id TEXT PRIMARY KEY NOT NULL,value TEXT)");
+    this.db.executeSQL("CREATE TABLE blobs(id TEXT PRIMARY KEY NOT NULL,value BLOB)");
     this.db.saveChanges();
   }
 
@@ -59,13 +60,12 @@ export class WorkspaceFile {
       throw new Error("workspace not open for write");
 
     const isString = typeof val === "string";
-    this.db.withSqliteStatement("INSERT OR REPLACE INTO resources(id,type,value) VALUES(?,?,?)", (stmt) => {
+    this.db.withSqliteStatement(`INSERT OR REPLACE INTO ${isString ? "strings" : "blobs"}(id,value) VALUES(?,?)`, (stmt) => {
       stmt.bindString(1, resourceName);
-      stmt.bindString(2, isString ? "string" : "blob");
       if (isString)
-        stmt.bindString(3, val);
+        stmt.bindString(2, val);
       else
-        stmt.bindBlob(3, val);
+        stmt.bindBlob(2, val);
       const rc = stmt.step();
       if (DbResult.BE_SQLITE_DONE !== rc)
         throw new Error("cannot add resource");
@@ -74,14 +74,14 @@ export class WorkspaceFile {
   }
 
   public getStringResource(resourceName: string): string | undefined {
-    return this.db.withSqliteStatement("SELECT value from resources WHERE id=? AND type=string", (stmt) => {
+    return this.db.withSqliteStatement("SELECT value from strings WHERE id=?", (stmt) => {
       stmt.bindString(1, resourceName);
       return DbResult.BE_SQLITE_ROW === stmt.step() ? stmt.getValueString(0) : undefined;
     });
   }
 
   public getBlobResource(resourceName: string): Uint8Array | undefined {
-    return this.db.withSqliteStatement("SELECT value from resources WHERE id=? AND type=blob", (stmt) => {
+    return this.db.withSqliteStatement("SELECT value from blobs WHERE id=?", (stmt) => {
       stmt.bindString(1, resourceName);
       return DbResult.BE_SQLITE_ROW === stmt.step() ? stmt.getValueBlob(0) : undefined;
     });
@@ -115,6 +115,8 @@ export class WorkspaceFile {
       if (undefined !== stat.size)
         fs.removeSync(localFileName);
       nativeDb.extractEmbeddedFile({ name: resourceName, localFileName });
+      fs.chmodSync(localFileName, 4); // set file readonly
+      fs.utimesSync(localFileName, info.date, info.date); // set the date of the created file
     }
 
     return localFileName;

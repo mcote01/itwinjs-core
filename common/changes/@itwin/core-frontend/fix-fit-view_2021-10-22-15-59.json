@@ -1,0 +1,10 @@
+{
+  "changes": [
+    {
+      "packageName": "@itwin/core-frontend",
+      "comment": "Fix exception when fitting a 2d view.",
+      "type": "none"
+    }
+  ],
+  "packageName": "@itwin/core-frontend"
+}

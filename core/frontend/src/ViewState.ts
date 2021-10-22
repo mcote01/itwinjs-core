@@ -1089,9 +1089,12 @@ export abstract class ViewState extends ElementState {
   }
 
   /** Return true if the view is looking at the current iModel project extents or
-   * false if the viewed area do does not include more than one percent of the project.
+   * false if the viewed area does not include more than one percent of the project extents.
    */
   public getIsViewingProject(): boolean {
+    if (!this.isSpatialView())
+      return false;
+
     const worldToNpc = this.computeWorldToNpc();
     if (!worldToNpc || !worldToNpc.map)
       return false;

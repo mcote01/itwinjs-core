@@ -796,12 +796,11 @@ export abstract class ViewManip extends ViewTool {
   /** @internal */
   public static fitViewWithGlobeAnimation(viewport: ScreenViewport, animateFrustumChange: boolean, options?: ViewChangeOptions) {
     const range = this.computeFitRange(viewport);
-
-    if (animateFrustumChange && (viewport.viewingGlobe || !viewport.view.getIsViewingProject())) {
-      const view3d = viewport.view as ViewState3d;
-      const cartographicCenter = view3d.rootToCartographic(range.center);
+    const view = viewport.view;
+    if (view.isSpatialView() && animateFrustumChange && (viewport.viewingGlobe || !view.getIsViewingProject())) {
+      const cartographicCenter = view.rootToCartographic(range.center);
       if (undefined !== cartographicCenter) {
-        const cartographicArea = rangeToCartographicArea(view3d, range);
+        const cartographicArea = rangeToCartographicArea(view, range);
         (async () => {
           await viewport.animateFlyoverToGlobalLocation({ center: cartographicCenter, area: cartographicArea }); // NOTE: Turns on camera...which is why we checked that it was already on...
           viewport.viewCmdTargetCenter = undefined;
@@ -811,7 +810,7 @@ export abstract class ViewManip extends ViewTool {
     }
 
     const aspect = viewport.viewRect.aspect;
-    viewport.view.lookAtVolume(range, aspect, options);
+    view.lookAtVolume(range, aspect, options);
     viewport.synchWithView({ animateFrustumChange });
     viewport.viewCmdTargetCenter = undefined;
   }
@@ -3852,7 +3851,8 @@ export class DefaultViewTouchTool extends ViewManip implements Animator {
     const vp = this.viewport!;
     const zoomRatio = this.computeZoomRatio(ev);
 
-    if (vp.isCameraOn) {
+    if (vp.view.isCameraEnabled()) {
+      const view = vp.view;
       const targetWorld = vp.viewToWorld(this._lastPtView);
       const preTrans = Transform.createTranslationXYZ(-targetWorld.x, -targetWorld.y, -targetWorld.z);
       const postTrans = Transform.createTranslation(this._startPtWorld);
@@ -3861,7 +3861,6 @@ export class DefaultViewTouchTool extends ViewManip implements Animator {
       preTrans.matrix.scale(zoomRatio, preTrans.matrix);
       const cameraTransform = postTrans.multiplyTransformTransform(preTrans);
 
-      const view = vp.view as ViewState3d;
       const oldEyePoint = view.getEyePoint();
       const newEyePoint = cameraTransform.multiplyPoint3d(oldEyePoint);
       const cameraOffset = newEyePoint.minus(oldEyePoint);
@@ -3981,13 +3980,15 @@ export class ViewToggleCameraTool extends ViewTool {
   public static override toolId = "View.ToggleCamera";
   public static override iconSpec = "icon-camera";
 
-  public override async onInstall(): Promise<boolean> { return (undefined !== this.viewport && this.viewport.view.allow3dManipulations()); }
+  public override async onInstall(): Promise<boolean> {
+    return (undefined !== this.viewport && this.viewport.view.allow3dManipulations());
+  }
 
   public override async onPostInstall() {
     if (this.viewport) {
       const vp = this.viewport;
-      if (vp.isCameraOn)
-        (vp.view as ViewState3d).turnCameraOff();
+      if (vp.view.isCameraEnabled())
+        vp.view.turnCameraOff();
       else
         vp.turnCameraOn();
 

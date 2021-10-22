@@ -4,8 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { expect } from "chai";
-import { SettingsSpecRegistry } from "../workspace/SettingsSpecRegistry";
-import { IModelTestUtils } from ".";
+import { SettingsSpecRegistry } from "../../workspace/SettingsSpecRegistry";
+import { IModelTestUtils } from "../IModelTestUtils";
 
 describe("SettingsRegistry", () => {
 

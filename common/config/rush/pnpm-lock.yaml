@@ -2638,7 +2638,7 @@ importers:
       '@itwin/eslint-plugin': workspace:*
       '@itwin/hypermodeling-frontend': workspace:*
       '@itwin/perf-tools': workspace:*
-      '@itwin/reality-data-client': ^3.0.0-dev.80
+      '@itwin/reality-data-client': ^0.1.4
       '@types/body-parser': ^1.17.0
       '@types/express': ^4.16.1
       '@types/node': 14.14.31
@@ -2673,7 +2673,7 @@ importers:
       '@itwin/core-quantity': link:../../core/quantity
       '@itwin/electron-authorization': 0.3.2
       '@itwin/hypermodeling-frontend': link:../../core/hypermodeling
-      '@itwin/reality-data-client': 3.0.0-dev.80
+      '@itwin/reality-data-client': 0.1.4
       body-parser: 1.19.0
     devDependencies:
       '@bentley/react-scripts': 4.0.3_typescript@4.4.4
@@ -2706,7 +2706,6 @@ importers:
       '@bentley/imodelhub-client': workspace:*
       '@bentley/itwin-client': workspace:*
       '@bentley/react-scripts': 4.0.3
-      '@bentley/reality-data-client': workspace:*
       '@itwin/appui-abstract': workspace:*
       '@itwin/backend-webpack-tools': workspace:*
       '@itwin/browser-authorization': ^0.3.0
@@ -2728,6 +2727,7 @@ importers:
       '@itwin/eslint-plugin': workspace:*
       '@itwin/frontend-devtools': workspace:*
       '@itwin/hypermodeling-frontend': workspace:*
+      '@itwin/reality-data-client': ^0.1.4
       '@itwin/webgl-compatibility': workspace:*
       '@types/express': ^4.16.1
       '@types/express-ws': ^3.0.1
@@ -2755,7 +2755,6 @@ importers:
       '@bentley/icons-generic-webfont': 1.0.34
       '@bentley/imodelhub-client': link:../../clients/imodelhub
       '@bentley/itwin-client': link:../../clients/itwin
-      '@bentley/reality-data-client': link:../../clients/reality-data
       '@itwin/appui-abstract': link:../../ui/appui-abstract
       '@itwin/browser-authorization': 0.3.0
       '@itwin/core-backend': link:../../core/backend
@@ -2773,6 +2772,7 @@ importers:
       '@itwin/electron-authorization': 0.3.2
       '@itwin/frontend-devtools': link:../../core/frontend-devtools
       '@itwin/hypermodeling-frontend': link:../../core/hypermodeling
+      '@itwin/reality-data-client': 0.1.4
       '@itwin/webgl-compatibility': link:../../core/webgl-compatibility
       body-parser: 1.19.0
     devDependencies:
@@ -3246,7 +3246,7 @@ importers:
       '@itwin/presentation-components': workspace:*
       '@itwin/presentation-frontend': workspace:*
       '@itwin/projects-client': ^0.2.0
-      '@itwin/reality-data-client': ^3.0.0-dev.80
+      '@itwin/reality-data-client': ^0.1.4
       '@itwin/ui-items-providers-test': workspace:*
       '@types/lorem-ipsum': ^1.0.2
       '@types/node': 14.14.31
@@ -3315,7 +3315,7 @@ importers:
       '@itwin/presentation-common': link:../../presentation/common
       '@itwin/presentation-components': link:../../presentation/components
       '@itwin/presentation-frontend': link:../../presentation/frontend
-      '@itwin/reality-data-client': 3.0.0-dev.80
+      '@itwin/reality-data-client': 0.1.4
       '@itwin/ui-items-providers-test': link:../ui-items-providers-test
       classnames: 2.3.1
       lorem-ipsum: 2.0.4
@@ -6171,6 +6171,21 @@ packages:
       - supports-color
     dev: false
 
+  /@bentley/itwin-client/3.0.0-extension.1:
+    resolution: {integrity: sha512-TdC8vNcDN5Xy7x/TBFzh+/To6ibdcPK12hodO9fTvJpVEIAQGZEO1EDLE/jA1S4RqA3nWk2trU9bjqqmh1KgoQ==}
+    peerDependencies:
+      '@itwin/core-bentley': ^3.0.0-extension.1
+    dependencies:
+      deep-assign: 2.0.0
+      js-base64: 3.7.2
+      lodash: 4.17.21
+      qs: 6.10.1
+      superagent: 5.3.1
+      xpath: 0.0.27
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@bentley/itwin-client/3.0.0-extension.1_f2c3418fbeb77077b236020c30c9aae4:
     resolution: {integrity: sha512-TdC8vNcDN5Xy7x/TBFzh+/To6ibdcPK12hodO9fTvJpVEIAQGZEO1EDLE/jA1S4RqA3nWk2trU9bjqqmh1KgoQ==}
     peerDependencies:
@@ -6615,9 +6630,6 @@ packages:
       '@itwin/core-bentley': 3.0.0-extension.1
       '@itwin/core-common': 3.0.0-extension.1_f2c3418fbeb77077b236020c30c9aae4
       oidc-client: 1.11.5
-    transitivePeerDependencies:
-      - '@bentley/itwin-client'
-      - '@itwin/core-geometry'
     dev: false
 
   /@itwin/certa/3.0.0-dev.127:
@@ -6820,11 +6832,13 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@itwin/reality-data-client/3.0.0-dev.80:
-    resolution: {integrity: sha512-iN01TZjCSUYSU9bX9OirdZzqXzqjgB/9PNyGwXWgF8VImAGFZMZtgO26A7P+Kkl9LeqpWFotMoHC4DvVvpHunQ==}
+  /@itwin/reality-data-client/0.1.4:
+    resolution: {integrity: sha512-q5tOziONZwuR/QKQy4QiSBs6/koMIL5r/jhnbAzf79NW+Z7HX7OeETFUiIH31mv+epVNYBDHtN7hYdLnXGZRmA==}
+    peerDependencies:
+      '@itwin/core-bentley': ^3.0.0-dev.109
+      '@itwin/core-common': ^3.0.0-dev.109
     dependencies:
-      '@bentley/itwin-client': 3.0.0-extension.1_f2c3418fbeb77077b236020c30c9aae4
-      '@itwin/core-bentley': 3.0.0-extension.1
+      '@bentley/itwin-client': 3.0.0-extension.1
       '@itwin/projects-client': 0.2.0
     transitivePeerDependencies:
       - supports-color
@@ -6838,7 +6852,6 @@ packages:
       openid-client: 4.9.1
     transitivePeerDependencies:
       - '@bentley/itwin-client'
-      - '@itwin/core-geometry'
     dev: false
 
   /@jest/console/26.6.2:

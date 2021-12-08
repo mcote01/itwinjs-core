@@ -2714,7 +2714,6 @@ importers:
       '@bentley/imodelhub-client': workspace:*
       '@bentley/itwin-client': workspace:*
       '@bentley/react-scripts': 4.0.3
-      '@bentley/reality-data-client': workspace:*
       '@itwin/appui-abstract': workspace:*
       '@itwin/backend-webpack-tools': workspace:*
       '@itwin/browser-authorization': ^0.3.1
@@ -2736,6 +2735,7 @@ importers:
       '@itwin/eslint-plugin': workspace:*
       '@itwin/frontend-devtools': workspace:*
       '@itwin/hypermodeling-frontend': workspace:*
+      '@itwin/reality-data-client': ^0.2.4
       '@itwin/webgl-compatibility': workspace:*
       '@types/express': ^4.16.1
       '@types/express-ws': ^3.0.1
@@ -2763,7 +2763,6 @@ importers:
       '@bentley/icons-generic-webfont': 1.0.34
       '@bentley/imodelhub-client': link:../../clients/imodelhub
       '@bentley/itwin-client': link:../../clients/itwin
-      '@bentley/reality-data-client': link:../../clients/reality-data
       '@itwin/appui-abstract': link:../../ui/appui-abstract
       '@itwin/browser-authorization': 0.3.1
       '@itwin/core-backend': link:../../core/backend
@@ -2781,6 +2780,7 @@ importers:
       '@itwin/electron-authorization': 0.5.1
       '@itwin/frontend-devtools': link:../../core/frontend-devtools
       '@itwin/hypermodeling-frontend': link:../../core/hypermodeling
+      '@itwin/reality-data-client': 0.2.4
       '@itwin/webgl-compatibility': link:../../core/webgl-compatibility
       body-parser: 1.19.0
     devDependencies:
@@ -6155,12 +6155,12 @@ packages:
     requiresBuild: true
     dev: false
 
-  /@bentley/itwin-client/3.0.0-dev.143_2d52e404ed26bf6fedfbf926b350cd6b:
-    resolution: {integrity: sha512-96yKqELSjhhqrfKjljzBzCn66cGgJSGcMf3gzwfCx/g/DitQzI6t4NWsKeVYyiDrqyrw0nTO/ImoJcPmApExOg==}
+  /@bentley/itwin-client/3.0.0-dev.144_a7d5557c0345ed8ab2dfeb5732dd4221:
+    resolution: {integrity: sha512-kzFPnn1NjbmhU+q88gtDmArWD2Cf0ODXL+3IDxE8KEZcsIwYQttQOzMehoHw2vPb+1c1fpXY1pfjJSlMlyKGHQ==}
     peerDependencies:
-      '@itwin/core-bentley': ^3.0.0-dev.143
+      '@itwin/core-bentley': ^3.0.0-dev.144
     dependencies:
-      '@itwin/core-bentley': 3.0.0-dev.143
+      '@itwin/core-bentley': 3.0.0-dev.144
       deep-assign: 2.0.0
       js-base64: 3.7.2
       lodash: 4.17.21
@@ -6612,12 +6612,12 @@ packages:
   /@itwin/browser-authorization/0.3.1:
     resolution: {integrity: sha512-wy4UL5fgIbhLNc5GUiIuMIHCFB5K5SJhb7gupe2Fq4b4dZw9Dqc1SZrwXSL9kFs4DkAoNqN+ja8KQikgtVjRcw==}
     dependencies:
-      '@itwin/core-bentley': 3.0.0-dev.143
+      '@itwin/core-bentley': 3.0.0-dev.144
       oidc-client: 1.11.5
     dev: false
 
-  /@itwin/certa/3.0.0-dev.143:
-    resolution: {integrity: sha512-kYKDiv7IOgHMx7eIuBTMOaW0Zb5WOiL03gL36ZDS8olFNmV1bc9mbStVp7g1WNCD6DYnVKicwpRXfEC3hoW1aA==}
+  /@itwin/certa/3.0.0-dev.144:
+    resolution: {integrity: sha512-BzrBj5FJzO0wEdeNWxWWX3BjkqMDzRewRiq4IHvJ9Eyin9AIH38aRM5yUUNIfGR5qAqEu9uS03IATq9bV0LIgg==}
     hasBin: true
     peerDependencies:
       electron: ^14.0.0
@@ -6639,8 +6639,8 @@ packages:
       - supports-color
       - utf-8-validate
 
-  /@itwin/certa/3.0.0-dev.143_electron@14.2.1:
-    resolution: {integrity: sha512-kYKDiv7IOgHMx7eIuBTMOaW0Zb5WOiL03gL36ZDS8olFNmV1bc9mbStVp7g1WNCD6DYnVKicwpRXfEC3hoW1aA==}
+  /@itwin/certa/3.0.0-dev.144_electron@14.2.1:
+    resolution: {integrity: sha512-BzrBj5FJzO0wEdeNWxWWX3BjkqMDzRewRiq4IHvJ9Eyin9AIH38aRM5yUUNIfGR5qAqEu9uS03IATq9bV0LIgg==}
     hasBin: true
     peerDependencies:
       electron: ^14.0.0
@@ -6664,8 +6664,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@itwin/core-bentley/3.0.0-dev.143:
-    resolution: {integrity: sha512-s7qYsbt9UKOvSV3kIdaY8CbHo+XmGspFenchPh4+8fblx7AjreMnI8oM5+glmHoNZ2DlfwvebWKroSHa+iZ/gQ==}
+  /@itwin/core-bentley/3.0.0-dev.144:
+    resolution: {integrity: sha512-crIC7pxn0kcraPxvsAm6ytSE57ThI3Ny4X+E1XfJaaOvLkoJlNhsUHJAewwpBGQ8/E+6rg8Jm7mXDdIrjavNcA==}
 
   /@itwin/core-bentley/3.0.0-extension.1:
     resolution: {integrity: sha512-3r1aRoZp694aqP2E0M9dZiaPSAC0E/E2VTvvN9K73NnlTvO4jpaIdt520oHp7tkGYx24VS9Q8+ED1Z0CH9+RkA==}
@@ -6687,8 +6687,8 @@ packages:
   /@itwin/electron-authorization/0.5.1:
     resolution: {integrity: sha512-S6BxwfX4/fxcrLglqN0exrTDV2w4l0r34SEJEqSN3DbHuoGhjRJISXZux0OXprMwWjuCy7hI09n/9EW733J2uA==}
     dependencies:
-      '@bentley/itwin-client': 3.0.0-dev.143_2d52e404ed26bf6fedfbf926b350cd6b
-      '@itwin/core-bentley': 3.0.0-dev.143
+      '@bentley/itwin-client': 3.0.0-dev.144_a7d5557c0345ed8ab2dfeb5732dd4221
+      '@itwin/core-bentley': 3.0.0-dev.144
       '@openid/appauth': 1.3.1
       keytar: 7.7.0
       open: 8.4.0
@@ -6780,8 +6780,8 @@ packages:
   /@itwin/oidc-signin-tool/3.0.0-dev.110:
     resolution: {integrity: sha512-uoTmMBqnEueiBQSzP6JjaTQu96fJa8JBqTESZZT/6Ub43jP1jYUcI+t0bk0lq3V4GF1GVWisTmcBaW6VK7kHsw==}
     dependencies:
-      '@itwin/certa': 3.0.0-dev.143
-      '@itwin/core-bentley': 3.0.0-dev.143
+      '@itwin/certa': 3.0.0-dev.144
+      '@itwin/core-bentley': 3.0.0-dev.144
       dotenv: 10.0.0
       dotenv-expand: 5.1.0
       openid-client: 4.9.1
@@ -6795,8 +6795,8 @@ packages:
   /@itwin/oidc-signin-tool/3.0.0-dev.110_electron@14.2.1:
     resolution: {integrity: sha512-uoTmMBqnEueiBQSzP6JjaTQu96fJa8JBqTESZZT/6Ub43jP1jYUcI+t0bk0lq3V4GF1GVWisTmcBaW6VK7kHsw==}
     dependencies:
-      '@itwin/certa': 3.0.0-dev.143_electron@14.2.1
-      '@itwin/core-bentley': 3.0.0-dev.143
+      '@itwin/certa': 3.0.0-dev.144_electron@14.2.1
+      '@itwin/core-bentley': 3.0.0-dev.144
       dotenv: 10.0.0
       dotenv-expand: 5.1.0
       openid-client: 4.9.1

@@ -6,13 +6,13 @@
 import { assert, compareStringsOrUndefined, GuidString } from "@itwin/core-bentley";
 import { ComboBox, ComboBoxEntry, createCheckBox, createComboBox, createNestedMenu, createNumericInput, NestedMenu } from "@itwin/frontend-devtools";
 import {
-  CartographicRange, ContextRealityModelProps, ModelProps, SpatialClassifier, SpatialClassifierFlagsProps, SpatialClassifierInsideDisplay,
+  CartographicRange, ContextRealityModelProps, ModelProps, OrbitGtBlobProps, SpatialClassifier, SpatialClassifierFlagsProps, SpatialClassifierInsideDisplay,
   SpatialClassifierOutsideDisplay, SpatialClassifiers,
 } from "@itwin/core-common";
 import {
   ContextRealityModelState, DisplayStyle3dState, IModelApp, SpatialModelState, SpatialViewState, Viewport,
 } from "@itwin/core-frontend";
-import { RealityDataAccessClient } from "@bentley/reality-data-client";
+import { RealityDataAccessClient } from "@itwin/reality-data-client";
 import { DisplayTestApp } from "./App";
 import { ToolBarDropDown } from "./ToolBar";
 
@@ -96,12 +96,32 @@ export class ClassificationsPanel extends ToolBarDropDown {
     }
 
     const range = new CartographicRange(this._vp.iModel.projectExtents, ecef.getTransform());
-    let available = new Array<ContextRealityModelProps>();
+    const available = new Array<ContextRealityModelProps>();
     try {
       if (this._iTwinId !== undefined && IModelApp.authorizationClient) {
         const accessToken = await IModelApp.authorizationClient.getAccessToken();
         if (accessToken) {
-          available = await new RealityDataAccessClient().queryRealityData(accessToken, { iTwinId: this._iTwinId, range });
+          const realityDataAccessClient = new RealityDataAccessClient();
+          const result = await realityDataAccessClient.getRealityDatas(accessToken, this._iTwinId, { top: 500, extent: range });
+          const availableRealityModels: ContextRealityModelProps[] = [];
+          const realityDatasFound = result.realityDatas;
+          for (const currentRealityData of realityDatasFound) {
+            let opcConfig: OrbitGtBlobProps | undefined;
+            if (currentRealityData.type && (currentRealityData.type.toUpperCase() === "OPC") && currentRealityData.rootDocument !== undefined) {
+              const rootDocUrl = await currentRealityData.getBlobUrl(accessToken, currentRealityData.rootDocument);
+              opcConfig = {
+                rdsUrl: "",
+                containerName: "",
+                blobFileName: rootDocUrl.toString(),
+                accountName: "",
+                sasToken: "",
+              };
+            }
+            availableRealityModels.push({
+              tilesetUrl: await realityDataAccessClient.getRealityDataUrl(this._iTwinId, currentRealityData.id), name: currentRealityData.displayName, description: (currentRealityData.description ? currentRealityData.description : ""),
+              realityDataId: currentRealityData.id, orbitGtBlob: opcConfig,
+            });
+          }
         }
       }
     } catch (_error) {

@@ -1444,7 +1444,7 @@ importers:
       '@itwin/eslint-plugin': workspace:*
       '@itwin/oidc-signin-tool': 3.0.0
       '@itwin/projects-client': ^0.3.0
-      '@itwin/service-authorization': ^0.3.0
+      '@itwin/service-authorization': ^0.4.0
       '@types/chai': ^4.1.4
       '@types/chai-as-promised': ^7
       '@types/fs-extra': ^4.0.7
@@ -1467,7 +1467,7 @@ importers:
       '@itwin/core-geometry': link:../../core/geometry
       '@itwin/core-transformer': link:../../core/transformer
       '@itwin/projects-client': 0.3.0
-      '@itwin/service-authorization': 0.3.0
+      '@itwin/service-authorization': 0.4.0
       fs-extra: 8.1.0
     devDependencies:
       '@itwin/build-tools': link:../../tools/build
@@ -2136,7 +2136,7 @@ importers:
       '@itwin/presentation-common': workspace:*
       '@itwin/presentation-frontend': workspace:*
       '@itwin/projects-client': ^0.3.0
-      '@itwin/service-authorization': ^0.3.0
+      '@itwin/service-authorization': ^0.4.0
       '@types/chai': ^4.1.4
       '@types/chai-as-promised': ^7
       '@types/mocha': ^8.2.2
@@ -2172,7 +2172,7 @@ importers:
       '@itwin/oidc-signin-tool': 3.0.0
       '@itwin/presentation-common': link:../../presentation/common
       '@itwin/presentation-frontend': link:../../presentation/frontend
-      '@itwin/service-authorization': 0.3.0
+      '@itwin/service-authorization': 0.4.0
       chai: 4.3.4
       chai-as-promised: 7.1.1_chai@4.3.4
       dotenv: 10.0.0
@@ -6697,24 +6697,6 @@ packages:
   /@itwin/core-bentley/3.0.0-dev.153:
     resolution: {integrity: sha512-UGAOpcl1HzXyuOIL5t8aE6+b8so1xLtiQM86AzDQu2/ivER7mY/260NQmvzoLCFIwEpcpiFB8r2AAV7xYqzYMg==}
 
-  /@itwin/core-bentley/3.0.0-extension.1:
-    resolution: {integrity: sha512-3r1aRoZp694aqP2E0M9dZiaPSAC0E/E2VTvvN9K73NnlTvO4jpaIdt520oHp7tkGYx24VS9Q8+ED1Z0CH9+RkA==}
-    dev: false
-
-  /@itwin/core-common/3.0.0-extension.1_f2c3418fbeb77077b236020c30c9aae4:
-    resolution: {integrity: sha512-IMcuAb/xJjbzvwSrZp5URmKU7h0se97DGIF1R76EMxaTvTCTa7OOkelu6t8f1mH0BXHv8WfeBfUu5ajP+RU7vg==}
-    peerDependencies:
-      '@bentley/itwin-client': ^3.0.0-extension.1
-      '@itwin/core-bentley': ^3.0.0-extension.1
-      '@itwin/core-geometry': ^3.0.0-extension.1
-    dependencies:
-      '@itwin/core-bentley': 3.0.0-extension.1
-      '@ungap/url-search-params': 0.1.4
-      flatbuffers: 1.12.0
-      js-base64: 3.7.2
-      semver: 5.7.1
-    dev: false
-
   /@itwin/core-geometry/3.0.0-dev.148:
     resolution: {integrity: sha512-y1ECs8FTtwozAYTHLYwNTNxXA/NQNYxJt0cOr82KpdX0s0P+Zu/9EBbOp4jLwnh0ap59X7w9IyrdGfi+i8lHYw==}
     dependencies:
@@ -6865,15 +6847,11 @@ packages:
       - debug
     dev: false
 
-  /@itwin/service-authorization/0.3.0:
-    resolution: {integrity: sha512-ZX7jsxxW3IWXQA0DXnSHV5PInf8S/IyqvhwEDyPYMCE1KtYo6CawNCeKnxe9kv8sbB0g017Xj7qHLC40+t9jHg==}
+  /@itwin/service-authorization/0.4.0:
+    resolution: {integrity: sha512-IGyES+Dra8S/SaeiAFo7NKllVTF3gwMlPMic7Hyd7GLq3xySRLmuO3UlfzphNgHDquYmU7u0tE6gGaQzp6y4Lg==}
     dependencies:
-      '@itwin/core-bentley': 3.0.0-extension.1
-      '@itwin/core-common': 3.0.0-extension.1_f2c3418fbeb77077b236020c30c9aae4
+      '@itwin/core-bentley': 3.0.0-dev.148
       openid-client: 4.9.1
-    transitivePeerDependencies:
-      - '@bentley/itwin-client'
-      - '@itwin/core-geometry'
     dev: false
 
   /@jest/console/26.6.2:
